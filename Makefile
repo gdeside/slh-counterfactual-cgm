@@ -21,7 +21,7 @@ RUN     = $(PYTHON) -m
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis regression_analysis \
 	table1 fig2 fig3 fig4 fig5 fig5_determinants suppfig1 suppfig_phenotype cohort_flowchart paper \
-	open_data open_data_phase_shift convert_units sample_data sample_data_run \
+	open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_run \
 	figures tests clean
 
 
@@ -195,6 +195,9 @@ open_data:  ## Anonymised dataset (HIPAA + GDPR: relative time + noise)
 
 open_data_phase_shift:  ## Anonymised dataset + random monitoring-start shift
 	$(RUN) scripts.preprocessing.generate_open_data --phase_shift
+
+open_data_to_raw:  ## Convert the open dataset CSV into Data/Raw/*.xlsx (OPEN_DATA_CSV=path/to/cohort_open_data.csv)
+	$(RUN) scripts.preprocessing.open_data_to_raw $(if $(OPEN_DATA_CSV),--input $(OPEN_DATA_CSV))
 
 convert_units:  ## Write mmol/L copies of the data files (mg/dL originals untouched)
 	$(RUN) scripts.preprocessing.convert_data_units

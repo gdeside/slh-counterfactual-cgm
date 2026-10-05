@@ -18,6 +18,7 @@ Code, analysis pipeline and figure scripts for the manuscript:
 - [Installation](#installation)
 - [Quick start with the sample dataset](#quick-start-with-the-sample-dataset)
 - [Data availability](#data-availability)
+- [How to use the data](#how-to-use-the-data)
 - [How to reproduce](#how-to-reproduce)
 - [Glucose units](#glucose-units-mgdl-and-mmoll)
 - [Makefile reference](#makefile-reference)
@@ -173,6 +174,60 @@ phenotype table (`Data/Final cohort SLH.csv`: Table 1, determinant figures) are 
   Its `DATACARD.md` documents the de-identification steps.
 - Because noise is added to glucose values, results computed from the open dataset will differ slightly from
   those reported in the manuscript.
+
+---
+
+## How to use the data
+
+Three kinds of data can be used with this code. In every case, point the code at a working folder with
+`CGM_DATA_ROOT` (default: `./data`); inputs are read from, and outputs written to, sub-folders of it.
+
+| Data | Use it for | How |
+|---|---|---|
+| **Synthetic sample** (`make sample_data`) | trying the code, the notebooks | `export CGM_DATA_ROOT=$PWD/sample_data` then `make pipeline` |
+| **Open anonymised dataset** (Zenodo) | re-running the analysis | convert it to the raw layout (below), then `make pipeline` |
+| **Your own CGM exports** | applying the method to new data | put one file per patient in `Data/Raw/` (below) |
+
+### Option 1 — Open dataset (Zenodo)
+
+The release contains `cohort_open_data.csv` (all patients) and `per_patient/OD_xxx.csv`, with three columns:
+
+| Column | Meaning |
+|---|---|
+| `patient_id` | anonymous code (`OD_001` …); the mapping to original IDs does not exist |
+| `time_h` | relative time since monitoring start (hours, 5-min steps) |
+| `glucose_mgdl` (or `glucose_mmoll`) | glucose with added Gaussian noise (mg/dL, or mmol/L) |
+
+```bash
+export CGM_DATA_ROOT=$PWD/od_run                       # any empty folder
+make open_data_to_raw OPEN_DATA_CSV=/path/to/cohort_open_data.csv
+make pipeline                                          # preprocessing → metrics → filtering → episodes → sensitivity
+```
+
+`open_data_to_raw` writes `Data/Raw/<patient_id>.xlsx` (columns `time`, `glycemie` in mg/dL) and maps the relative
+time onto an arbitrary origin (2000-01-01 00:00): no real date is involved. Because noise was added to glucose, results
+differ slightly from the manuscript. The phenotype table (`Data/Final cohort SLH.csv`) is **not** part of the open
+dataset, so Table 1 and the determinant figures cannot be reproduced from it.
+
+### Option 2 — Your own CGM data
+
+Create `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT`, one file per patient, with two columns:
+
+| Column | Content |
+|---|---|
+| `time` | timestamp of each reading (date-time) |
+| `glycemie` (also accepted: `glycemia`, `glucose`) | glucose in **mg/dL** (convert mmol/L × 18.0156 first) |
+
+The pipeline expects 5-minute sampling and extracts a 45-day window with ≥ 70 % coverage per patient (patients without
+one are listed in `Data/Preprocessed/patients_status.csv`). Then run `make pipeline`.
+
+### Where the results go
+
+| Folder under `CGM_DATA_ROOT` | Content |
+|---|---|
+| `Data/Preprocessed/`, `Data/Metrics/`, `Data/Filtered/`, `Data/Episodes/` | windows, CGM metrics, filtered cohort, classified episodes |
+| `Results/` | tables and sensitivity-analysis outputs (`Results/Open_Data/` for the anonymised release) |
+| `Figures/` | all figures (PDF + SVG) |
 
 ---
 
