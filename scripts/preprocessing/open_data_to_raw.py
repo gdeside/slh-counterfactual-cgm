@@ -22,9 +22,9 @@ from pathlib import Path
 import pandas as pd
 
 from src.config import RAW_PATH
+from src.utils.unit_conversion import MGDL_PER_MMOLL
 
 ORIGIN = pd.Timestamp("2000-01-01 00:00")
-MMOL_TO_MGDL = 18.0156
 
 
 def main() -> None:
@@ -37,7 +37,7 @@ def main() -> None:
     if "glucose_mgdl" in df.columns:
         glucose = df["glucose_mgdl"]
     elif "glucose_mmoll" in df.columns:
-        glucose = df["glucose_mmoll"] * MMOL_TO_MGDL
+        glucose = df["glucose_mmoll"] * MGDL_PER_MMOLL
     else:
         raise SystemExit("Expected a 'glucose_mgdl' or 'glucose_mmoll' column.")
 

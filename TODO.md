@@ -93,11 +93,11 @@ Only reusable *code* is migrated to `scripts/presentation_figures/`, cleaned, an
 
 21. [ ] **Regenerate every manuscript figure/table from the open dataset** (values differ slightly because of the noise;
         stated in the README) and run `make tests` + `make sample_data_run` on the cleaned tree.
-22. [ ] **Add one end-to-end test** (synthetic trace: detection → counterfactual → Δ metrics) and a **GitHub Actions
+22. [x] **Add one end-to-end test** (synthetic trace: detection → counterfactual → Δ metrics) and a **GitHub Actions
         workflow** running `make tests`. (Do this before the release so CI is in the archived snapshot.)
 
 ## D. Release
-
+        **DONE:** `tests/test_pipeline_end_to_end.py` (+ unit conversion, patient selection, open data), `.github/workflows/tests.yml`; 216 tests pass locally. **Remaining:** check the first GitHub Actions run is green after pushing.
 23. [ ] **Final commit on `master`**, then `make sample_data` to produce `sample_data.zip`, and **move the tag**:
         `git tag -f -a v1.0.0 -m "v1.0.0" && git push -f origin v1.0.0`
         (or delete and recreate it). Only while no release exists.
@@ -112,7 +112,7 @@ Only reusable *code* is migrated to `scripts/presentation_figures/`, cleaned, an
 ## E. After release (optional, can be a v1.0.1)
 
 27. [ ] Add ORCIDs and the missing affiliations (Syed, Lysy) to `CITATION.cff` / README.
-28. [ ] Add badges (licence, Python, tests), a `docs/` page describing each output file's columns, and a short note on the
+28. [ ] *(badges done: tests, Python, licences, DOI)* Add a `docs/` page describing each output file's columns, and a short note on the
         config layout (`src/config/` is the single source of thresholds).
 29. [ ] Add the journal year/volume/pages to the citation once published.
 

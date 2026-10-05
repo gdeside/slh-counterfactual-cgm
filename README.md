@@ -1,5 +1,11 @@
 # Counterfactual CGM Signals for Short-Lasting Hyperglycaemia (SLH)
 
+[![Tests](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml/badge.svg)](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml)
+[![Python](https://img.shields.io/badge/python-%E2%89%A5%203.11-blue.svg)](#installation)
+[![License: MIT](https://img.shields.io/badge/code%20license-MIT-green.svg)](LICENSE)
+[![Data: CC BY 4.0](https://img.shields.io/badge/data%20license-CC%20BY%204.0-lightgrey.svg)](#data-availability)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23102518.svg)](https://doi.org/10.5281/zenodo.23102518)
+
 Code, analysis pipeline and figure scripts for the manuscript:
 
 > *Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making*
@@ -216,7 +222,7 @@ Create `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT`, one file per patient,
 | Column | Content |
 |---|---|
 | `time` | timestamp of each reading (date-time) |
-| `glycemie` (also accepted: `glycemia`, `glucose`) | glucose in **mg/dL** (convert mmol/L × 18.0156 first) |
+| `glycemie` (also accepted: `glycemia`, `glucose`) | glucose in **mg/dL** (convert mmol/L × 18.0182 first) |
 
 The pipeline expects 5-minute sampling and extracts a 45-day window with ≥ 70 % coverage per patient (patients without
 one are listed in `Data/Preprocessed/patients_status.csv`). Then run `make pipeline`.
@@ -361,7 +367,18 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 make tests        # or: python3 -m pytest tests -v
 ```
 
-Covers data loading, quality flags, coverage, metric computation, episode criteria and the clock-lock index (182 tests).
+Runs in a few seconds, needs no patient data, and is executed on every push by GitHub Actions
+(`.github/workflows/tests.yml`). Covered:
+
+| Area | Test file |
+|---|---|
+| Data loading, quality flags, coverage | `test_load_data.py`, `test_quality_flags.py`, `test_coverage.py` |
+| CGM metrics and the clock-lock index Λ | `test_metrics.py`, `test_rhythm.py` |
+| Episode criteria C1–C6 | `test_criteria.py` |
+| **End to end** on a synthetic trace: detection → SLH/LLH classification → counterfactual → Δ metrics | `test_pipeline_end_to_end.py` |
+| mg/dL ↔ mmol/L conversion | `test_unit_conversion.py` |
+| Automatic / explicit patient selection | `test_patient_selection.py` |
+| Open-data anonymisation, open data → raw conversion, synthetic sample data | `test_open_data.py` |
 
 ---
 
