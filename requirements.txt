@@ -1,0 +1,13 @@
+# Core dependencies (tested on Python 3.13; needs >= 3.11)
+numpy==2.4.4
+pandas==3.0.2
+scipy==1.17.1
+scikit-learn==1.8.0
+statsmodels==0.14.6
+matplotlib==3.10.9
+seaborn==0.13.2
+plotly==6.7.0
+openpyxl==3.1.5
+tqdm==4.67.3
+pysummaries==0.0.3   # Table 1
+pytest==9.0.3

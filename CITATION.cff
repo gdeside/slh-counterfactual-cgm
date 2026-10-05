@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this code or the open dataset, please cite it as below."
+title: "Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code and open dataset"
+type: software
+version: 1.0.0
+date-released: 2026-10-05
+doi: 10.5281/zenodo.23102518
+license: MIT
+repository-code: "https://github.com/gdeside/counterfactual-cgm-slh"
+authors:
+  - family-names: Deside
+    given-names: Guillaume
+    email: guillaume.deside28@gmail.com
+    affiliation: "Institute for Statistics, Biostatistics, and Actuarial Sciences (ISBA), Université catholique de Louvain"
+  - family-names: Syed
+    given-names: Zain
+  - family-names: Symul
+    given-names: Laura
+    affiliation: "Institute for Statistics, Biostatistics, and Actuarial Sciences (ISBA), Université catholique de Louvain"
+  - family-names: Lysy
+    given-names: Philippe
+preferred-citation:
+  type: article
+  title: "Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making"
+  journal: "The Lancet Digital Health"
+  authors:
+    - family-names: Deside
+      given-names: Guillaume
+    - family-names: Syed
+      given-names: Zain
+    - family-names: Symul
+      given-names: Laura
+    - family-names: Lysy
+      given-names: Philippe
