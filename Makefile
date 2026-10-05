@@ -19,7 +19,7 @@ RUN     = $(PYTHON) -m
 	lininterp_stepbystep lininterp_offset_comp lininterp_45days \
 	sensitivity_analysis lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity \
 	timeseries_sensitivity sensitivity_figures \
-	quartile_analysis clock_lock scatter_analysis regression_analysis \
+	quartile_analysis scatter_analysis regression_analysis \
 	table1 fig2 fig3 fig4 fig5 fig5_determinants suppfig1 suppfig_phenotype cohort_flowchart paper \
 	open_data open_data_phase_shift convert_units sample_data sample_data_run \
 	figures tests clean
@@ -92,9 +92,6 @@ patient_similarity:  ## Participant similarity in CGM-metric space vs n_SLH (int
 
 quartile_analysis:  ## Quartile stratification by n_SLH
 	$(RUN) scripts.statistics.quartile_analysis
-
-clock_lock:  ## Clock-lock index (rhythm) cohort analysis
-	$(RUN) scripts.statistics.clock_lock_analysis
 
 scatter_analysis:  ## n_SLH vs delta-metric scatter plots
 	$(RUN) scripts.statistics.scatter_analysis
