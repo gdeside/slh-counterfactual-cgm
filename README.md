@@ -224,16 +224,39 @@ one are listed in `Data/Preprocessed/patients_status.csv`). Then run `make pipel
 ### Which patients are shown in the illustrations?
 
 Scripts that illustrate one patient (episode detection, counterfactual construction, AGP, …) or two patients
-(Figures 3–5: high vs low SLH burden) **do not hard-code participant IDs**. By default they pick automatically, from the
-filtered cohort, the patient with the **most** SLH episodes (and, for pairs, the one with the **fewest**). Override with
-`--patient_id <ID>` (single-patient scripts), or for the pair figures:
+(Figures 3–5, patient comparison) **do not hard-code participant IDs**. Participant IDs differ between datasets
+(original study codes, `A001`… in the sample data, `OD_001`… in the open dataset), so the code picks patients itself
+unless you tell it which ones to use.
+
+**Default (automatic).** From the filtered cohort, the script takes the patient with the **most** SLH episodes
+and, for two-patient figures, also the patient with the **fewest** (at least one). The chosen IDs are printed
+(`[auto] patient with most SLH episodes: …`).
+
+**Choosing your own patients**
+
+| Figure type | How | Example |
+|---|---|---|
+| One patient | `--patient_id <ID>` | `python3 -m scripts.fig_slh_schema --patient_id A174` |
+| Two patients (Figures 3, 4, 5, `patient_comparison`, two-patient presentation figures) | environment variables `CGM_PATIENT_HIGH` and `CGM_PATIENT_LOW` | see below |
+| `lininterp_*` scripts | set `SELECTED_PID` at the top of the script (default `None` = automatic) | `SELECTED_PID = "A224"` |
+
+`CGM_PATIENT_HIGH` is the patient with a **high** SLH burden (many SLH episodes) and `CGM_PATIENT_LOW` the one with a
+**low** burden; they are the two patients contrasted in Figures 3–5. They are *environment variables*: the
+`NAME=value` part placed before a command sets them for that command only, so they work with `make` and with `python3 -m`:
 
 ```bash
-CGM_PATIENT_HIGH=<id> CGM_PATIENT_LOW=<id> make fig3 fig4 fig5
+# Figures 3, 4 and 5 for two chosen patients
+CGM_PATIENT_HIGH=A174 CGM_PATIENT_LOW=A224 make fig3 fig4 fig5
+
+# the same, for every figure of the shell session
+export CGM_PATIENT_HIGH=A174
+export CGM_PATIENT_LOW=A224
+make fig3 fig4 fig5 patient_comparison
 ```
 
-The patients used in the manuscript are original study codes that do not exist in the open dataset (IDs shuffled to
-`OD_xxx`), so the figures from the open data show different, automatically chosen patients. Selection logic:
+`A174` and `A224` are the two participants shown in the manuscript (high vs low SLH burden); they exist only in the
+original dataset. If an ID is not found in the data, the script prints a warning and falls back to the automatic choice,
+so the same command also runs on the sample or open data (it then shows other patients). Selection logic:
 [`src/utils/patient_selection.py`](src/utils/patient_selection.py).
 
 ### Presentation figures
