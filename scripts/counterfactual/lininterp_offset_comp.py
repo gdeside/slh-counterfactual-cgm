@@ -27,6 +27,7 @@ import matplotlib.dates as mdates
 # =============================================================================
 # PROJECT IMPORTS — Data & Processing
 # =============================================================================
+from src.utils.patient_selection import resolve_patient_id
 from src.preprocessing.load_data import load_patient_window, prepare_valid_data
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.episodes.detection import detect_hyperglycemia_episodes
@@ -83,7 +84,7 @@ from src.utils.unit_conversion import format_glucose
 FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "Counterfactual_analysis")
 
 # ── Patient selection ─────────────────────────────────────────────────────────
-SELECTED_PID = "A174"
+SELECTED_PID = None   # None = automatic (patient with the most SLH episodes); or set a patient ID
 
 # ── Visualization parameters ──────────────────────────────────────────────────
 PLOT_WINDOW_H = 3              # Hours of signal shown on each side of episode
@@ -401,9 +402,10 @@ def main():
     print("=" * 70)
     
     # Load patient data
-    df_raw = load_patient_window(SELECTED_PID)
+    selected_pid = resolve_patient_id(SELECTED_PID, role="most")
+    df_raw = load_patient_window(selected_pid)
     if df_raw is None:
-        raise FileNotFoundError(f"Cannot load {SELECTED_PID}")
+        raise FileNotFoundError(f"Cannot load {selected_pid}")
     
     df = prepare_valid_data(df_raw)
     timestep = detect_dominant_sampling_interval(df)
@@ -415,7 +417,7 @@ def main():
     # Enrich SLH episodes with peak information for visualization
     slh_episodes = enrich_slh_episodes_with_peak_info(df, classification_df, raw_episodes)
     
-    print(f"\n  Patient: {SELECTED_PID}")
+    print(f"\n  Patient: {selected_pid}")
     print(f"  Timestep: {timestep:.0f} min")
     print(f"  Raw episodes detected: {len(raw_episodes)}")
     print(f"  Episodes classified: {len(classification_df)}")
@@ -447,7 +449,7 @@ def main():
     
     # Generate figures
     os.makedirs(FIGURES_OUTPUT_PATH, exist_ok=True)
-    output_dir = os.path.join(FIGURES_OUTPUT_PATH, SELECTED_PID)
+    output_dir = os.path.join(FIGURES_OUTPUT_PATH, selected_pid)
     os.makedirs(output_dir, exist_ok=True)
     
     print("\n  Generating offset comparison figures...")
@@ -457,11 +459,11 @@ def main():
         
         print(f"      Multi-panel figure...")
         output_prefix = os.path.join(output_dir, f"multipanel_ep{ep_i:02d}")
-        generate_offset_comparison_multipanel(ep, ep_i, df, OFFSET_VALUES, timestep, SELECTED_PID, output_prefix)
+        generate_offset_comparison_multipanel(ep, ep_i, df, OFFSET_VALUES, timestep, selected_pid, output_prefix)
         
         print(f"      Overlay figure...")
         output_prefix = os.path.join(output_dir, f"overlay_ep{ep_i:02d}")
-        generate_offset_comparison_overlay(ep, ep_i, df, OFFSET_VALUES, timestep, SELECTED_PID, output_prefix)
+        generate_offset_comparison_overlay(ep, ep_i, df, OFFSET_VALUES, timestep, selected_pid, output_prefix)
     
     print("\n" + "=" * 70)
     print(f"Output: {output_dir}/")

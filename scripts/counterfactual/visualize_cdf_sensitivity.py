@@ -17,7 +17,7 @@ Output: Results/Sensitivity_LinInterp_Modular/Figures/Cohort/cdf/
 
 Usage:
     python3 visualize_cdf_sensitivity.py
-    python3 visualize_cdf_sensitivity.py --metric TIR70-180 --patients A159 A224
+    python3 -m scripts.counterfactual.visualize_cdf_sensitivity --metric TIR70-180 --patients ID1 ID2
 
 Authors: Guillaume Deside
 """
@@ -35,6 +35,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 # Import configuration
+from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
 from src.config import BASE_PATH
 
 # Import visualization
@@ -59,7 +60,7 @@ COHORT_CSV = os.path.join(DATA_DIR, "cohort_sensitivity.csv")
 QUARTILE_CSV = os.path.join(BASE_PATH, "Results", "Quartile_Analysis", "quartile_assignments.csv")
 
 # ── Default representative patients ──────────────────────────────────────────
-DEFAULT_PATIENTS = ["A159", "A224"]  # Modify these to your representative cases
+DEFAULT_PATIENTS = None  # None = automatic: [high-SLH, low-SLH] patients (CGM_PATIENT_HIGH / CGM_PATIENT_LOW)
 
 # ── Metrics to plot ──────────────────────────────────────────────────────────
 METRICS = [
@@ -117,10 +118,8 @@ PATIENT_MARKER_SIZE = 80
 PATIENT_MARKER_ALPHA = 0.90
 PATIENT_MARKER_EDGE_WIDTH = 1.5
 PATIENT_MARKER_EDGE_COLOR = "#000000"
-PATIENT_COLORS = {
-    DEFAULT_PATIENTS[0]: "#E69F00",  # Orange
-    DEFAULT_PATIENTS[1]: "#CC79A7",  # Purple
-}
+PATIENT_COLOR_CYCLE = ["#E69F00", "#CC79A7", "#009E73", "#56B4E9"]  # orange, purple, …
+PATIENT_COLORS: dict = {}   # filled from the selected patients in main()
 
 # ── Quartile lines ───────────────────────────────────────────────────────────
 QUARTILE_LINE_COLOR = "#666666"
@@ -669,10 +668,13 @@ def main():
         "--patients",
         nargs='+',
         default=DEFAULT_PATIENTS,
-        help=f"Patient IDs to mark on CDF (default: {DEFAULT_PATIENTS})"
+        help="Patient IDs to mark on CDF (default: high- and low-SLH patients, chosen automatically)"
     )
     
     args = parser.parse_args()
+    if not args.patients:
+        args.patients = list(resolve_patient_pair())
+    PATIENT_COLORS.update(zip(args.patients, PATIENT_COLOR_CYCLE))
     
     print("=" * 70)
     print("  Cohort Sensitivity CDF Visualization")

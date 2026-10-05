@@ -1,11 +1,11 @@
 # To-do before the v1.0.0 release (ordered)
 
-Everything below gets done; the numbering is the order to do it in. Steps 1–10 modify the repository, so they
+Everything below gets done; the numbering is the order to do it in. Steps 1–22 modify the repository, so they
 come **before** the release: publishing the GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 
 > ⚠️ Status checked on `master` (PR #53 merged): the tag `v1.0.0` **already exists on the remote** (commit `905a5e8`),
 > but **no GitHub release is published yet**, so Zenodo has not archived anything. The tag must be moved to the final
-> commit in step 12 (`git tag -f` + force-push of the tag) — only safe as long as no release exists.
+> commit in step 23 (`git tag -f` + force-push of the tag) — only safe as long as no release exists.
 
 ## A. Safety first (nothing public until these pass)
 
@@ -18,51 +18,103 @@ come **before** the release: publishing the GitHub release triggers the Zenodo s
 2. [x] **Notebook outputs replaced by synthetic ones** — the 8 notebooks were re-executed on the synthetic sample data
        (fake patients A001–A004, time relative to an arbitrary t = 0 = 2000-01-01), each with an "Illustration only"
        banner; no real dates, local paths or patient data remain in them. `make tests`: 182 passed.
-3. [x] **Presentation figures with real-patient outputs** (`scripts/presentation_figures/`) removed from the clean branch.
+3. [x] **Real-patient presentation outputs** (old `scripts/presentation_figures/output/`, GIF, PDFs) removed from the clean branch history; see B2 for the rest.
 4. [ ] **Ethics / DPO check** that releasing the open dataset (and the figures) is covered by the approval.
 
 ## B. Clean the repository content
 
-5. [ ] **Remove hard-coded local paths** (still present in): `src/config/paths.py` (default `BASE_PATH` + commented line 24),
-       `scripts/supplementary_code/regression_analysis_poisson.py`, `notebooks/01_cgm_metrics.ipynb`.
-       Make `CGM_DATA_ROOT` required or default to `./data`-style relative path with a clear error message.
-6. [x] **Non-code artefacts removed** from the clean branch (`TLDE_submission_review.md`, `talk_15min_plan.md`,
-       `scripts/presentation_figures/`); `env/`, `presentation/`, `analyzer.py` are git-ignored — don't re-add.
-7. [ ] **Decide the fate of `scripts/supplementary_code/`** (2 files left: `local_slh_analysis_cohort.py`,
-       `regression_analysis_poisson.py`) and the empty `scripts/poster_figures/`: keep only what supports a figure,
-       table or statement of the paper, delete the rest, and say so in the README.
-8. [ ] **Fix the `Makefile`**: `make clock_lock` (line 96-97) calls the deleted `scripts.statistics.clock_lock_analysis`
-       — drop or redirect the target (also remove it from the `.PHONY` list, line 22), and remove targets pointing at
-       anything deleted in steps 6–7.
+5. [x] **Remove hard-coded local paths** — `src/config/paths.py` now uses `CGM_DATA_ROOT` (default `./data`),
+       `regression_analysis_poisson.py` deleted, notebooks re-executed. `git grep "/Users/"` is empty (re-run at the end).
+6. [ ] **Remove non-code artefacts** — `TLDE_submission_review.md`, `talk_15min_plan.md` (untracked leftovers: delete the
+       local files); `env/`, `presentation/`, `analyzer.py` are git-ignored (don't re-add). Also delete local junk:
+7. [ ] **Decide the fate of `scripts/supplementary_code/`** (1 file left: `local_slh_analysis_cohort.py`) and delete the
+       empty `scripts/poster_figures/`: keep only what supports a figure, table or statement of the paper, say so in the README.
+8. [x] **Makefile** — `clock_lock` target removed; every target points to an existing module (re-check after steps 7, 9–13).
 9. [ ] **Re-check the README figure/table map** against the final manuscript numbering (two "Fig. 5" scripts), and the
-       script/Makefile references after steps 6–8.
+       script/Makefile references after steps 6–13.
+
+### B2. Presentation material (`presentation/` and `scripts/presentation_figures/`)
+
+Principle: nothing from `presentation/` is published (git-ignored, contains patient figures, LaTeX builds, PDFs).
+Only reusable *code* is migrated to `scripts/presentation_figures/`, cleaned, and tested on the sample data.
+
+10. [ ] **Decide: publish `scripts/presentation_figures/` or not.** It is currently untracked in the clean branch. If yes,
+        do steps 11–15; if no, keep it local (add to `.gitignore`) and drop it from the README structure tree (line ~109).
+11. [ ] **Migrate or drop the remaining scripts still in `presentation/`** (10): `agp_counterfactual_comparison.py`,
+        `agp_presentation.py`, `agp_recurrence.py`, `agp_recurrence_two_patients.py`, `agp_two_patients_comparison.py`,
+        `boxplots_tir_cv_median.py`, `cgm_7day_counterfactual.py`, `cgm_meal_spikes_animation.py`,
+        `cgm_meal_spikes_insulin.py`, `cgm_nine_days_comparison.py` — many duplicate scripts already in
+        `scripts/` or `scripts/presentation_figures/` (e.g. `cgm_agp_recurrence.py`, `patient_comparison.py`,
+        `cgm_nine_days.py`, `cgm_meal_spikes.py`): delete duplicates, migrate the rest as done for
+        `slh_distributions_by_category`, `offset_sensitivity_single_patient`, `offset_counterfactual_single_episode`,
+        `episode_classification_zoom_panels`.
+12. [ ] **Fix headers and paths of the older scripts already in `scripts/presentation_figures/`**: `cgm_nine_days.py`,
+        `cgm_overview.py`, `counterfactual_steps.py` still show `presentation/...` in their docstring (file name and
+        `--out_dir presentation/output`); check the `sys.path.insert` depth (must be `"..", ".."`) and the default output
+        folder in every script; add `scripts/presentation_figures/__init__.py` (the other script packages have one).
+13. [ ] **Align presentation scripts with the paper's classification** (as done for `slh_distributions_by_category`):
+        every script that classifies episodes must use the Figure 2 rules (C1 → LLH, C4/C5/C6 → Not isolated, C3 → Night,
+        else SLH; C2 dropped) — check `slh_count_vs_counterfactual_deltas.py`, `slh_twin_comparison.py`,
+        `twin_two_weeks.py`, `metric_permutation_invariance.py`, `counterfactual_steps.py`.
+14. [ ] **Delete the old figures in `presentation/output/`** of every script migrated or dropped in step 11
+        (already gone: `zoom_panels_individual/`, `sensitivity_analysis/`, `episode_counterfactual_comparison/`,
+        `slh_distributions/`; remaining folders: `agp`, `agp_counterfactual_comparison`, `agp_recurrence`,
+        `agp_recurrence_two_patients`, `agp_two_patients_comparison`, `boxplots_tir_cv_median`, `cgm_7day_counterfactual`,
+        `cgm_meal_spikes`, `cgm_nine_days_comparison`), plus the LaTeX decks (`Poster/`, `local_slh/`, `onset_duration/`:
+        `.pdf`, `.aux`, `.log`…) — local files only, but they contain real-patient figures: keep them out of any archive/zip.
+15. [ ] **Test every kept presentation script on the sample data** (`CGM_DATA_ROOT=…/sample_data`, `--patient_id A001`);
+        delete generated `scripts/presentation_figures/output/` before the release (outputs from real data must never be
+        committed; add `scripts/presentation_figures/output/` to `.gitignore`). Optionally add a `make presentation_figures` target.
+
+### B3. Patient IDs and scripts layout
+
+16. [x] **Remove hard-coded real patient IDs from defaults** — DONE: new `src/utils/patient_selection.py` (automatic most/fewest-SLH selection, `--patient_id`, `CGM_PATIENT_HIGH/LOW`), applied to all scripts, README note added, tested on the sample data (Fig. 5 needs the clinical table). **Remaining:** the DPO check on `A###` codes. Original task: (`A159`, `A174`, `A224` in `lininterp_*`,
+        `visualize_*_sensitivity`, `fig_slh_schema.py`, `generate_*`, `patient_comparison.py`, `scatter_analysis.py`, and the
+        paper Figures 3–5). On the open dataset (IDs shuffled to `OD_xxx`) and on the sample data these patients do not
+        exist, so the scripts fail with defaults. Options: automatic selection (most / fewest SLH, as in notebooks 04, 07),
+        or `--patient_id` required + README note that Figures 3–5 use specific patients that cannot be located in the open
+        dataset. Also confirm with the DPO that `A###` study codes cannot be linked back to patients.
+17. [ ] **Tidy the loose scripts at the root of `scripts/`** (`cgm_agp_recurrence.py`, `fig_slh_schema.py`,
+        `generate_episode_funnel_single_patient.py`, `generate_overview_figure.py`, `generate_zoom_panels.py`,
+        `patient_comparison.py`): move into a sub-package (e.g. `scripts/slh_illustrations/`) or into `paper_figures/`,
+        update the Makefile targets, the README map and any cross-import (`generate_zoom_panels` is imported by
+        `episode_classification_zoom_panels.py`).
+18. [ ] **Naming consistency**: the paper scripts use `generate_*`, the others do not; the two "Fig. 5" scripts need clear
+        names; check every script has a header with its module command and its output location.
+19. [ ] **Review `scripts/statistics/` and `scripts/patient_selection/`**: keep only what feeds a figure/table/statement
+        of the paper (e.g. `slh_baseline_metrics_multivariate_exploration.py`, `slh_combined_cgm_phenotype_pca.py`,
+        `slh_metrics_visualization_from_files.py`, `slh_patient_characteristics_exploration.py` look exploratory); the
+        `compelling_pairs` / `patient_similarity` Makefile targets select real patients — confirm they are needed.
+20. [ ] **Final consistency checks**: `git grep "/Users/"` empty; `git grep -n "presentation/"` only intended hits;
+        no module in the Makefile missing (script in the repo); `make help` clean; `make tests` green; no unused imports
+        (`make lint` if available).
 
 ## C. Validate
 
-10. [ ] **Regenerate every manuscript figure/table from the open dataset** (values differ slightly because of the noise;
+21. [ ] **Regenerate every manuscript figure/table from the open dataset** (values differ slightly because of the noise;
         stated in the README) and run `make tests` + `make sample_data_run` on the cleaned tree.
-11. [ ] **Add one end-to-end test** (synthetic trace: detection → counterfactual → Δ metrics) and a **GitHub Actions
+22. [ ] **Add one end-to-end test** (synthetic trace: detection → counterfactual → Δ metrics) and a **GitHub Actions
         workflow** running `make tests`. (Do this before the release so CI is in the archived snapshot.)
 
 ## D. Release
 
-12. [ ] **Final commit on `master`**, then `make sample_data` to produce `sample_data.zip`, and **move the tag**:
+23. [ ] **Final commit on `master`**, then `make sample_data` to produce `sample_data.zip`, and **move the tag**:
         `git tag -f -a v1.0.0 -m "v1.0.0" && git push -f origin v1.0.0`
         (or delete and recreate it). Only while no release exists.
-13. [ ] **Archive the open dataset** (`make open_data`, output in `Results/Open_Data/`) on Zenodo and put its DOI in the
+24. [ ] **Archive the open dataset** (`make open_data`, output in `Results/Open_Data/`) on Zenodo and put its DOI in the
         README, `CITATION.cff` and the manuscript's data-sharing statement. Check whether `10.5281/zenodo.23102518`
         is the code record, the dataset record, or a concept DOI, and update the README/CITATION accordingly.
-14. [ ] **Publish the GitHub release** `v1.0.0` with `sample_data.zip` attached
+25. [ ] **Publish the GitHub release** `v1.0.0` with `sample_data.zip` attached
         (`gh release create v1.0.0 sample_data.zip --title "v1.0.0" --notes "First public release"`) → triggers the Zenodo
         snapshot. Check it appears on Zenodo and the version DOI matches `CITATION.cff`.
-15. [ ] Link `sample_data.zip` from the README Quick start and add the release/DOI badge.
+26. [ ] Link `sample_data.zip` from the README Quick start and add the release/DOI badge.
 
 ## E. After release (optional, can be a v1.0.1)
 
-16. [ ] Add ORCIDs and the missing affiliations (Syed, Lysy) to `CITATION.cff` / README.
-17. [ ] Add badges (licence, Python, tests), a `docs/` page describing each output file's columns, and a short note on the
+27. [ ] Add ORCIDs and the missing affiliations (Syed, Lysy) to `CITATION.cff` / README.
+28. [ ] Add badges (licence, Python, tests), a `docs/` page describing each output file's columns, and a short note on the
         config layout (`src/config/` is the single source of thresholds).
-18. [ ] Add the journal year/volume/pages to the citation once published.
+29. [ ] Add the journal year/volume/pages to the citation once published.
 
 ## Done
 
@@ -83,4 +135,4 @@ git push origin :refs/tags/v1.0.0          # delete the old remote tag
 git push origin --delete cleanup-for-publication
 ```
 Then ask GitHub Support to purge cached views of PR #53 / dangling commits if the repo was public. Do the remaining
-steps (5, 7–11) as normal commits on top, then re-create the tag in step 12.
+steps (6–22) as normal commits on top, then re-create the tag in step 23.

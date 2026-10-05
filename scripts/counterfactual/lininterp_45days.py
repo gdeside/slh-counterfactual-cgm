@@ -29,6 +29,7 @@ from matplotlib.lines import Line2D
 
 
 # Import existing functions
+from src.utils.patient_selection import resolve_patient_id
 from src.preprocessing.load_data import load_patient_window, prepare_valid_data
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.episodes.detection import detect_hyperglycemia_episodes
@@ -82,7 +83,7 @@ from src.utils.unit_conversion import format_glucose, glucose_unit_label
 FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "Counterfactual_analysis")
 
 # ── Patient selection ─────────────────────────────────────────────────────────
-SELECTED_PID = "A224"   # Set to None for automatic selection (max SLH count)
+SELECTED_PID = None   # None = automatic (patient with the most SLH episodes); or set a patient ID
 
 
 ALPHA_SLH_HIGHLIGHT = 0.35        # Transparency for SLH shading
@@ -258,40 +259,11 @@ def main():
     # ═════════════════════════════════════════════════════════════════════════
     
     # Load patient
-    if SELECTED_PID is not None:
-        patient_id = SELECTED_PID
-        df_raw = load_patient_window(patient_id)
-        if df_raw is None:
-            raise FileNotFoundError(f"Cannot load {patient_id}")
-        df = prepare_valid_data(df_raw)
-    else:
-        # Auto-select patient with most SLH episodes
-        import re
-        all_dirs = sorted([
-            d for d in os.listdir(PREPROCESSING_PATH)
-            if re.match(r"A\d{3}$", d)
-        ])
-        
-        best = (None, None, None, 0)  # (pid, df, classification_df, n_slh)
-
-        for pid in all_dirs[:80]:
-            df_raw = load_patient_window(pid)
-            if df_raw is None:
-                continue
-            df_v = prepare_valid_data(df_raw)
-            if len(df_v) < 200:
-                continue
-            
-            # Detect and classify episodes
-            raw_episodes = detect_hyperglycemia_episodes(df_v)
-            classification_df = classify_episodes(df_v, raw_episodes)
-            n_slh = (classification_df["classification"] == LABEL_SLH).sum()
-            
-            if n_slh > best[3]:
-                best = (pid, df_v, classification_df, n_slh)
-        
-        patient_id, df, classification_df, n_slh = best
-        print(f"  Selected: {patient_id} (n_SLH={n_slh})")
+    patient_id = resolve_patient_id(SELECTED_PID, role="most")
+    df_raw = load_patient_window(patient_id)
+    if df_raw is None:
+        raise FileNotFoundError(f"Cannot load {patient_id}")
+    df = prepare_valid_data(df_raw)
     
     # Detect episodes and classify
     raw_episodes = detect_hyperglycemia_episodes(df)

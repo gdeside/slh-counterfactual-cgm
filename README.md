@@ -70,7 +70,7 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 |---|---|---|
 | Fig. 1 — SLH detection schema | `scripts/fig_slh_schema.py` | |
 | Fig. 2 — SLH/LLH classification summary | `scripts/paper_figures/generate_figure_2_classification_summary.py` | |
-| Fig. 3 — Two patients, similar metrics, different SLH burden (A174 vs A224) | `scripts/paper_figures/generate_figure_3.py` | |
+| Fig. 3 — Two patients, similar metrics, different SLH burden (high vs low SLH) | `scripts/paper_figures/generate_figure_3.py` | |
 | Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | needs `make sensitivity_analysis` |
 | Fig. 5 — Distribution of ΔTIR / Δmedian | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | |
 | Fig. 5 (alt.) — Determinants of SLH burden | `scripts/paper_figures/generate_figure_5_slh_determinants.py` | needs the clinical phenotype table |
@@ -220,6 +220,21 @@ Create `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT`, one file per patient,
 
 The pipeline expects 5-minute sampling and extracts a 45-day window with ≥ 70 % coverage per patient (patients without
 one are listed in `Data/Preprocessed/patients_status.csv`). Then run `make pipeline`.
+
+### Which patients are shown in the illustrations?
+
+Scripts that illustrate one patient (episode detection, counterfactual construction, AGP, …) or two patients
+(Figures 3–5: high vs low SLH burden) **do not hard-code participant IDs**. By default they pick automatically, from the
+filtered cohort, the patient with the **most** SLH episodes (and, for pairs, the one with the **fewest**). Override with
+`--patient_id <ID>` (single-patient scripts), or for the pair figures:
+
+```bash
+CGM_PATIENT_HIGH=<id> CGM_PATIENT_LOW=<id> make fig3 fig4 fig5
+```
+
+The patients used in the manuscript are original study codes that do not exist in the open dataset (IDs shuffled to
+`OD_xxx`), so the figures from the open data show different, automatically chosen patients. Selection logic:
+[`src/utils/patient_selection.py`](src/utils/patient_selection.py).
 
 ### Where the results go
 

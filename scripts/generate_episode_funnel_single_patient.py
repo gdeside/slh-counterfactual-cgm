@@ -18,6 +18,7 @@ import argparse
 
 
 # Data & processing
+from src.utils.patient_selection import resolve_patient_id
 from src.preprocessing.load_data import load_patient_window
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.episodes.detection import detect_hyperglycemia_episodes
@@ -40,7 +41,7 @@ from src.visualization.episode_plots import plot_funnel_figure
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
-DEFAULT_PATIENT_ID = "A159"
+DEFAULT_PATIENT_ID = None   # None = automatic: patient with the most SLH episodes
 DEFAULT_OUTPUT_DIR = os.path.join(FIG_DIR, "SLH_analysis")
 
 
@@ -95,7 +96,7 @@ def generate_funnel_for_patient(patient_id: str, output_dir: str):
     Parameters
     ----------
     patient_id : str
-        Patient identifier (e.g., 'A224')
+        Patient identifier (default: patient with the most SLH episodes)
     output_dir : str
         Output directory for figure
         
@@ -153,7 +154,7 @@ def parse_arguments():
     parser.add_argument(
         "--patient_id", 
         default=DEFAULT_PATIENT_ID,
-        help="Patient ID (e.g., A224)"
+        help="Patient ID (default: patient with the most SLH episodes)"
     )
     parser.add_argument(
         "--output", 
@@ -166,6 +167,7 @@ def parse_arguments():
 def main():
     """Main execution."""
     args = parse_arguments().parse_args()
+    args.patient_id = resolve_patient_id(args.patient_id)
     
     print("\n" + "=" * 70)
     print("  Episode Classification Funnel Generator")

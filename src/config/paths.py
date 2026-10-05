@@ -11,17 +11,14 @@ and data location.
 from pathlib import Path
 
 # =============================================================================
-# BASE PATH — EDIT THIS FOR YOUR MACHINE
+# BASE PATH — set the CGM_DATA_ROOT environment variable
 # =============================================================================
 import os
 
-# Override with the CGM_DATA_ROOT environment variable (e.g. the folder produced by
-# `make sample_data`); falls back to the default below.
-BASE_PATH = Path(os.environ.get(
-    "CGM_DATA_ROOT",
-    "/Users/guillaume/Documents/Projects_Lysy/counterfactual-cgm-slh_echec",
-))
-#BASE_PATH = Path("/Users/guillaume/Library/CloudStorage/OneDrive-UCL/Shared - Zain - Philippe - Laura - Guillaume")
+# CGM_DATA_ROOT is the folder holding Data/ and Results/ (e.g. the folder produced by
+# `make sample_data`). Without it, ./data (relative to the working directory) is used.
+_root = os.environ.get("CGM_DATA_ROOT", "data")
+BASE_PATH = Path(_root)
 
 # =============================================================================
 # DATA DIRECTORIES

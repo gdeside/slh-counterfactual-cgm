@@ -172,15 +172,11 @@ DELTA_PREFIX_ALL_DAY = "delta_"
 DELTA_PREFIX_DAYTIME = "daytime_delta_"
 
 # ── Representative patients highlighted on scatter plots (optional) ──────────
-PATIENT_IDS = []   # e.g. ["A174", "A224"] to highlight specific patients
-PATIENT_COLORS = {
-    "A174": "#E69F00",   # Orange
-    "A224": "#CC79A7",   # Purple
-}
-PATIENT_MARKERS = {
-    "A174": "D",         # Diamond
-    "A224": "s",         # Square
-}
+PATIENT_IDS = []   # patients to highlight (also via --highlight_patients ID ID ...)
+PATIENT_COLOR_CYCLE  = ["#E69F00", "#CC79A7", "#009E73", "#56B4E9"]
+PATIENT_MARKER_CYCLE = ["D", "s", "^", "v"]
+PATIENT_COLORS: dict = {}    # filled from the highlighted IDs in main()
+PATIENT_MARKERS: dict = {}
 
 # ── Figure parameters (column widths) ─────────────────────────────────
 # A single scatter is drawn two columns wide (115 mm) and the grid at full page
@@ -639,13 +635,15 @@ def parse_arguments():
     parser.add_argument("--daytime", action="store_true",
                         help="Use daytime-only (06:00-22:00) deltas instead of all-day deltas")
     parser.add_argument("--highlight_patients", nargs="*", default=PATIENT_IDS,
-                        help="Patient IDs to highlight on scatter plots (e.g. A174 A224)")
+                        help="Patient IDs to highlight on scatter plots (default: none)")
     return parser.parse_args()
 
 
 def main():
     """Main execution pipeline."""
     args = parse_arguments()
+    PATIENT_COLORS.update(zip(args.highlight_patients or [], PATIENT_COLOR_CYCLE))
+    PATIENT_MARKERS.update(zip(args.highlight_patients or [], PATIENT_MARKER_CYCLE))
     offset = args.offset
     delta_prefix = DELTA_PREFIX_DAYTIME if args.daytime else DELTA_PREFIX_ALL_DAY
     suffix = "_daytime" if args.daytime else ""

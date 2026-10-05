@@ -254,8 +254,8 @@ def save_figure(
     Glucose figures get the display unit appended to their filename, so the
     mg/dL and mmol/L versions coexist::
 
-        Figure4_Counterfactual_Construction_A174_vs_A224_mgdl.pdf
-        Figure4_Counterfactual_Construction_A174_vs_A224_mmoll.pdf
+        Figure4_Counterfactual_Construction_<high>_vs_<low>_mgdl.pdf
+        Figure4_Counterfactual_Construction_<high>_vs_<low>_mmoll.pdf
 
     Parameters
     ----------

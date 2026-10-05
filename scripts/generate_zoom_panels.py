@@ -27,7 +27,7 @@ Usage
 -----
 
 python3 -m scripts.generate_zoom_panels \
-    --patient_id A159 \
+    --patient_id ID \
     --output /path/to/output/dir \
     --n_panels 6
 
@@ -62,6 +62,7 @@ from matplotlib.lines import Line2D
 # =============================================================================
 # PROJECT — Preprocessing
 # =============================================================================
+from src.utils.patient_selection import resolve_patient_id
 from src.preprocessing.load_data import load_patient_window
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 
@@ -120,7 +121,7 @@ from src.utils.unit_conversion import format_glucose
 # SCRIPT CONFIGURATION
 # =============================================================================
 
-DEFAULT_PATIENT_ID = "A159"
+DEFAULT_PATIENT_ID = None   # None = automatic: patient with the most SLH episodes
 DEFAULT_OUTPUT_DIR = os.path.join(FIG_DIR, "SLH_analysis")
 
 # Visualization parameters
@@ -579,7 +580,7 @@ def parse_arguments():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--patient_id", default=DEFAULT_PATIENT_ID,
-                        help="Patient ID (e.g., A159)")
+                        help="Patient ID (default: patient with the most SLH episodes)")
     parser.add_argument("--output",     default=DEFAULT_OUTPUT_DIR,
                         help="Output directory for figure")
     parser.add_argument("--n_panels",   type=int, default=N_PANELS_MAX,
@@ -590,6 +591,7 @@ def parse_arguments():
 def main() -> int:
     """Entry point."""
     args = parse_arguments().parse_args()
+    args.patient_id = resolve_patient_id(args.patient_id)
 
     print("\n" + "=" * 70)
     print("  Zoom Panels — Representative Episodes")

@@ -3,7 +3,8 @@ scripts/paper_figures/generate_figure_3.py
 ====================================================================
 Figure 3 (main text): glucose profiles and SLH recurrence patterns in two
 representative patients with similar CGM summary metrics but contrasting SLH
-frequency (A174, n_SLH = 59 vs A224, n_SLH = 19).
+frequency (high vs low SLH burden; patients chosen via CGM_PATIENT_HIGH / CGM_PATIENT_LOW,
+or automatically: most / fewest SLH episodes).
 
 Derived from `generate_classification_comparison_figure` in
 scripts/patient_comparison.py, which produced this figure until now. The
@@ -61,6 +62,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
+from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
 from src.config.constants import TIME_COL, GLUCOSE_COL, COL_EPISODE_START, COL_EPISODE_END
 from src.config.figure_config import FIG_DIR
 
@@ -86,8 +88,9 @@ from scripts.paper_figures.generate_figure_2_classification_summary import (
 # =============================================================================
 # PARAMETERS
 # =============================================================================
-PATIENT_A = "A174"   # high SLH frequency
-PATIENT_B = "A224"   # low SLH frequency
+# High- and low-SLH-burden patients. Automatic by default (most / fewest SLH episodes);
+# to reproduce the manuscript use CGM_PATIENT_HIGH=<id> CGM_PATIENT_LOW=<id> (see README).
+PATIENT_A, PATIENT_B = resolve_patient_pair()
 
 OUTPUT_DIR = os.path.join(FIG_DIR, "Manuscript_Figures")
 OUTPUT_NAME = f"Figure3_Patient_Comparison_{PATIENT_A}_vs_{PATIENT_B}"

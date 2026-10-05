@@ -38,7 +38,7 @@ PDF and SVG are written to *output_dir* via
 
 Usage
 -----
-  python3 -m scripts.generate_overview_figure [--patient_id A174] [--output Results/SLH_analysis] [--days_per_row 9] [--n_rows 5]
+  python3 -m scripts.generate_overview_figure [--patient_id ID] [--output Results/SLH_analysis] [--days_per_row 9] [--n_rows 5]
 
 Authors
 -------
@@ -70,6 +70,7 @@ from matplotlib.lines import Line2D
 # =============================================================================
 # PROJECT — preprocessing
 # =============================================================================
+from src.utils.patient_selection import resolve_patient_id
 from src.preprocessing.load_data import load_patient_window
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 
@@ -136,7 +137,7 @@ from src.utils.unit_conversion import format_glucose, glucose_unit_label
 # CONFIGURATION
 # =============================================================================
 
-DEFAULT_PATIENT_ID = "A174"
+DEFAULT_PATIENT_ID = None   # None = automatic: patient with the most SLH episodes
 DEFAULT_OUTPUT_DIR = os.path.join(FIG_DIR, "SLH_analysis")
 
 DAYS_PER_ROW = 9
@@ -649,7 +650,7 @@ def make_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--patient_id",
         default=DEFAULT_PATIENT_ID,
-        help="Patient ID (e.g. A159)",
+        help="Patient ID (default: patient with the most SLH episodes)",
     )
     parser.add_argument(
         "--output",
@@ -674,6 +675,7 @@ def make_parser() -> argparse.ArgumentParser:
 def main() -> int:
     """Entry point — parse arguments and run the patient pipeline."""
     args = make_parser().parse_args()
+    args.patient_id = resolve_patient_id(args.patient_id)
 
     print("\n" + "=" * 70)
     print("  45-Day Overview — Episode Classification by Criterion Level")

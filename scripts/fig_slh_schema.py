@@ -27,7 +27,7 @@ Outputs
 
 Usage
 -----
-    python3 -m scripts.fig_slh_schema [--patient_id A174] [--n_days 5]
+    python3 -m scripts.fig_slh_schema [--patient_id ID] [--n_days 5]
                                      [--zoom_pad 80] [--out_dir <path>]
 
 Authors
@@ -48,6 +48,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
+from src.utils.patient_selection import resolve_patient_id
 from src.config import TIME_COL, GLUCOSE_COL, FIG_DIR, FIGURE_WIDTH_INCHES
 from src.config.figure_config import FONT_SIZE_BASE
 
@@ -73,7 +74,7 @@ from src.visualization.style import apply_publication_style, save_figure
 # =============================================================================
 FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "SLH_Schema")
 
-DEFAULT_PATIENT_ID = "A174"
+DEFAULT_PATIENT_ID = None   # None = automatic: patient with the most SLH episodes
 N_DAYS_OVERVIEW = 5
 ZOOM_PAD_MIN = 80
 ZOOM_MIN_DURATION_MIN = 15  # example SLH shown in zoom panels must be at least this long
@@ -432,7 +433,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--patient_id", default=DEFAULT_PATIENT_ID,
-        help="Patient ID (e.g. A168) or ALL (auto-picks best patient)"
+        help="Patient ID (default: patient with the most SLH episodes) or ALL (auto-picks best patient)"
     )
     parser.add_argument(
         "--n_days", type=int, default=N_DAYS_OVERVIEW,
@@ -452,6 +453,8 @@ def parse_arguments():
 def main():
     """Main execution pipeline."""
     args = parse_arguments().parse_args()
+    if (args.patient_id or "").strip().upper() != "ALL":
+        args.patient_id = resolve_patient_id(args.patient_id)
     apply_publication_style()
     
     # Override global zoom padding if specified

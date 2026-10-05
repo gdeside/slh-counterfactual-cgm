@@ -55,6 +55,7 @@ from matplotlib.lines import Line2D
 from scipy import stats
 
 # Import configuration
+from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
 from src.config import BASE_PATH, DATA_PATH, SENSITIVITY_PATH
 
 # Import visualization
@@ -91,7 +92,7 @@ from scripts.paper_figures.generate_figure_5_slh_determinants import (
 SELECTED_OFFSET = 30
 
 # ── Representative patients ──────────────────────────────────────────────────
-PATIENT_IDS = ["A174", "A224"]
+PATIENT_IDS = list(resolve_patient_pair())   # [high-SLH, low-SLH] (CGM_PATIENT_HIGH / CGM_PATIENT_LOW, else automatic)
 
 # ── Input paths ──────────────────────────────────────────────────────────────
 # NOTE: previously pointed at "Sensitivity_LinInterp_Modular", a directory
@@ -112,15 +113,9 @@ COLOR_DAYTIME = "#C9A84C"       # Warm gold for daytime
 COLOR_MEDIAN_REF = "#B5121B"    # Cohort-median reference line (row 2)
 
 # Patient markers
-PATIENT_COLORS = {
-    "A174": "#E69F00",          # Orange
-    "A224": "#CC79A7",          # Purple
-}
+PATIENT_COLORS = dict(zip(PATIENT_IDS, ["#E69F00", "#CC79A7"]))   # orange, purple
 
-PATIENT_MARKERS = {
-    "A174": "D",                # Diamond
-    "A224": "s",                # Square
-}
+PATIENT_MARKERS = dict(zip(PATIENT_IDS, ["D", "s"]))              # diamond, square
 
 # ── Histogram styling ────────────────────────────────────────────────────────
 HIST_BINS = 30            # Row 1, panel A (TIR)

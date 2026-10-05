@@ -31,6 +31,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.gridspec import GridSpec
 
+from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
 from src.config.constants import (
     TIME_COL, 
     GLUCOSE_COL,
@@ -58,8 +59,8 @@ from src.visualization.agp_plot import plot_agp_panel, plot_recurrence_duration_
 # =============================================================================
 # PARAMETERS 
 # =============================================================================
-PATIENT_A = "A174"  # First patient for comparison
-PATIENT_B = "A224"  # Second patient for comparison
+# High- / low-SLH-burden patients: CGM_PATIENT_HIGH / CGM_PATIENT_LOW, else automatic (most / fewest SLH episodes)
+PATIENT_A, PATIENT_B = resolve_patient_pair()
 
 
 FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "Comparisons")

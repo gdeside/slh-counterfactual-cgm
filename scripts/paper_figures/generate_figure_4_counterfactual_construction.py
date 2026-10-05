@@ -1,7 +1,7 @@
 """
 Figure 4: Counterfactual Signal Construction and Sensitivity Analysis
 ====================================================================
-Renumbered from Figure 3 (bis) now that Figure 3 is the A174-vs-A224 patient
+Renumbered from Figure 3 (bis) now that Figure 3 is the high-vs-low-SLH patient
 comparison (scripts/patient_comparison.py).
 
 Multi-panel figure combining:
@@ -35,6 +35,7 @@ from matplotlib.lines import Line2D
 from datetime import datetime, time as _dtime
 
 # Import existing functions
+from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
 from src.preprocessing.load_data import load_patient_window
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.episodes.detection import detect_hyperglycemia_episodes
@@ -54,7 +55,7 @@ from src.utils.unit_conversion import format_glucose, glucose_unit_label
 # =============================================================================
 # CONFIGURATION
 # =============================================================================
-PATIENT_IDS = ["A174", "A224"]  # Two patients to compare
+PATIENT_IDS = list(resolve_patient_pair())  # [high-SLH, low-SLH] patients (CGM_PATIENT_HIGH / CGM_PATIENT_LOW, else automatic)
 SELECTED_OFFSET_MIN = 30        # Main offset value for 7-day and AGP panels; used in main analysis
 OFFSET_VALUES_COMPARE = [0, 15, 30, 45, 60, 75, 90]  # Offsets for episode comparison
 APPLY_KERNEL = True

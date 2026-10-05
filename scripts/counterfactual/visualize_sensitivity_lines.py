@@ -13,7 +13,7 @@ Output: Results/Sensitivity_LinInterp_Modular/Figures/{patient_id}/
             {patient_id}_sensitivity_lines.pdf/.png
 
 Usage:
-    python3 visualize_sensitivity_lines.py --patient_id A168
+    python3 visualize_sensitivity_lines.py --patient_id ID
 
 Authors: Guillaume Deside
 """
@@ -26,6 +26,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+from src.utils.patient_selection import resolve_patient_id
 from src.config import (
     TIME_COL,
     THRESHOLD_HYPO,
@@ -50,7 +51,7 @@ from src.utils.unit_conversion import glucose_unit_label, is_glucose_valued_colu
 # =============================================================================
 
 # ── Patient ID (can be changed here or via --patient_id) ────────────────────
-DEFAULT_PATIENT_ID = "A224"
+DEFAULT_PATIENT_ID = None   # None = automatic: patient with the most SLH episodes
 
 # ── Paths ────────────────────────────────────────────────────────────────────
 SIGNALS_DIR = str(SENSITIVITY_LININTERP_SIGNALS)
@@ -453,6 +454,8 @@ def main():
     )
     
     args = parser.parse_args()
+    
+    args.patient_id = resolve_patient_id(args.patient_id)
     
     print("=" * 70)
     print("  Sensitivity Line Plots: Δ Metric vs Zone-Expansion δ")

@@ -613,7 +613,7 @@ def analyse_patient(patient_id: str, out_dir: Path) -> dict | None:
     Parameters
     ----------
     patient_id : str
-        Patient identifier (e.g., 'A174').
+        Patient identifier (e.g., 'A001').
     out_dir : Path
         Directory where figures and CSV are written.
 
