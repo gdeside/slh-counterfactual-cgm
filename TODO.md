@@ -38,9 +38,9 @@ come **before** the release: publishing the GitHub release triggers the Zenodo s
 Principle: nothing from `presentation/` is published (git-ignored, contains patient figures, LaTeX builds, PDFs).
 Only reusable *code* is migrated to `scripts/presentation_figures/`, cleaned, and tested on the sample data.
 
-10. [ ] **Decide: publish `scripts/presentation_figures/` or not.** It is currently untracked in the clean branch. If yes,
+10. [x] **Decide: publish `scripts/presentation_figures/` or not.** It is currently untracked in the clean branch. If yes, — **DONE:** published (code only).
         do steps 11–15; if no, keep it local (add to `.gitignore`) and drop it from the README structure tree (line ~109).
-11. [ ] **Migrate or drop the remaining scripts still in `presentation/`** (10): `agp_counterfactual_comparison.py`,
+11. [x] **Migrate or drop the remaining scripts still in `presentation/`** (10): `agp_counterfactual_comparison.py`, — **DONE:** migrated to `scripts/presentation_figures/`: `agp_counterfactual_recurrence`, `agp_single_patient`, `agp_recurrence_two_patients`, `counterfactual_seven_day_overview`, `nine_days_two_patients`; duplicates moved to the local, git-ignored `presentation/_dropped/` (`agp_recurrence`, `agp_two_patients_comparison`, `boxplots_tir_cv_median` ⊂ `visualize_boxplots_sensitivity.py`, `cgm_meal_spikes_animation`, `cgm_meal_spikes_insulin` ⊂ `cgm_meal_spikes.py`).
         `agp_presentation.py`, `agp_recurrence.py`, `agp_recurrence_two_patients.py`, `agp_two_patients_comparison.py`,
         `boxplots_tir_cv_median.py`, `cgm_7day_counterfactual.py`, `cgm_meal_spikes_animation.py`,
         `cgm_meal_spikes_insulin.py`, `cgm_nine_days_comparison.py` — many duplicate scripts already in
@@ -48,21 +48,21 @@ Only reusable *code* is migrated to `scripts/presentation_figures/`, cleaned, an
         `cgm_nine_days.py`, `cgm_meal_spikes.py`): delete duplicates, migrate the rest as done for
         `slh_distributions_by_category`, `offset_sensitivity_single_patient`, `offset_counterfactual_single_episode`,
         `episode_classification_zoom_panels`.
-12. [ ] **Fix headers and paths of the older scripts already in `scripts/presentation_figures/`**: `cgm_nine_days.py`,
+12. [x] **Fix headers and paths of the older scripts already in `scripts/presentation_figures/`**: `cgm_nine_days.py`, — **DONE:** headers, `sys.path` depth, default output folder (`scripts/presentation_figures/output/<script>/`) and `__init__.py` fixed in all scripts.
         `cgm_overview.py`, `counterfactual_steps.py` still show `presentation/...` in their docstring (file name and
         `--out_dir presentation/output`); check the `sys.path.insert` depth (must be `"..", ".."`) and the default output
         folder in every script; add `scripts/presentation_figures/__init__.py` (the other script packages have one).
-13. [ ] **Align presentation scripts with the paper's classification** (as done for `slh_distributions_by_category`):
+13. [x] **Align presentation scripts with the paper's classification** (as done for `slh_distributions_by_category`): — **DONE:** `LABEL_SLH` from `classify_episodes` equals the Figure 2 SLH set; the only mislabelled output was the "LLH" series of `agp_recurrence_two_patients` (it included non-isolated / night episodes) — now the four Figure 2 categories. `agp_counterfactual_recurrence` keeps SLH/LLH like paper Figure 3 (shared `src` panel).
         every script that classifies episodes must use the Figure 2 rules (C1 → LLH, C4/C5/C6 → Not isolated, C3 → Night,
         else SLH; C2 dropped) — check `slh_count_vs_counterfactual_deltas.py`, `slh_twin_comparison.py`,
         `twin_two_weeks.py`, `metric_permutation_invariance.py`, `counterfactual_steps.py`.
-14. [ ] **Delete the old figures in `presentation/output/`** of every script migrated or dropped in step 11
+14. [x] **Delete the old figures in `presentation/output/`** of every script migrated or dropped in step 11 — **DONE:** `presentation/output/` and the LaTeX decks are gone locally; only `presentation/_dropped/` (git-ignored) remains.
         (already gone: `zoom_panels_individual/`, `sensitivity_analysis/`, `episode_counterfactual_comparison/`,
         `slh_distributions/`; remaining folders: `agp`, `agp_counterfactual_comparison`, `agp_recurrence`,
         `agp_recurrence_two_patients`, `agp_two_patients_comparison`, `boxplots_tir_cv_median`, `cgm_7day_counterfactual`,
         `cgm_meal_spikes`, `cgm_nine_days_comparison`), plus the LaTeX decks (`Poster/`, `local_slh/`, `onset_duration/`:
         `.pdf`, `.aux`, `.log`…) — local files only, but they contain real-patient figures: keep them out of any archive/zip.
-15. [ ] **Test every kept presentation script on the sample data** (`CGM_DATA_ROOT=…/sample_data`, `--patient_id A001`);
+15. [x] **Test every kept presentation script on the sample data** (`CGM_DATA_ROOT=…/sample_data`, `--patient_id A001`); — **DONE:** `make presentation_figures` runs all 19 scripts on the sample data without error; `output/` is git-ignored and was deleted.
         delete generated `scripts/presentation_figures/output/` before the release (outputs from real data must never be
         committed; add `scripts/presentation_figures/output/` to `.gitignore`). Optionally add a `make presentation_figures` target.
 

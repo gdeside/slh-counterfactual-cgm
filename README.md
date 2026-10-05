@@ -106,7 +106,7 @@ counterfactual-cgm-slh/
 │   ├── statistics/               #   descriptive stats, regressions, quartiles, clock-lock index (`src/metrics/rhythm.py`)
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
-│   ├── presentation_figures/     #   talk figures (not part of the paper)
+│   ├── presentation_figures/     #   talk figures, synthetic-data friendly (`make presentation_figures`; not part of the paper)
 │   └── supplementary_code/       #   exploratory / superseded analyses
 │
 ├── notebooks/                    # 8 example notebooks (01_cgm_metrics … 08_phenotype_cgm_slh_association)
@@ -235,6 +235,13 @@ CGM_PATIENT_HIGH=<id> CGM_PATIENT_LOW=<id> make fig3 fig4 fig5
 The patients used in the manuscript are original study codes that do not exist in the open dataset (IDs shuffled to
 `OD_xxx`), so the figures from the open data show different, automatically chosen patients. Selection logic:
 [`src/utils/patient_selection.py`](src/utils/patient_selection.py).
+
+### Presentation figures
+
+`scripts/presentation_figures/` holds the 16:9 figures made for talks (not part of the manuscript). They use the same
+episode classification as Figure 2 and choose their patients automatically (see
+[Which patients are shown](#which-patients-are-shown-in-the-illustrations)). `make presentation_figures` runs all of
+them; outputs go to `scripts/presentation_figures/output/` (git-ignored).
 
 ### Where the results go
 

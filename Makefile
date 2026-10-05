@@ -21,7 +21,7 @@ RUN     = $(PYTHON) -m
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis regression_analysis \
 	table1 fig2 fig3 fig4 fig5 fig5_determinants suppfig1 suppfig_phenotype cohort_flowchart paper \
-	open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_run \
+	presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_run \
 	figures tests clean
 
 
@@ -189,6 +189,27 @@ paper: fig2 fig3 fig4 fig5 suppfig1 cohort_flowchart  ## Manuscript figures that
 
 
 # ---- OPEN DATA & UNITS ------------------------------------------------------
+
+presentation_figures:  ## Talk figures (scripts/presentation_figures/, output ignored by git; patients chosen automatically)
+	$(RUN) scripts.presentation_figures.agp_counterfactual_recurrence
+	$(RUN) scripts.presentation_figures.agp_recurrence_two_patients
+	$(RUN) scripts.presentation_figures.agp_single_patient
+	$(RUN) scripts.presentation_figures.cgm_meal_spikes
+	$(RUN) scripts.presentation_figures.cgm_nine_days
+	$(RUN) scripts.presentation_figures.cgm_overview
+	$(RUN) scripts.presentation_figures.cgm_slh_repeat_gif
+	$(RUN) scripts.presentation_figures.counterfactual_seven_day_overview
+	$(RUN) scripts.presentation_figures.counterfactual_steps
+	$(RUN) scripts.presentation_figures.episode_classification_zoom_panels
+	$(RUN) scripts.presentation_figures.insulin_types
+	$(RUN) scripts.presentation_figures.metric_permutation_invariance
+	$(RUN) scripts.presentation_figures.nine_days_two_patients
+	$(RUN) scripts.presentation_figures.offset_counterfactual_single_episode
+	$(RUN) scripts.presentation_figures.offset_sensitivity_single_patient
+	$(RUN) scripts.presentation_figures.slh_count_vs_counterfactual_deltas
+	$(RUN) scripts.presentation_figures.slh_distributions_by_category
+	$(RUN) scripts.presentation_figures.slh_twin_comparison
+	$(RUN) scripts.presentation_figures.twin_two_weeks
 
 open_data:  ## Anonymised dataset (HIPAA + GDPR: relative time + noise)
 	$(RUN) scripts.preprocessing.generate_open_data
