@@ -1,4 +1,6 @@
 """
+scripts/counterfactual/lininterp_offset_comp.py
+===============================================
 Linear Interpolation Counterfactual — Offset Comparison Figures
 ================================================================
 Generates figures comparing different zone expansion offset (δ) values.
@@ -7,6 +9,10 @@ Usage:
     python3 -m scripts.counterfactual.lininterp_offset_comp
 
 Authors: Guillaume Deside
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/Counterfactual_analysis/<patient_id>/multipanel_epNN.{pdf,svg} and overlay_epNN.{pdf,svg}
 """
 # =============================================================================
 # STANDARD LIBRARY

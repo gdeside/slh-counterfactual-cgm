@@ -20,7 +20,7 @@ RUN     = $(PYTHON) -m
 	sensitivity_analysis lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity \
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis regression_analysis \
-	table1 fig2 fig3 fig4 fig5 fig5_determinants suppfig1 suppfig3 suppfig_phenotype cohort_flowchart paper \
+	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_phenotype cohort_flowchart paper \
 	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
 
@@ -162,7 +162,7 @@ fig2:  ## Figure 2 — SLH/LLH classification summary
 	$(RUN) scripts.paper_figures.generate_figure_2_classification_summary
 
 fig3:  ## Figure 3 — two patients, similar metrics, different SLH burden
-	$(RUN) scripts.paper_figures.generate_figure_3
+	$(RUN) scripts.paper_figures.generate_figure_3_patient_comparison
 
 fig4:  ## Figure 4 — counterfactual construction + sensitivity
 	$(RUN) scripts.paper_figures.generate_figure_4_counterfactual_construction
@@ -170,11 +170,11 @@ fig4:  ## Figure 4 — counterfactual construction + sensitivity
 fig5:  ## Figure 5 — distribution of delta-TIR / delta-median
 	$(RUN) scripts.paper_figures.generate_figure_5_counterfactual_distribution
 
-fig5_determinants:  ## SLH determinants figure (needs clinical phenotype table)
-	$(RUN) scripts.paper_figures.generate_figure_5_slh_determinants
+fig6:  ## Figure 6 — SLH determinants (needs clinical phenotype table)
+	$(RUN) scripts.paper_figures.generate_figure_6_slh_determinants
 
 suppfig1:  ## Suppl. Fig. 1 — data quality and cohort selection
-	$(RUN) scripts.paper_figures.generate_supplementary_figure_1
+	$(RUN) scripts.paper_figures.generate_supplementary_figure_1_data_quality
 
 suppfig3:  ## Suppl. Fig. 3 — SLH detection schema (one patient, automatic choice unless PATIENT_ID given)
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
@@ -185,7 +185,7 @@ suppfig_phenotype:  ## Suppl. figure — phenotype determinants (needs clinical 
 cohort_flowchart:  ## Suppl. cohort flowchart (PDF needs rsvg-convert)
 	$(RUN) scripts.paper_figures.generate_cohort_flowchart
 
-paper: fig2 fig3 fig4 fig5 suppfig1 suppfig3 cohort_flowchart  ## Manuscript figures that need no clinical table (see table1 / fig5_determinants)
+paper: fig2 fig3 fig4 fig5 suppfig1 suppfig3 cohort_flowchart  ## Manuscript figures that need no clinical table (see table1 / fig6)
 
 
 # ---- OPEN DATA & UNITS ------------------------------------------------------

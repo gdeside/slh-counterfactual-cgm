@@ -1,8 +1,10 @@
 """
+scripts/counterfactual/visualize_agp_sensitivity.py
+===================================================
 AGP Visualization for Sensitivity Analysis Results
 ===================================================
 Input:  Results/Sensitivity_LinInterp_Modular/Data/{patient_id}_sensitivity.csv
-        Data/Data_Preprocessed_45d/{patient_id}/{patient_id}_win1_*.xlsx
+        Data/Preprocessed/{patient_id}/{patient_id}_win1_*.xlsx
         Data/Episodes/{patient_id}_episodes.csv
 
 Output: Results/Sensitivity_LinInterp_Modular/Figures/{patient_id}/
@@ -26,6 +28,11 @@ Generates two figure types:
      * Counterfactual signal (median + IQR in color)
 
 Authors: Guillaume Deside
+
+Usage
+-----
+    python3 -m scripts.counterfactual.visualize_agp_sensitivity [--help for options]
+    (or: make agp_sensitivity)
 """
 
 import os

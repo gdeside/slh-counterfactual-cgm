@@ -1,6 +1,6 @@
 """
 scripts/paper_figures/generate_figure_2_classification_summary.py
-====================================================================
+=================================================================
 Figure 2 (main text): SLH/LLH episode classification summary.
 
 Promoted from Supplementary Figure 2 to a main-text figure. Cohort-wide

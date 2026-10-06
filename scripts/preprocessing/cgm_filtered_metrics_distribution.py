@@ -1,6 +1,6 @@
 """
-scripts/cgm_filtered_metrics_distribution.py
-=============================================
+scripts/preprocessing/cgm_filtered_metrics_distribution.py
+==========================================================
 
 CGM Metrics Distribution — Filtered Cohort
 -------------------------------------------
@@ -10,12 +10,12 @@ glucose filter (cgm_filtering.py).
 
 Input
 -----
-- Data_Metrics/metrics_all_patients.csv
-- Data_Filtered/median_glucose_110to170_patient_status.csv
+- Data/Metrics/metrics_all_patients.csv
+- Data/Filtered/median_glucose_110to170_patient_status.csv
 
 Output
 ------
-- Data_Filtered/filtered_cohort_metrics_distribution.csv
+- Data/Filtered/filtered_cohort_metrics_distribution.csv
 
 Description
 -----------
@@ -31,6 +31,11 @@ Guillaume Deside
 Date
 ----
 2026-08-26
+
+Usage
+-----
+    python3 -m scripts.preprocessing.cgm_filtered_metrics_distribution [--help for options]
+    (or: make filtered_metrics_distribution)
 """
 
 # =============================================================================

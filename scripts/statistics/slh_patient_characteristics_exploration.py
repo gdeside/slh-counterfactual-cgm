@@ -1,6 +1,6 @@
 """
-scripts/slh_patient_characteristics_exploration.py
-====================================================
+scripts/statistics/slh_patient_characteristics_exploration.py
+=============================================================
 Non-parametric exploration of the link between patient phenotype /
 clinical characteristics and SLH episode count (Num_SLH).
 

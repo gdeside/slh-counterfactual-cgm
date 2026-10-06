@@ -37,6 +37,10 @@ Guillaume Deside
 Date
 ----
 2026
+
+Output
+------
+    scripts/presentation_figures/output/metric_permutation_invariance/  (git-ignored; --out_dir to change)
 """
 
 import os

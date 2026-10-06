@@ -1,6 +1,6 @@
 """
-python3 -m scripts.sample_data.generate_sample_data [--out DIR] [--n-patients 4] [--zip]
-=========================================================================================
+scripts/sample_data/generate_sample_data.py
+===========================================
 
 Synthetic CGM sample dataset (no real patient data) so that reviewers can run the
 core pipeline (preprocessing -> metrics -> filtering -> episode detection ->
@@ -20,6 +20,15 @@ Run the pipeline on it with::
     CGM_DATA_ROOT=<DIR> make preprocessing metrics_preprocessing filtering episode_detection
 
 Fixed seed: the output is reproducible.
+
+Usage
+-----
+    python3 -m scripts.sample_data.generate_sample_data [--help for options]
+    (or: make sample_data)
+
+Output
+------
+    <out>/Data/Raw/A00N.xlsx for each fake patient (+ <out>.zip with --zip)
 """
 import argparse
 import shutil

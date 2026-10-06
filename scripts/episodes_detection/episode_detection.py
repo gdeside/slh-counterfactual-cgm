@@ -1,7 +1,9 @@
 """
+scripts/episodes_detection/episode_detection.py
+===============================================
 CGM Episode Detection and Classification
 =========================================
-Input       : Data/Data_Preprocessed_45d/{PID}/{PID}_win1_*.xlsx
+Input       : Data/Preprocessed/{PID}/{PID}_win1_*.xlsx
               Data/Preprocessed/windows_summary.csv
               Data/Filtered/median_glucose_110to170_patient_status.csv
               (only patients selected by cgm_filtering.py are processed)
@@ -56,6 +58,10 @@ Context windows
   Post-episode: 60 min after offset
   Data completeness check: core + ±60 min windows
 
+Usage
+-----
+    python3 -m scripts.episodes_detection.episode_detection [--help for options]
+    (or: make episode_detection)
 """
 import os
 

@@ -40,11 +40,11 @@ Usage
     python3 -m scripts.preprocessing.convert_data_units
 
     # Only some targets, to a chosen directory
-    python3 -m scripts.preprocessing.convert_data_units \\
+    python3 -m scripts.preprocessing.convert_data_units \
         --targets metrics signals --output-dir ~/Desktop/mmol
 
     # Convert a mmol/L tree back to mg/dL
-    python3 -m scripts.preprocessing.convert_data_units \\
+    python3 -m scripts.preprocessing.convert_data_units \
         --to mg/dL --source-dir <BASE_PATH>/Converted_mmolL --output-dir /tmp/back
 
 Author
@@ -54,6 +54,10 @@ Guillaume Deside
 Date
 ----
 2026-09-10
+
+Output
+------
+    <CGM_DATA_ROOT>/Converted_mmolL/  (mirror of the converted data files; mg/dL originals untouched)
 """
 
 # =============================================================================

@@ -1,8 +1,10 @@
 """
+scripts/cgm_agp_recurrence.py
+=============================
 CGM Episode Visualization
 =========================
 Input       : Data/Episodes/{PID}_episodes.csv
-              Data/Data_Preprocessed_45d/{PID}/{PID}_win1_*.xlsx
+              Data/Preprocessed/{PID}/{PID}_win1_*.xlsx
 Output      : Figures/AGP/{PID}/
                   {PID}_agp_duration.pdf/.png
                   {PID}_agp_classification.pdf/.png
@@ -16,6 +18,11 @@ Generates two figure types per patient:
 2. AGP with classification-based recurrence
    - Top panel: Ambulatory Glucose Profile (same as above)
    - Bottom panel: Recurrence heatmap by SLH vs LLH classification
+
+Usage
+-----
+    python3 -m scripts.cgm_agp_recurrence [--help for options]
+    (or: make agp_recurrence)
 """
 import os
 import numpy as np

@@ -1,6 +1,6 @@
 """
 scripts/generate_zoom_panels.py
-================================
+===============================
 
 Zoom Panels — Representative Episodes by Classification Level
 -------------------------------------------------------------
@@ -26,10 +26,7 @@ via ``save_figure`` from ``src.visualization.style``.
 Usage
 -----
 
-python3 -m scripts.generate_zoom_panels \
-    --patient_id ID \
-    --output /path/to/output/dir \
-    --n_panels 6
+python3 -m scripts.generate_zoom_panels     --patient_id ID     --output /path/to/output/dir     --n_panels 6
 
 Authors
 -------

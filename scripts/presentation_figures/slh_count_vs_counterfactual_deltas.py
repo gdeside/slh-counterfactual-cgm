@@ -18,6 +18,15 @@ Usage
 -----
     python3 scripts/presentation_figures/slh_count_vs_counterfactual_deltas.py
     python3 scripts/presentation_figures/slh_count_vs_counterfactual_deltas.py --offset 30
+
+Usage
+-----
+    python3 -m scripts.presentation_figures.slh_count_vs_counterfactual_deltas [--help for options]
+    (or: make presentation_figures)
+
+Output
+------
+    scripts/presentation_figures/output/slh_count_vs_counterfactual_deltas/  (git-ignored; --out_dir to change)
 """
 
 import os

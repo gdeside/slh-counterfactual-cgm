@@ -1,6 +1,6 @@
 """
 scripts/presentation_figures/slh_distributions_by_category.py
-==============================================================
+=============================================================
 
 Presentation figure (16:9, 1 row × 3 columns) with the key SLH distributions, using
 the SAME episode classification as manuscript Figure 2

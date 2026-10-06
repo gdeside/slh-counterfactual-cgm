@@ -1,6 +1,6 @@
 """
-scripts/slh_baseline_metrics_multivariate_exploration.py
-==========================================================
+scripts/statistics/slh_baseline_metrics_multivariate_exploration.py
+===================================================================
 Non-parametric multivariate exploration of the relationship between
 baseline CGM metrics and SLH episode count.
 

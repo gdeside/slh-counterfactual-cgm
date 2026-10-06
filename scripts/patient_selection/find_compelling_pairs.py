@@ -1,6 +1,6 @@
 """
 scripts/patient_selection/find_compelling_pairs.py
-===================================================
+==================================================
 Select pairs of participants that illustrate, in the article, that the number
 of SLH episodes carries information beyond standard CGM metrics.
 

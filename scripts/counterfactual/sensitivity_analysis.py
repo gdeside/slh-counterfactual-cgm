@@ -1,4 +1,6 @@
 """
+scripts/counterfactual/sensitivity_analysis.py
+==============================================
 CGM Sensitivity Analysis — Linear Interpolation Counterfactual (MODULAR)
 =========================================================================
 Uses modular episode detection and counterfactual construction from src/.

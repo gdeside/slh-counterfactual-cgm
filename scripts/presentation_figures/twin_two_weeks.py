@@ -66,6 +66,10 @@ Guillaume Deside
 Date
 ----
 2026
+
+Output
+------
+    scripts/presentation_figures/output/twin_two_weeks/  (git-ignored; --out_dir to change)
 """
 
 import os

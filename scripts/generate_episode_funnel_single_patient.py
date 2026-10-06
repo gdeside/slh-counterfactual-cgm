@@ -1,4 +1,6 @@
 """
+scripts/generate_episode_funnel_single_patient.py
+=================================================
 Episode Classification Funnel — Single-Patient Visualization
 ============================================================
 
@@ -10,6 +12,15 @@ The pipeline:
     2. Detect hyperglycemia episodes
     3. Apply sequential exclusion criteria
     4. Visualize retention/exclusion at each stage
+
+Usage
+-----
+    python3 -m scripts.generate_episode_funnel_single_patient [--help for options]
+    (or: make slh_funnel)
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/SLH_analysis/<patient_id>_funnel.{pdf,svg}
 """
 
 import os

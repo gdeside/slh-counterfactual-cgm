@@ -1,6 +1,6 @@
 """
-scripts/cgm_metrics.py
-==================
+scripts/preprocessing/cgm_metrics.py
+====================================
 
 CGM Metrics Computation
 ----------------------
@@ -8,13 +8,13 @@ Compute standardized CGM metrics from preprocessed 45-day windows.
 
 Input
 -----
-- Data_Preprocessed_45d/windows_summary.csv
-- Data_Preprocessed_45d/patients_status.csv
-- Data_Preprocessed_45d/{PID}/{PID}_win1_*.xlsx
+- Data/Preprocessed/windows_summary.csv
+- Data/Preprocessed/patients_status.csv
+- Data/Preprocessed/{PID}/{PID}_win1_*.xlsx
 
 Output
 ------
-- Data_Metrics/metrics_all_patients.csv
+- Data/Metrics/metrics_all_patients.csv
 
 Description
 -----------
@@ -31,6 +31,11 @@ Guillaume Deside
 Date
 ----
 2026-03-28
+
+Usage
+-----
+    python3 -m scripts.preprocessing.cgm_metrics [--help for options]
+    (or: make metrics_preprocessing)
 """
 
 # =============================================================================

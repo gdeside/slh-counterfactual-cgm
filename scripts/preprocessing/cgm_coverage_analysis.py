@@ -1,6 +1,6 @@
 """
-scripts/cgm_coverage_analysis.py
-=======================
+scripts/preprocessing/cgm_coverage_analysis.py
+==============================================
 
 CGM Coverage Analysis — Preprocessed 45-Day Windows
 --------------------------------------------------

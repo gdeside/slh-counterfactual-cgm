@@ -1,4 +1,6 @@
 """
+scripts/counterfactual/lininterp_stepbystep.py
+==============================================
 Linear Interpolation Counterfactual — Step-by-Step Figure
 ==========================================================
 Generates 4-panel vertical figure showing counterfactual construction steps:
@@ -17,6 +19,10 @@ Usage:
     python -m scripts.counterfactual.lininterp_stepbystep
 
 Authors: Guillaume Deside
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/Counterfactual_analysis/<patient_id>/steps_epNN.{pdf,svg}
 """
 
 # ─────────────────────────────────────────────────────────────────────────────

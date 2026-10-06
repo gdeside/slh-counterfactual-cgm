@@ -1,7 +1,9 @@
 """
+scripts/preprocessing/cgm_filtering.py
+======================================
 CGM Patient Filtering — Median Glucose Criterion
 ================================================
-Input       : Data/Data_Metrics/metrics_all_patients.csv
+Input       : Data/Metrics/metrics_all_patients.csv
 Output      : Data/Filtered_Cohorts/
               Figures/Filtered_Cohorts/
 
@@ -15,6 +17,11 @@ Figure outputs
   median_vs_cv_scatter.pdf/.png        — Scatter plot colored by TIR
   median_vs_tir_scatter.pdf/.png       — Scatter plot colored by CV
   cv_vs_tir_scatter.pdf/.png           — Scatter plot colored by Median
+
+Usage
+-----
+    python3 -m scripts.preprocessing.cgm_filtering [--help for options]
+    (or: make filtering)
 """
 # =============================================================================
 # IMPORTS

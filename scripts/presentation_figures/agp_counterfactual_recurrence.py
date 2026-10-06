@@ -23,10 +23,11 @@ Panels:
 
 Usage
 -----
-    python3 -m scripts.presentation_figures.agp_counterfactual_recurrence \
-        [--patient_id ID] \
-        [--offset_min 45] \
-        [--out_dir DIR]
+    python3 -m scripts.presentation_figures.agp_counterfactual_recurrence         [--patient_id ID]         [--offset_min 45]         [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/agp_counterfactual_recurrence/  (git-ignored; --out_dir to change)
 """
 
 import os

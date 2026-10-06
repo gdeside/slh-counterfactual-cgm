@@ -1,6 +1,6 @@
 """
-scripts/paper_figures/generate_figure_3.py
-====================================================================
+scripts/paper_figures/generate_figure_3_patient_comparison.py
+=============================================================
 Figure 3 (main text): glucose profiles and SLH recurrence patterns in two
 representative patients with similar CGM summary metrics but contrasting SLH
 frequency (high vs low SLH burden; patients chosen via CGM_PATIENT_HIGH / CGM_PATIENT_LOW,
@@ -43,7 +43,7 @@ panel F now spells out what each shaded colour means (previously unlabelled).
 
 Usage
 -----
-    env/bin/python3 -m scripts.paper_figures.generate_figure_3
+    env/bin/python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
 
 Outputs (FIG_DIR / Manuscript_Figures)
 ---------------------------------------
@@ -432,7 +432,7 @@ def build_figure(patient_a: str, patient_b: str, data_a: dict, data_b: dict) -> 
     return fig
 
 
-def generate_figure_3() -> None:
+def generate_figure_3_patient_comparison() -> None:
     print("\n" + "=" * 70)
     print(f"  GENERATING FIGURE 3 — {PATIENT_A} vs {PATIENT_B}")
     print("=" * 70)
@@ -468,4 +468,4 @@ def generate_figure_3() -> None:
 
 
 if __name__ == "__main__":
-    generate_figure_3()
+    generate_figure_3_patient_comparison()

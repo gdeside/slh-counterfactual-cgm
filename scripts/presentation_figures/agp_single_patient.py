@@ -21,6 +21,10 @@ Usage
                                               [--resolution 15]
                                               [--no_mean]
                                               [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/agp_single_patient/  (git-ignored; --out_dir to change)
 """
 
 import os

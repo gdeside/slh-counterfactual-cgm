@@ -1,4 +1,6 @@
 """
+scripts/counterfactual/visualize_timeseries_sensitivity.py
+==========================================================
 Time Series Visualization: Original vs Counterfactual Signals
 ==============================================================
 
@@ -25,6 +27,11 @@ Usage:
     python3 visualize_timeseries_sensitivity.py --patient_id A168 --n_days 7 --start_day 0
 
 Authors: Guillaume Deside
+
+Usage
+-----
+    python3 -m scripts.counterfactual.visualize_timeseries_sensitivity [--help for options]
+    (or: make timeseries_sensitivity)
 """
 
 import os

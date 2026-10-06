@@ -1,4 +1,6 @@
 """
+scripts/paper_figures/generate_figure_5_counterfactual_distribution.py
+======================================================================
 Generate Figure 5: Counterfactual Distribution and Correlation Analysis
 ========================================================================
 Renumbered from "Figure 4 bis" now that Figure 4 is the counterfactual
@@ -18,7 +20,7 @@ Five-panel figure combining:
   replacing the previous ΔTIR/ΔMedian vs n_SLH scatter plots.
 - Row 3: Spearman correlation matrix (CGM metrics, phenotype, biomarkers,
   n_SLH), reusing the data and computation from
-  scripts/paper_figures/generate_figure_5_slh_determinants.py, with the
+  scripts/paper_figures/generate_figure_6_slh_determinants.py, with the
   upper triangle masked out (the matrix is symmetric, so showing both halves
   only repeats the same values).
 
@@ -37,6 +39,10 @@ Usage:
     python3 -m scripts.paper_figures.generate_figure_5_counterfactual_distribution
 
 Authors: Guillaume Deside
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/Manuscript_Figures/Figure5_Counterfactual_Distribution_Correlation.{pdf,svg}
 """
 
 import os
@@ -71,7 +77,7 @@ from src.utils.unit_conversion import (
 # Reuse the correlation-matrix data/computation from Figure 5 (SLH determinants)
 # rather than duplicating it -- only the plotting function is overridden below
 # to mask the (redundant, symmetric) upper triangle.
-from scripts.paper_figures.generate_figure_5_slh_determinants import (
+from scripts.paper_figures.generate_figure_6_slh_determinants import (
     build_dataset,
     compute_correlation_stats,
     compute_mutual_information,
@@ -373,7 +379,7 @@ def plot_time_of_max_diff_histogram(ax, df, offset, patient_ids, show_legend=Fal
 def plot_correlation_matrix_masked(ax, rho_mat: np.ndarray, p_mat: np.ndarray,
                                    cols: list, labels: list) -> None:
     """
-    Same panel as plot_correlation_matrix in generate_figure_5_slh_determinants.py,
+    Same panel as plot_correlation_matrix in generate_figure_6_slh_determinants.py,
     except the upper triangle is masked out: the matrix is symmetric (rho[i,j]
     == rho[j,i]), so showing both halves only repeats the same values.
     """
@@ -461,7 +467,7 @@ def plot_mutual_information_panel(ax, mi_df: pd.DataFrame) -> None:
     three colours as panel E's axis labels and domain headers.
 
     Adapted from `plot_mutual_information` in
-    generate_figure_5_slh_determinants.py — same bars and colours, but sorted
+    generate_figure_6_slh_determinants.py — same bars and colours, but sorted
     descending, without the redundant domain legend (panel E already labels
     the three domains, in the same colours, immediately to the left) and with
     this figure's panel letter.
@@ -520,7 +526,7 @@ def generate_figure_5():
     print(f"    Representative patients: {PATIENT_IDS}")
 
     # Load phenotype/biomarker data and compute the correlation matrix
-    # (reused from generate_figure_5_slh_determinants.py)
+    # (reused from generate_figure_6_slh_determinants.py)
     print("\n  Loading and merging CGM + phenotype + biomarker data...")
     df_corr = build_dataset(apply_filter=True)
     print("  Computing Spearman correlation matrix...")

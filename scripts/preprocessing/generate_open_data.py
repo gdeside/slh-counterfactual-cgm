@@ -1,6 +1,6 @@
 """
-scripts/generate_open_data.py
-==============================
+scripts/preprocessing/generate_open_data.py
+===========================================
 Generate an anonymised open-access CGM dataset.
 
 Privacy-by-design anonymisation pipeline compliant with:
@@ -86,7 +86,7 @@ Usage
     python3 -m scripts.preprocessing.generate_open_data --unit mmol/L
 
     # All patients, stronger noise, random phase shift, custom seed
-    python3 -m scripts.preprocessing.generate_open_data --no_filter --noise_std 3.0 \\
+    python3 -m scripts.preprocessing.generate_open_data --no_filter --noise_std 3.0 \
                                                          --phase_shift --seed 123
 
 Authors

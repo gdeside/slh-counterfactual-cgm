@@ -136,7 +136,7 @@ handed to matplotlib stays in mg/dL.
 
 ```bash
 # Whole run in mmol/L
-CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3
+CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
 ```
 
 ```python
@@ -145,7 +145,7 @@ from src.utils.unit_conversion import set_display_unit, display_unit, UNIT_MMOLL
 set_display_unit("mmol/L")          # process-wide, before building figures
 
 with display_unit(UNIT_MMOLL):      # or scoped — e.g. to emit both versions
-    generate_figure_3()
+    generate_figure_3_patient_comparison()
 ```
 
 Console logs, `DATACARD.md`, and the parameter banners printed by the pipeline

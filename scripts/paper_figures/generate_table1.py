@@ -1,6 +1,6 @@
 """
-scripts/generate_table1.py
-===========================
+scripts/paper_figures/generate_table1.py
+========================================
 Generate Table 1 (study cohort characteristics) using pysummaries.
 
 Each variable is assigned its statistical summary:

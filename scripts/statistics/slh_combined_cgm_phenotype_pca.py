@@ -1,6 +1,6 @@
 """
-scripts/slh_combined_cgm_phenotype_pca.py
-===========================================
+scripts/statistics/slh_combined_cgm_phenotype_pca.py
+====================================================
 Combined CGM + phenotype PCA, aimed at characterising the "honeymoon phase"
 signature of SLH: a single low-dimensional axis spanning both the patient's
 actual glycaemic pattern (CGM metrics) and their clinical characteristics

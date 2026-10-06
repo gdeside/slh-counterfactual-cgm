@@ -22,11 +22,11 @@ Both figures: 16:9 presentation-ready layout, side-by-side panels.
 
 Usage
 -----
-    python3 -m scripts.presentation_figures.nine_days_two_patients \
-        [--patient_1 ID] \
-        [--patient_2 ID] \
-        [--n_days 9] \
-        [--out_dir DIR]
+    python3 -m scripts.presentation_figures.nine_days_two_patients         [--patient_1 ID]         [--patient_2 ID]         [--n_days 9]         [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/nine_days_two_patients/  (git-ignored; --out_dir to change)
 """
 
 import os

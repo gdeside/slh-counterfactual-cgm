@@ -1,4 +1,6 @@
 """
+scripts/paper_figures/generate_figure_4_counterfactual_construction.py
+======================================================================
 Figure 4: Counterfactual Signal Construction and Sensitivity Analysis
 ====================================================================
 Renumbered from Figure 3 (bis) now that Figure 3 is the high-vs-low-SLH patient
@@ -21,6 +23,11 @@ Usage:
 python3 -m scripts.paper_figures.generate_figure_4_counterfactual_construction
 
 Authors: Guillaume Deside
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/Manuscript_Figures/Figure4_Counterfactual_Construction_<high>_vs_<low>.{pdf,svg}
+    and the underlying delta tables in Figures/Manuscript_Figures/<high>_vs_<low>/*.csv
 """
 
 import os

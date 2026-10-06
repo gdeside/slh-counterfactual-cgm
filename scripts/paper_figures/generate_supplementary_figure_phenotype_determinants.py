@@ -1,6 +1,6 @@
 """
 scripts/paper_figures/generate_supplementary_figure_phenotype_determinants.py
-================================================================================
+=============================================================================
 Supplementary figure: patient-phenotype determinants of SLH burden.
 
 Panels
@@ -17,7 +17,7 @@ Panels
   D - Combined CGM + phenotype PCA -- correlation circle.
 
 Panels C/D reuse compute_combined_pca and the PCA_COLS/colour definitions
-from scripts/paper_figures/generate_figure_5_slh_determinants.py verbatim
+from scripts/paper_figures/generate_figure_6_slh_determinants.py verbatim
 ("the PCA as it was done before"). Only the plotting wrappers are
 re-declared here, because the originals hardcode "D"/"E" panel labels that
 were correct for that file's own 7-panel layout but not for this one.
@@ -76,7 +76,7 @@ from scripts.statistics.slh_patient_characteristics_exploration import (
 
 # Reuse the combined CGM+phenotype PCA computation and colour/variable
 # definitions from Figure 5 (SLH determinants) rather than duplicating them.
-from scripts.paper_figures.generate_figure_5_slh_determinants import (
+from scripts.paper_figures.generate_figure_6_slh_determinants import (
     build_dataset,
     compute_combined_pca,
     PCA_COLS,
@@ -276,7 +276,7 @@ def plot_gtaa1c_duration_by_insulin_regimen(ax, df: pd.DataFrame) -> dict:
 
 # =============================================================================
 # PANELS C/D: Combined CGM + phenotype PCA
-# (computation reused verbatim from generate_figure_5_slh_determinants.py;
+# (computation reused verbatim from generate_figure_6_slh_determinants.py;
 #  plotting re-declared only to control panel labelling for this layout)
 # =============================================================================
 def plot_pca_scores_panel(ax, coords, y, var_exp) -> None:

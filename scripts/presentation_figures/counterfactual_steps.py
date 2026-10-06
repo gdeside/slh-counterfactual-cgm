@@ -21,6 +21,10 @@ Usage
                                                   [--offset_min 45]
                                                   [--window_h 3]
                                                   [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/counterfactual_steps/  (git-ignored; --out_dir to change)
 """
 
 import os

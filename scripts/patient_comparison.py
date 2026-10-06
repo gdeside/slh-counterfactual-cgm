@@ -1,7 +1,9 @@
 """
+scripts/patient_comparison.py
+=============================
 Patient Comparison Visualization (Enhanced)
 ============================================
-Input       : Data/Data_Preprocessed_45d/{PID}/{PID}_win1_*.xlsx
+Input       : Data/Preprocessed/{PID}/{PID}_win1_*.xlsx
               Data/Episodes/{PID}_episodes.csv
 Output      : Figures/Comparisons/{PID_A}_vs_{PID_B}/
                   comparison_{PID_A}_vs_{PID_B}_duration.{pdf,svg}
@@ -18,7 +20,6 @@ ENHANCEMENTS:
 
 Usage:
     python3 -m scripts.patient_comparison
-
 """
 import os
 from datetime import datetime, time, timedelta

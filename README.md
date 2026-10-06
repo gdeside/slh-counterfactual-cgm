@@ -77,17 +77,17 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 |---|---|---|
 | Suppl. Fig. 3 — SLH detection schema | `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` | `make suppfig3` |
 | Fig. 2 — SLH/LLH classification summary | `scripts/paper_figures/generate_figure_2_classification_summary.py` | |
-| Fig. 3 — Two patients, similar metrics, different SLH burden (high vs low SLH) | `scripts/paper_figures/generate_figure_3.py` | |
+| Fig. 3 — Two patients, similar metrics, different SLH burden (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | |
 | Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | needs `make sensitivity_analysis` |
 | Fig. 5 — Distribution of ΔTIR / Δmedian | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | |
-| Fig. 5 (alt.) — Determinants of SLH burden | `scripts/paper_figures/generate_figure_5_slh_determinants.py` | needs the clinical phenotype table |
+| Fig. 6 — Determinants of SLH burden | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | needs the clinical phenotype table |
 | Table 1 — Cohort characteristics | `scripts/paper_figures/generate_table1.py` | needs `pysummaries` |
 | Suppl. Fig. — Cohort flowchart | `scripts/paper_figures/generate_cohort_flowchart.py` | needs `rsvg-convert` (`brew install librsvg`) |
-| Suppl. Fig. 1 — Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1.py` | |
+| Suppl. Fig. 1 — Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1_data_quality.py` | |
 | Suppl. Fig. — Phenotype determinants | `scripts/paper_figures/generate_supplementary_figure_phenotype_determinants.py` | |
 
 Run any script as a module from the repository root, e.g.
-`python3 -m scripts.paper_figures.generate_figure_3`.
+`python3 -m scripts.paper_figures.generate_figure_3_patient_comparison`.
 
 ---
 
@@ -124,6 +124,13 @@ counterfactual-cgm-slh/
 ├── requirements.txt
 └── LICENSE                       # MIT
 ```
+
+**Naming conventions.** Every script is run as `python3 -m scripts.<package>.<name>` (or through `make`) and starts with a header
+giving its path, what it does, its **module command** (`Usage`) and its **output location** (`Output`).
+`scripts/paper_figures/` uses `generate_<figure or table>[_<content>]` — numbered after the manuscript
+(`generate_figure_3_patient_comparison`, `generate_figure_5_counterfactual_distribution`, `generate_figure_6_slh_determinants`,
+`generate_supplementary_figure_3_slh_detection_schema`, …); the other packages are named after the step they perform
+(`cgm_preprocessing`, `episode_detection`, `lininterp_stepbystep`, …); talk figures live in `scripts/presentation_figures/`.
 
 ---
 
@@ -361,7 +368,7 @@ make sensitivity_figures
 
 # 4. Manuscript figures / tables
 make paper                   # Fig. 2-5, Suppl. Fig. 1 and 3, cohort flowchart
-make table1 fig5_determinants suppfig_phenotype   # need the clinical phenotype table
+make table1 fig6 suppfig_phenotype   # need the clinical phenotype table
 # individual figures: make fig2 fig3 fig4 fig5 … (see the figure map above)
 
 # 5. Open-data release
@@ -386,7 +393,7 @@ The pipeline computes and stores glucose in **mg/dL**; mmol/L is a presentation 
 
 ```bash
 python3 -m scripts.preprocessing.convert_data_units            # mmol/L copies of data files
-CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3
+CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
 python3 -m scripts.preprocessing.generate_open_data --unit mmol/L
 ```
 
@@ -406,7 +413,7 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 | SLH figures | `slh_schema`, `slh_funnel`, `slh_overview`, `slh_zoom_panels`, `agp_recurrence`, `patient_comparison` |
 | Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
 | Sensitivity | `sensitivity_analysis`, `lines_`/`boxplots_`/`cdf_`/`agp_`/`timeseries_sensitivity`, `sensitivity_figures` |
-| Manuscript | `table1`, `fig2`, `fig3`, `fig4`, `fig5`, `fig5_determinants`, `suppfig1`, `suppfig_phenotype`, `cohort_flowchart`, **`paper`** |
+| Manuscript | `table1`, `fig2`, `fig3`, `fig4`, `fig5`, `fig6`, `suppfig1`, `suppfig_phenotype`, `cohort_flowchart`, **`paper`** |
 | Open data / units | `open_data`, `open_data_phase_shift`, `convert_units` |
 | Sample dataset | `sample_data`, `sample_data_run` |
 | Utility | `figures`, `tests`, `clean` |

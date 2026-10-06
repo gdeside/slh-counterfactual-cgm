@@ -25,6 +25,10 @@ with a gamma-shaped action profile and a leaky (counter-regulated) integral.
 Usage
 -----
     python3 -m scripts.presentation_figures.cgm_meal_spikes [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/cgm_meal_spikes/  (git-ignored; --out_dir to change)
 """
 
 import os

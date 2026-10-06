@@ -1,6 +1,6 @@
 """
-python3 -m scripts.paper_figures.generate_cohort_flowchart
-============================================================
+scripts/paper_figures/generate_cohort_flowchart.py
+==================================================
 
 Cohort selection flow diagram (CONSORT-style), from the pediatric diabetes
 convention roster at CUSL down to the analysis cohort.
@@ -12,6 +12,15 @@ renders a PDF copy with ``rsvg-convert`` (brew install librsvg).
 
 Author: Guillaume Deside
 Date: 2026-09-29
+
+Usage
+-----
+    python3 -m scripts.paper_figures.generate_cohort_flowchart [--help for options]
+    (or: make cohort_flowchart)
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/Supplementary/cohort_flowchart.svg (+ .pdf if rsvg-convert is installed)
 """
 
 import shutil

@@ -1,6 +1,6 @@
 """
-python3 -m scripts.preprocessing.open_data_to_raw [--input CSV] [--unit mg/dL|mmol/L]
-=====================================================================================
+scripts/preprocessing/open_data_to_raw.py
+=========================================
 
 Turns the released open dataset (``cohort_open_data.csv``: ``patient_id``, ``time_h``,
 ``glucose_mgdl`` or ``glucose_mmoll``) into the raw layout read by the pipeline:
@@ -15,6 +15,10 @@ Then run the pipeline on it::
     export CGM_DATA_ROOT=/path/to/folder
     python3 -m scripts.preprocessing.open_data_to_raw --input /path/to/cohort_open_data.csv
     make pipeline
+
+Output
+------
+    <CGM_DATA_ROOT>/Data/Raw/<patient_id>.xlsx  (columns time, glycemie in mg/dL)
 """
 import argparse
 from pathlib import Path

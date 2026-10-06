@@ -26,6 +26,10 @@ Usage
 -----
     python3 -m scripts.presentation_figures.cgm_slh_repeat_gif
             [--n_days 45] [--n_slh 25] [--slh_hour 10.5] [--fps 2] [--seed 3] [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/cgm_slh_repeat_gif/  (git-ignored; --out_dir to change)
 """
 
 import os

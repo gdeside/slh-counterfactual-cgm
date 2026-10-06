@@ -298,7 +298,7 @@ def convert_glucose_column(
 # CANONICAL_UNIT (mg/dL).  Initialised from the environment so a whole run can
 # be switched without touching the code:
 #
-#     CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3
+#     CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
 #
 _display_unit = normalize_unit(os.environ.get(ENV_DISPLAY_UNIT, CANONICAL_UNIT))
 

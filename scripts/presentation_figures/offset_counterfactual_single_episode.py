@@ -17,9 +17,7 @@ Shows:
 
 Usage
 -----
-    python3 -m scripts.presentation_figures.offset_counterfactual_single_episode \
-        [--patient_id ID] \
-        [--out_dir DIR]
+    python3 -m scripts.presentation_figures.offset_counterfactual_single_episode         [--patient_id ID]         [--out_dir DIR]
 
 Output (default scripts/presentation_figures/output/offset_counterfactual_single_episode/)
   offset_counterfactual_single_episode_<patient_id>.{pdf,svg}

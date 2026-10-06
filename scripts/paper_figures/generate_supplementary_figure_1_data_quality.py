@@ -1,6 +1,6 @@
 """
-python3 -m scripts.paper_figures.generate_supplementary_figure_1
-==========================================
+scripts/paper_figures/generate_supplementary_figure_1_data_quality.py
+=====================================================================
 
 Supplementary Figure 1: Data Quality and Cohort Selection
 ---------------------------------------------------------
@@ -14,6 +14,15 @@ E) Median glucose vs TIR scatter plot
 
 Author: Guillaume Deside
 Date: 2026-04-21
+
+Usage
+-----
+    python3 -m scripts.paper_figures.generate_supplementary_figure_1_data_quality [--help for options]
+    (or: make suppfig1)
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/Supplementary/supplementary_figure_1.{pdf,svg}
 """
 
 # =============================================================================
@@ -549,7 +558,7 @@ def add_panel_label(ax, label, x=-0.15, y=1.05):
 # =============================================================================
 # MAIN FIGURE GENERATION
 # =============================================================================
-def generate_supplementary_figure_1():
+def generate_supplementary_figure_1_data_quality():
     """Generate complete supplementary figure 1."""
     
     print("\n" + "=" * 70)
@@ -651,4 +660,4 @@ def generate_supplementary_figure_1():
 # ENTRY POINT
 # =============================================================================
 if __name__ == "__main__":
-    generate_supplementary_figure_1()
+    generate_supplementary_figure_1_data_quality()

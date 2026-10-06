@@ -27,11 +27,15 @@ and thresholds.
 
 Usage
 -----
-    python3 -m scripts.presentation_figures.agp_recurrence_two_patients [--patient_a ID] \\
-                                                         [--patient_b ID] \\
-                                                         [--resolution 5] \\
-                                                         [--no_mean] \\
+    python3 -m scripts.presentation_figures.agp_recurrence_two_patients [--patient_a ID] \
+                                                         [--patient_b ID] \
+                                                         [--resolution 5] \
+                                                         [--no_mean] \
                                                          [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/agp_recurrence_two_patients/  (git-ignored; --out_dir to change)
 """
 
 import os

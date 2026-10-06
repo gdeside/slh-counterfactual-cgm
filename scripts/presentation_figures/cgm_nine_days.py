@@ -23,6 +23,10 @@ Usage
     python3 -m scripts.presentation_figures.cgm_nine_days [--patient_id ID]
                                            [--n_days 9]
                                            [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/cgm_nine_days/  (git-ignored; --out_dir to change)
 """
 
 import os

@@ -1,6 +1,6 @@
 """
-scripts/cgm_preprocessing.py
-============================
+scripts/preprocessing/cgm_preprocessing.py
+==========================================
 
 CGM Data Preprocessing — Optimal 45-Day Window Extraction (5-min only)
 ----------------------------------------------------------------------
@@ -31,6 +31,11 @@ Guillaume Deside
 Date
 ----
 2026-04-15
+
+Usage
+-----
+    python3 -m scripts.preprocessing.cgm_preprocessing [--help for options]
+    (or: make preprocessing)
 """
 
 # =============================================================================

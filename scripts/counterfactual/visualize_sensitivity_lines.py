@@ -1,4 +1,6 @@
 """
+scripts/counterfactual/visualize_sensitivity_lines.py
+=====================================================
 Sensitivity Line Plots: Delta Metric vs Zone-Expansion Offset
 =============================================================
 
@@ -16,6 +18,11 @@ Usage:
     python3 visualize_sensitivity_lines.py --patient_id ID
 
 Authors: Guillaume Deside
+
+Usage
+-----
+    python3 -m scripts.counterfactual.visualize_sensitivity_lines [--help for options]
+    (or: make lines_sensitivity)
 """
 
 import os

@@ -1,4 +1,6 @@
 """
+scripts/counterfactual/lininterp_45days.py
+==========================================
 Linear Interpolation Counterfactual — 45-Day Overview Figure
 =============================================================
 
@@ -12,6 +14,10 @@ Usage:
     python3 -m scripts.counterfactual.lininterp_45days
 
 Authors: Guillaume Deside
+
+Output
+------
+    <CGM_DATA_ROOT>/Figures/Counterfactual_analysis/<patient_id>/overview_45d.{pdf,svg}
 """
 
 # ─────────────────────────────────────────────────────────────────────────────

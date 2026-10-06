@@ -1,7 +1,7 @@
 """
-scripts/paper_figures/generate_figure_5_slh_determinants.py
-=============================================================
-Manuscript figure: association of CGM metrics, patient phenotype and
+scripts/paper_figures/generate_figure_6_slh_determinants.py
+===========================================================
+Figure 6 — SLH determinants: association of CGM metrics, patient phenotype and
 glycaemic biomarkers with SLH burden (number of SLH episodes).
 
 Panels
@@ -20,7 +20,7 @@ Panels
 Every panel is drawn by a plot_<name>(ax, ...) function that is reused
 twice: once inside the combined GridSpec figure below, and once on its own
 Axes to save an individual per-panel file (see save_individual_panel and the
-Figure_Determinants/ subfolder in Outputs).
+Figure6_Determinants/ subfolder in Outputs).
 
 Variable sets and merge logic reuse the definitions established in:
   scripts/slh_baseline_metrics_multivariate_exploration.py   (CGM metrics)
@@ -32,12 +32,12 @@ Variable sets and merge logic reuse the definitions established in:
 
 Usage
 -----
-    env/bin/python3 -m scripts.paper_figures.generate_figure_5_slh_determinants [--no_filter]
+    python3 -m scripts.paper_figures.generate_figure_6_slh_determinants [--no_filter]
 
 Outputs (FIG_DIR / Manuscript_Figures)
 ---------------------------------------
-  Figure5_SLH_Determinants.{pdf,svg}            - combined 7-panel figure
-  Figure_Determinants/panel<X>_<name>.{pdf,svg} - each panel A-G saved standalone
+  Figure6_SLH_Determinants.{pdf,svg}            - combined 7-panel figure
+  Figure6_Determinants/panel<X>_<name>.{pdf,svg} - each panel A-G saved standalone
   correlation_matrix_slh_determinants.csv       - full Spearman rho matrix
   correlation_pvalues_slh_determinants.csv      - matching p-value matrix
   spearman_vs_slh_determinants.csv              - each variable vs n_SLH only
@@ -92,8 +92,8 @@ from src.visualization.colors import WONG_COLORS, DIVERGING, COLORMAP_CONTINUOUS
 # CONFIGURATION
 # =============================================================================
 OUTPUT_DIR      = os.path.join(FIG_DIR, "Manuscript_Figures")
-OUTPUT_NAME     = "Figure5_SLH_Determinants"
-INDIVIDUAL_DIR  = os.path.join(OUTPUT_DIR, "Figure_Determinants")
+OUTPUT_NAME     = "Figure6_SLH_Determinants"
+INDIVIDUAL_DIR  = os.path.join(OUTPUT_DIR, "Figure6_Determinants")
 
 RESPONSE       = "n_SLH"
 RESPONSE_LABEL = "Number of SLH episodes"
@@ -662,7 +662,7 @@ def plot_scatter_duration_gtaa1c_by_insulin(ax, df: pd.DataFrame, scatter_stats:
 # =============================================================================
 def save_individual_panel(plot_fn, figsize: tuple, filename: str, *args, **kwargs) -> None:
     """Render one panel-drawing function standalone (its own figure) into
-    Figure_Determinants/, reusing the exact drawing function used inside the
+    Figure6_Determinants/, reusing the exact drawing function used inside the
     combined Figure 5 GridSpec - no plotting logic is duplicated."""
     apply_publication_style()
     fig, ax = plt.subplots(figsize=figsize)
@@ -811,7 +811,7 @@ def generate_figure_5(apply_filter: bool = True) -> None:
     write_summary_txt(df, spearman_vs_response_df, mi_df, var_exp,
                        pc_vs_slh_stats, scatter_stats, regimen_stats)
 
-    print("\n  Saving individual panels to Figure_Determinants/ ...")
+    print("\n  Saving individual panels to Figure6_Determinants/ ...")
     os.makedirs(INDIVIDUAL_DIR, exist_ok=True)
     save_individual_panel(
         lambda ax: plot_correlation_matrix(ax, rho_mat, p_mat, cols, labels),

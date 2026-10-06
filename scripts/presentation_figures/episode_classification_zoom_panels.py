@@ -19,6 +19,10 @@ Usage
 -----
     python3 -m scripts.presentation_figures.episode_classification_zoom_panels [--patient_id ID]
                                                           [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/episode_classification_zoom_panels/  (git-ignored; --out_dir to change)
 """
 
 import os

@@ -33,7 +33,7 @@ private if the DPO asks for it, and never commit the real inputs.
 
 Usage
 -----
-    CGM_DATA_ROOT=/path/to/real/data python3 -m scripts.sample_data.generate_sample_data_from_real \\
+    CGM_DATA_ROOT=/path/to/real/data python3 -m scripts.sample_data.generate_sample_data_from_real \
         [--out sample_data_real] [--seed 2024] [--noise_std 2.0] [--n_days 50] [--min_sources 5] [--zip]
 """
 import argparse

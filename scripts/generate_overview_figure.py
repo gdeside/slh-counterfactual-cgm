@@ -1,4 +1,6 @@
 """
+scripts/generate_overview_figure.py
+===================================
 45-Day CGM Overview — Episode Classification by Criterion Level
 ===============================================================
 Generate a publication-ready multi-row figure showing the raw CGM signal

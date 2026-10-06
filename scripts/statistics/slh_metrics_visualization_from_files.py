@@ -1,4 +1,6 @@
 """
+scripts/statistics/slh_metrics_visualization_from_files.py
+==========================================================
 SLH Metrics Interactive Visualization (from existing files)
 ============================================================
 Script: slh_metrics_visualization_from_files.py
@@ -21,6 +23,10 @@ Output: Interactive HTML files in Figures/SLH_Metrics_Interactive/
 
 Authors: Guillaume Deside
 Date: 2026-04-22
+
+Usage
+-----
+    python3 -m scripts.statistics.slh_metrics_visualization_from_files [--help for options]
 """
 
 # =============================================================================

@@ -60,6 +60,10 @@ Guillaume Deside
 Date
 ----
 2026
+
+Output
+------
+    scripts/presentation_figures/output/slh_twin_comparison/  (git-ignored; --out_dir to change)
 """
 
 import os

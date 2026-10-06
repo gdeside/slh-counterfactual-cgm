@@ -1,6 +1,6 @@
 """
-scripts/slh_regression_analysis.py
-====================================
+scripts/statistics/slh_regression_analysis.py
+=============================================
 Random Forest regression analysis: CGM metrics + patient phenotype
 as predictors of SLH episode count (n_SLH).
 
@@ -33,7 +33,7 @@ Outputs  (RESULTS_PATH / RF_SLH_Predictors)
 
 Usage
 -----
-    env/bin/python3 -m scripts.statistics.slh_regression_analysis [--no_filter] \\
+    env/bin/python3 -m scripts.statistics.slh_regression_analysis [--no_filter] \
         [--max_missing 0.20] [--n_permutations 1000] [--top_k 6]
 
 Authors

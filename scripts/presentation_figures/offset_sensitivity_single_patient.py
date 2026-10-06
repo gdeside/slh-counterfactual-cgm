@@ -16,9 +16,7 @@ Shows:
 
 Usage
 -----
-    python3 -m scripts.presentation_figures.offset_sensitivity_single_patient \
-        [--patient_id ID] \
-        [--out_dir DIR]
+    python3 -m scripts.presentation_figures.offset_sensitivity_single_patient         [--patient_id ID]         [--out_dir DIR]
 
 Output (default scripts/presentation_figures/output/offset_sensitivity_single_patient/)
   offset_sensitivity_single_patient_<patient_id>.{pdf,svg}

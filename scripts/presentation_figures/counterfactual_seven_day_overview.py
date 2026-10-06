@@ -18,10 +18,11 @@ Shows:
 
 Usage
 -----
-    python3 -m scripts.presentation_figures.counterfactual_seven_day_overview \
-        [--patient_id ID] \
-        [--offset_min 45] \
-        [--out_dir DIR]
+    python3 -m scripts.presentation_figures.counterfactual_seven_day_overview         [--patient_id ID]         [--offset_min 45]         [--out_dir DIR]
+
+Output
+------
+    scripts/presentation_figures/output/counterfactual_seven_day_overview/  (git-ignored; --out_dir to change)
 """
 
 import os
