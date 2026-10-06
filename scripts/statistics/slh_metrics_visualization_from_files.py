@@ -58,6 +58,7 @@ from src.config import (
 
 from src.filtering.load_filtering import load_filtered_patient_list
 from src.episodes.load_episodes import discover_episode_files
+from src.visualization.style import FONT_CSS_FAMILY
 
 # =============================================================================
 # CONFIGURATION
@@ -271,7 +272,7 @@ def plot_3d_scatter(df: pd.DataFrame, x_metric: str, y_metric: str,
             zaxis_title=z_label,
             camera=dict(eye=dict(x=1.5, y=1.5, z=1.3))
         ),
-        font=dict(family="Arial", size=12),
+        font=dict(family=FONT_CSS_FAMILY, size=12),
         width=900,
         height=700
     )
@@ -334,7 +335,7 @@ def plot_2d_scatter_grid(df: pd.DataFrame, metrics: list, filename: str):
     
     fig.update_layout(
         title_text='CGM Metrics Grid (colored by n_SLH)',
-        font=dict(family="Arial", size=11),
+        font=dict(family=FONT_CSS_FAMILY, size=11),
         width=1000,
         height=800
     )
@@ -384,7 +385,7 @@ def plot_bubble_chart(df: pd.DataFrame, x_metric: str, y_metric: str, filename: 
         title=f'Bubble: {x_metric} vs {y_metric} (size & color = n_SLH)',
         xaxis_title=x_label,
         yaxis_title=y_label,
-        font=dict(family="Arial", size=12),
+        font=dict(family=FONT_CSS_FAMILY, size=12),
         width=800,
         height=600
     )
@@ -427,7 +428,7 @@ def plot_parallel_coordinates(df: pd.DataFrame, metrics: list, filename: str):
     
     fig.update_layout(
         title='Parallel Coordinates: CGM Metrics (colored by n_SLH)',
-        font=dict(family="Arial", size=11),
+        font=dict(family=FONT_CSS_FAMILY, size=11),
         width=1200,
         height=600
     )
@@ -468,7 +469,7 @@ def plot_correlation_heatmap(df: pd.DataFrame, metrics: list, filename: str):
     
     fig.update_layout(
         title='Correlation Heatmap: Metrics with n_SLH',
-        font=dict(family="Arial", size=11),
+        font=dict(family=FONT_CSS_FAMILY, size=11),
         width=700,
         height=700,
         xaxis=dict(side='bottom'),
@@ -501,7 +502,7 @@ def plot_n_slh_distribution(df: pd.DataFrame, filename: str):
         title='Distribution of n_SLH Across Cohort',
         xaxis_title='Number of SLH Episodes (n_SLH)',
         yaxis_title='Number of Patients',
-        font=dict(family="Arial", size=12),
+        font=dict(family=FONT_CSS_FAMILY, size=12),
         width=800,
         height=500,
         showlegend=False

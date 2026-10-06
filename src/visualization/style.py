@@ -39,11 +39,20 @@ FONT_SIZE_BASE = 7
 FIGURE_UNIT_SUFFIX = "auto"
 
 
+#: Sans-serif fallback chain. Arial is the house font; on systems without it (Linux, CI) matplotlib falls back to a
+#: metric-compatible Arial clone, then to DejaVu Sans, which ships with matplotlib — no "font not found" warnings.
+FONT_SANS_SERIF = ["Arial", "Helvetica", "Liberation Sans", "Nimbus Sans", "Arimo", "DejaVu Sans"]
+
+#: Same chain as a CSS / plotly font-family string.
+FONT_CSS_FAMILY = "Arial, Helvetica, 'Liberation Sans', 'DejaVu Sans', sans-serif"
+
+
 def apply_publication_style() -> None:
     """Apply consistent style matplotlib rcParams for all figures."""
     matplotlib.rcParams.update({
-        # Font settings (Arial is safe and commonly accepted)
-        "font.family": "Arial",
+        # Font settings (Arial when available, otherwise a metric-compatible fallback — see FONT_SANS_SERIF)
+        "font.family": "sans-serif",
+        "font.sans-serif": FONT_SANS_SERIF,
         "font.size": FONT_SIZE_BASE,
         "axes.titlesize": 8.5,
         "axes.labelsize": 8,
@@ -132,7 +141,8 @@ def apply_lancet_style() -> None:
 
     matplotlib.rcParams.update({
         # Type: nothing below the 7 pt house minimum, sans-serif throughout.
-        "font.family": "Arial",
+        "font.family": "sans-serif",
+        "font.sans-serif": FONT_SANS_SERIF,
         "font.size": LANCET_MIN_FONT_PT,
         "axes.titlesize": 8.0,
         "axes.labelsize": LANCET_MIN_FONT_PT,

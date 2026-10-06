@@ -37,6 +37,7 @@ from matplotlib.lines import Line2D
 from src.config import EPISODES_PATH
 from src.episodes.episode_config import D_MIN_MIN, D_MAX_MIN, NIGHT_START_H, NIGHT_END_H
 from src.visualization.colors import COLOR_NIGHT
+from src.visualization.style import FONT_SANS_SERIF
 from scripts.paper_figures.generate_figure_2_classification_summary import (
     build_cohort_episodes,
     CATEGORY_ORDER,
@@ -64,7 +65,8 @@ C_SLH    = CATEGORY_COLORS["SLH"]   # same orange as Figure 2
 C_MEDIAN = "#CC3311"                # median line
 
 plt.rcParams.update({
-    "font.family":       "Arial",
+    "font.family":       "sans-serif",
+    "font.sans-serif":   FONT_SANS_SERIF,
     "font.size":         FS_LABEL,
     "axes.labelsize":    FS_LABEL,
     "axes.titlesize":    FS_TITLE,

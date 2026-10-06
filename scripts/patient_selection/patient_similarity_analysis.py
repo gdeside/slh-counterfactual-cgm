@@ -52,9 +52,11 @@ from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import StandardScaler
 
 from src.config import PATIENT_ID_COL
+from src.visualization.style import FONT_CSS_FAMILY
 from src.config.paths import RESULTS_PATH
 
 from scripts.patient_selection.find_compelling_pairs import PROFILE_METRICS, load_cohort
+from src.visualization.style import FONT_CSS_FAMILY
 
 # =============================================================================
 # CONFIGURATION
@@ -182,7 +184,7 @@ def plot_embedding(coords: np.ndarray, normalised: pd.DataFrame, title: str, axi
         customdata=normalised["n_SLH"], hovertemplate="<b>%{text}</b><br>n_SLH: %{customdata}<extra></extra>", **axes))
 
     labels = [f"{axis_name} {k + 1}" for k in range(coords.shape[1])]
-    layout = dict(title=f"{title} (coloured by n_SLH)", font=dict(family="Arial", size=12))
+    layout = dict(title=f"{title} (coloured by n_SLH)", font=dict(family=FONT_CSS_FAMILY, size=12))
     if three_d:
         layout.update(scene=dict(xaxis_title=labels[0], yaxis_title=labels[1], zaxis_title=labels[2],
                                  camera=dict(eye=dict(x=1.5, y=1.5, z=1.3))), width=900, height=700)
@@ -206,7 +208,7 @@ def plot_distance_matrix(distances: np.ndarray, normalised: pd.DataFrame, filena
 
     fig = go.Figure(go.Heatmap(z=z, x=ids, y=ids, colorscale=COLORSCALE, hovertext=hover, hoverinfo="text",
                                colorbar=dict(title="Distance", thickness=15, len=0.7)))
-    fig.update_layout(title="Distance matrix (sorted by n_SLH)", width=800, height=800, font=dict(family="Arial", size=11),
+    fig.update_layout(title="Distance matrix (sorted by n_SLH)", width=800, height=800, font=dict(family=FONT_CSS_FAMILY, size=11),
                       xaxis=dict(title="Participant", showticklabels=False), yaxis=dict(title="Participant", showticklabels=False))
     save_html(fig, filename)
 
@@ -235,7 +237,7 @@ def plot_pairs_network(pairs: pd.DataFrame, normalised: pd.DataFrame, filename: 
     ])
     fig.update_layout(title=f"Similarity network (top {len(top)} pairs)", showlegend=False, width=900, height=700,
                       xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-                      yaxis=dict(showgrid=False, zeroline=False, showticklabels=False), font=dict(family="Arial", size=11))
+                      yaxis=dict(showgrid=False, zeroline=False, showticklabels=False), font=dict(family=FONT_CSS_FAMILY, size=11))
     save_html(fig, filename)
 
 

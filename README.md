@@ -146,6 +146,10 @@ source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+**Fonts.** Figures use Arial when it is installed; otherwise matplotlib falls back silently to a metric-compatible font
+(Helvetica, Liberation Sans, Nimbus Sans or DejaVu Sans, which ships with matplotlib) — nothing to install on Linux, though
+`sudo apt install fonts-liberation` gives the closest match to Arial.
+
 **Point the code at your data.** Set the `CGM_DATA_ROOT` environment variable (or edit `BASE_PATH` in
 [`src/config/paths.py`](src/config/paths.py)). Expected layout under `BASE_PATH`:
 
@@ -439,6 +443,7 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 | Automatic / explicit patient selection | `test_patient_selection.py` |
 | Open-data anonymisation, open data → raw conversion, synthetic sample data | `test_open_data.py` |
 | Single-file example (detection + counterfactual on a CSV / Excel file) | `test_example_script.py` |
+| Figure fonts fall back cleanly when Arial is missing (Linux) | `test_style_fonts.py` |
 
 ---
 
