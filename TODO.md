@@ -37,8 +37,6 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
        `patient_comparison.py`): move into a sub-package (e.g. `scripts/slh_illustrations/`) or `paper_figures/`; update the
        Makefile targets, the README map and cross-imports (`generate_zoom_panels` is imported by
        `scripts/presentation_figures/episode_classification_zoom_panels.py`).
-7. [ ] **Naming consistency**: paper scripts use `generate_*`, the others do not; give the two "Fig. 5" scripts clear names;
-       check every script has a header with its module command and its output location.
 8. [ ] **Review `scripts/statistics/` and `scripts/patient_selection/`**: keep only what feeds a figure, table or statement
        of the paper (`slh_baseline_metrics_multivariate_exploration.py`, `slh_combined_cgm_phenotype_pca.py`,
        `slh_metrics_visualization_from_files.py`, `slh_patient_characteristics_exploration.py` look exploratory); confirm
@@ -46,9 +44,6 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 9. [ ] **Final consistency checks**: `git grep "/Users/"` empty; `git grep -n "presentation/"` only intended hits; every
        Makefile target points to an existing module; `make help` clean; `make tests` green; no unused imports.
 
-9b. [ ] **Dependencies**: `requirements.txt` lists `statsmodels` but nothing imports it any more (the Poisson regression was
-        deleted) — remove it. `scripts/patient_selection/patient_similarity_analysis.py` imports `umap` (optional) and its
-        warning still points to the deleted `requirements-optional.txt` — change it to `pip install umap-learn`.
 9c. [ ] **README fixes**: contact e-mail differs between README (`guillaume.deside@uclouvain.be`) and `CITATION.cff`
         (`guillaume.deside28@gmail.com`) — keep one; the structure tree still lists `scripts/supplementary_code/` (folder
         no longer exists) and omits `.github/`; mention that `scripts/statistics/` has 4 exploratory scripts with no Makefile target
@@ -112,6 +107,8 @@ Steps 3–10 can be done as normal commits on `release-clean` before or after th
 
 ## Done
 
+- **Dependencies**: unused `statsmodels` removed from `requirements.txt`; the optional-UMAP warning in `patient_similarity_analysis.py` now says `pip install umap-learn`.
+- **Naming and headers**: both "Figure 5" scripts disambiguated (`generate_figure_5_counterfactual_distribution`, determinants → `generate_figure_6_slh_determinants`, `make fig6`); `generate_figure_3` → `generate_figure_3_patient_comparison`; `generate_supplementary_figure_1` → `..._1_data_quality`; all 66 scripts now start with their path and carry a module command and an output location; obsolete folder names (`Data_Preprocessed_45d`, …) fixed; naming conventions documented in the README.
 - `scripts/fig_slh_schema.py` → `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` (`make suppfig3`, output in `Figures/Supplementary/`, part of `make paper`).
 - **Single-file example**: `scripts/examples/detect_and_counterfactual.py` (`make example`, README section, tests; 220 tests pass) and notebook `09_detect_and_counterfactual_on_your_file.ipynb` (executed on a synthetic trace, "Illustration only" banner).
 - **History and safety**: orphan branch `release-clean` created (largest blob 1.4 MB, no old notebooks / GIF / presentation

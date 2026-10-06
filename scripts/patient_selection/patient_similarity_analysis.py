@@ -1,6 +1,6 @@
 """
 scripts/patient_selection/patient_similarity_analysis.py
-=========================================================
+========================================================
 Similarity between participants in standardised CGM-metric space, and its
 relation with the number of SLH episodes (n_SLH).
 
@@ -151,7 +151,7 @@ def umap_embedding(X: np.ndarray) -> np.ndarray | None:
     try:
         from umap import UMAP
     except ImportError:
-        print("  [WARN] UMAP not installed — skipping (pip install umap-learn, see requirements-optional.txt).")
+        print("  [WARN] UMAP not installed — skipping (pip install umap-learn).")
         return None
     return UMAP(n_components=2, random_state=RANDOM_STATE, n_neighbors=min(15, len(X) - 1)).fit_transform(X)
 
