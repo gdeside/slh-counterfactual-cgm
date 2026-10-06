@@ -3,11 +3,11 @@ scripts/counterfactual/visualize_agp_sensitivity.py
 ===================================================
 AGP Visualization for Sensitivity Analysis Results
 ===================================================
-Input:  Results/Sensitivity_LinInterp_Modular/Data/{patient_id}_sensitivity.csv
+Input:  Results/Sensitivity_Analysis/Data/{patient_id}_sensitivity.csv
         Data/Preprocessed/{patient_id}/{patient_id}_win1_*.xlsx
         Data/Episodes/{patient_id}_episodes.csv
 
-Output: Results/Sensitivity_LinInterp_Modular/Figures/{patient_id}/
+Output: Results/Sensitivity_Analysis/Figures/{patient_id}/
             {patient_id}_agp_medians_overlay.pdf/.png
             {patient_id}_agp_subplots.pdf/.png
 
@@ -78,6 +78,7 @@ from src.visualization.colors import (
     COLOR_ORIGINAL,
 )
 from src.visualization.glucose_axis import apply_glucose_axis
+from src.utils.patient_selection import resolve_patient_id
 
 # =============================================================================
 # CONFIGURATION
@@ -416,9 +417,11 @@ def main():
         description="AGP visualization for sensitivity analysis results",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument("--patient_id", required=True, help="Patient ID (e.g., A168)")
+    parser.add_argument("--patient_id", default=None,
+                        help="Patient ID (default: patient with the most SLH episodes)")
     
     args = parser.parse_args()
+    args.patient_id = resolve_patient_id(args.patient_id)
     
     kernel_str = f"k={KERNEL_MIN} min" if APPLY_KERNEL else "no kernel"
     

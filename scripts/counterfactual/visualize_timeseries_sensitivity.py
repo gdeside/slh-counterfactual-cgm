@@ -19,12 +19,12 @@ Generates three types of figures showing N days of CGM data:
    - Single panel with original + all counterfactual curves
    - File: {patient_id}_timeseries_overlay.pdf/.png
 
-Input:  Results/Sensitivity_LinInterp_Modular/Signals/{patient_id}_signals.csv
-Output: Results/Sensitivity_LinInterp_Modular/Figures/{patient_id}/timeseries/
+Input:  Results/Sensitivity_Analysis/Signals/{patient_id}_signals.csv
+Output: Results/Sensitivity_Analysis/Figures/{patient_id}/timeseries/
 
 Usage:
-    python3 visualize_timeseries_sensitivity.py --patient_id A168
-    python3 visualize_timeseries_sensitivity.py --patient_id A168 --n_days 7 --start_day 0
+    python3 -m scripts.counterfactual.visualize_timeseries_sensitivity --patient_id ID
+    python3 -m scripts.counterfactual.visualize_timeseries_sensitivity --patient_id ID --n_days 7 --start_day 0
 
 Authors: Guillaume Deside
 
@@ -72,6 +72,7 @@ from src.visualization.colors import (
     COLOR_THRESHOLD,
 )
 from src.utils.unit_conversion import format_glucose
+from src.utils.patient_selection import resolve_patient_id
 
 # =============================================================================
 # CONFIGURATION
@@ -476,13 +477,15 @@ def main():
         description="Time series visualization for sensitivity analysis",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument("--patient_id", required=True, help="Patient ID (e.g., A168)")
+    parser.add_argument("--patient_id", default=None,
+                        help="Patient ID (default: patient with the most SLH episodes)")
     parser.add_argument("--n_days", type=int, default=DEFAULT_N_DAYS,
                        help="Number of days to plot")
     parser.add_argument("--start_day", type=int, default=DEFAULT_START_DAY,
                        help="Starting day offset (0 = from beginning)")
     
     args = parser.parse_args()
+    args.patient_id = resolve_patient_id(args.patient_id)
     
     print("=" * 70)
     print("  Time Series Visualization for Sensitivity Analysis")

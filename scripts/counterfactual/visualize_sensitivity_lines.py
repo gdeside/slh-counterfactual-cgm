@@ -9,9 +9,9 @@ zone-expansion offset (δ). Each subplot shows one metric with both:
 - Full 24-hour metrics (circles)
 - Daytime metrics 06:00-22:00 (triangles)
 
-Input:  Results/Sensitivity_LinInterp_Modular/Signals/{patient_id}_signals.csv
-        Results/Sensitivity_LinInterp_Modular/Data/{patient_id}_sensitivity.csv
-Output: Results/Sensitivity_LinInterp_Modular/Figures/{patient_id}/
+Input:  Results/Sensitivity_Analysis/Signals/{patient_id}_signals.csv
+        Results/Sensitivity_Analysis/Data/{patient_id}_sensitivity.csv
+Output: Results/Sensitivity_Analysis/Figures/{patient_id}/
             {patient_id}_sensitivity_lines.pdf/.png
 
 Usage:

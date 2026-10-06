@@ -13,9 +13,9 @@ Features:
 - Separate figures per metric (full-time and daytime)
 - Side-by-side comparison figures
 
-Input:  Results/Sensitivity_LinInterp_Modular/Data/cohort_sensitivity.csv
+Input:  Results/Sensitivity_Analysis/Data/cohort_sensitivity.csv
         Results/Quartile_Analysis/quartile_assignments.csv
-Output: Results/Sensitivity_LinInterp_Modular/Figures/Cohort/cdf/
+Output: Results/Sensitivity_Analysis/Figures/Cohort/cdf/
 
 Usage:
     python3 visualize_cdf_sensitivity.py
@@ -54,7 +54,7 @@ from src.utils.unit_conversion import glucose_unit_label, is_glucose_valued_colu
 SELECTED_OFFSET = 30  # Zone-expansion offset to plot (minutes)
 
 # ── Paths ────────────────────────────────────────────────────────────────────
-SENSITIVITY_RESULTS_DIR = os.path.join(BASE_PATH, "Results", "Sensitivity_LinInterp_Modular")
+SENSITIVITY_RESULTS_DIR = os.path.join(BASE_PATH, "Results", "Sensitivity_Analysis")
 DATA_DIR = os.path.join(SENSITIVITY_RESULTS_DIR, "Data")
 FIGURES_OUTPUT_DIR = os.path.join(SENSITIVITY_RESULTS_DIR, "Figures", "Cohort", "cdf")
 

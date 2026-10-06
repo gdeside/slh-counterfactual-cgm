@@ -57,7 +57,7 @@ SELECTED_OFFSET = 30
 
 PATIENT_IDS = list(resolve_patient_pair())   # [high-SLH, low-SLH]
 
-SENSITIVITY_RESULTS_DIR = os.path.join(BASE_PATH, "Results", "Sensitivity_LinInterp_Modular")
+SENSITIVITY_RESULTS_DIR = os.path.join(BASE_PATH, "Results", "Sensitivity_Analysis")
 DATA_DIR                = os.path.join(SENSITIVITY_RESULTS_DIR, "Data")
 COHORT_CSV              = os.path.join(DATA_DIR, "cohort_sensitivity.csv")
 EPISODES_SUMMARY_CSV    = os.path.join(DATA_PATH, "Episodes", "episodes_summary.csv")

@@ -37,8 +37,8 @@ Artwork specification
 ---------------------
 No title is drawn inside the artwork.
 
-Input:  Results/Sensitivity_LinInterp_Modular/Data/cohort_sensitivity.csv
-Output: Results/Sensitivity_LinInterp_Modular/Figures/Cohort/boxplots/
+Input:  Results/Sensitivity_Analysis/Data/cohort_sensitivity.csv
+Output: Results/Sensitivity_Analysis/Figures/Cohort/boxplots/
         Figures/Supplementary/SupplementaryFigure_Sensitivity_Boxplots.{pdf,svg}
 
 Usage:

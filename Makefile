@@ -12,7 +12,10 @@ RUN     = $(PYTHON) -m
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install requirements-check \
+# Clinical phenotype table (not in the repository, not in the open dataset)
+CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
+
+.PHONY: help install check_clinical_table paper_clinical requirements-check \
 	time_step_analysis preprocessing coverage_analysis metrics_preprocessing filtering \
 	filtered_metrics_distribution episode_detection pipeline \
 	slh_stats compelling_pairs patient_similarity slh_funnel slh_overview slh_zoom_panels agp_recurrence patient_comparison \
@@ -37,11 +40,16 @@ help:  ## List all targets
 	     /^# ---- / {sub(/^# ---- /, ""); sub(/ -*$$/, ""); printf "\n  %s\n", $$0} \
 	     /^[a-zA-Z0-9_]+:.*## / {printf "    %-31s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
-	@echo "  Data root: CGM_DATA_ROOT=/path/to/data make <target>  (default: src/config/paths.py)"
+	@echo "  Data root: CGM_DATA_ROOT=/path/to/data make <target>  (default: ./data)"
 	@echo ""
 
 
 # ---- SETUP ------------------------------------------------------------------
+
+check_clinical_table:  ## Check that the clinical phenotype table exists (needed by table1, fig5, fig6, ...)
+	@test -f "$(CLINICAL_TABLE)" || { echo "Clinical table not found: $(CLINICAL_TABLE)"; \
+	  echo "  -> this target needs 'Data/Final cohort SLH.csv' under CGM_DATA_ROOT (not part of the open dataset)."; exit 1; }
+
 
 install:  ## Install dependencies (requirements.txt)
 	$(PYTHON) -m pip install -r requirements.txt
@@ -96,7 +104,7 @@ quartile_analysis:  ## Quartile stratification by n_SLH
 scatter_analysis:  ## n_SLH vs delta-metric scatter plots
 	$(RUN) scripts.statistics.scatter_analysis
 
-regression_analysis:  ## Random-forest regression of n_SLH (needs the clinical phenotype table)
+regression_analysis: check_clinical_table  ## Random-forest regression of n_SLH (needs the clinical phenotype table)
 	$(RUN) scripts.statistics.slh_regression_analysis
 
 
@@ -155,7 +163,7 @@ sensitivity_figures: lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_
 
 # ---- MANUSCRIPT FIGURES & TABLES --------------------------------------------
 
-table1:  ## Table 1 — cohort characteristics (needs clinical phenotype table)
+table1: check_clinical_table  ## Table 1 — cohort characteristics (needs clinical phenotype table)
 	$(RUN) scripts.paper_figures.generate_table1
 
 fig2:  ## Figure 2 — SLH/LLH classification summary
@@ -167,10 +175,10 @@ fig3:  ## Figure 3 — two patients, similar metrics, different SLH burden
 fig4:  ## Figure 4 — counterfactual construction + sensitivity
 	$(RUN) scripts.paper_figures.generate_figure_4_counterfactual_construction
 
-fig5:  ## Figure 5 — distribution of delta-TIR / delta-median
+fig5: check_clinical_table  ## Figure 5 — distribution of delta-TIR / delta-median
 	$(RUN) scripts.paper_figures.generate_figure_5_counterfactual_distribution
 
-fig6:  ## Figure 6 — SLH determinants (needs clinical phenotype table)
+fig6: check_clinical_table  ## Figure 6 — SLH determinants (needs clinical phenotype table)
 	$(RUN) scripts.paper_figures.generate_figure_6_slh_determinants
 
 suppfig1:  ## Suppl. Fig. 1 — data quality and cohort selection
@@ -179,13 +187,15 @@ suppfig1:  ## Suppl. Fig. 1 — data quality and cohort selection
 suppfig3:  ## Suppl. Fig. 3 — SLH detection schema (one patient, automatic choice unless PATIENT_ID given)
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
-suppfig_phenotype:  ## Suppl. figure — phenotype determinants (needs clinical phenotype table)
+suppfig_phenotype: check_clinical_table  ## Suppl. figure — phenotype determinants (needs clinical phenotype table)
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_phenotype_determinants
 
 cohort_flowchart:  ## Suppl. cohort flowchart (PDF needs rsvg-convert)
 	$(RUN) scripts.paper_figures.generate_cohort_flowchart
 
-paper: fig2 fig3 fig4 fig5 suppfig1 suppfig3 cohort_flowchart  ## Manuscript figures that need no clinical table (see table1 / fig6)
+paper: fig2 fig3 fig4 suppfig1 suppfig3 cohort_flowchart  ## Manuscript figures that need no clinical table
+
+paper_clinical: table1 fig5 fig6 suppfig_phenotype  ## Table 1 and figures that need the clinical phenotype table
 
 
 # ---- OPEN DATA & UNITS ------------------------------------------------------

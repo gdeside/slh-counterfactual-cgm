@@ -371,8 +371,8 @@ make sensitivity_analysis    # all patients × all δ (slowest step)
 make sensitivity_figures
 
 # 4. Manuscript figures / tables
-make paper                   # Fig. 2-5, Suppl. Fig. 1 and 3, cohort flowchart
-make table1 fig6 suppfig_phenotype   # need the clinical phenotype table
+make paper                   # Fig. 2-4, Suppl. Fig. 1 and 3, cohort flowchart (no clinical table needed)
+make paper_clinical          # Table 1, Fig. 5-6, Suppl. phenotype figure (need Data/Final cohort SLH.csv)
 # individual figures: make fig2 fig3 fig4 fig5 … (see the figure map above)
 
 # 5. Open-data release
@@ -411,6 +411,24 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 
 | Group | Targets |
 |---|---|
+| Setup | `install`, `requirements-check` (reports missing imports, never overwrites `requirements.txt`), `check_clinical_table` |
+| Data pipeline | `time_step_analysis`, `preprocessing`, `coverage_analysis`, `metrics_preprocessing`, `filtering`, `filtered_metrics_distribution`, `episode_detection`, **`pipeline`** (core chain) |
+| Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis`, `regression_analysis`* |
+| Patient selection | `compelling_pairs`, `patient_similarity` |
+| SLH illustrations | `slh_funnel`, `slh_overview`, `slh_zoom_panels`, `agp_recurrence`, `patient_comparison` |
+| Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
+| Sensitivity | `sensitivity_analysis`, `lines_`/`boxplots_`/`cdf_`/`agp_`/`timeseries_sensitivity`, `sensitivity_figures` |
+| Manuscript | `fig2`, `fig3`, `fig4`, `suppfig1`, `suppfig3`, `cohort_flowchart`, **`paper`**; with the clinical table*: `table1`, `fig5`, `fig6`, `suppfig_phenotype`, **`paper_clinical`** |
+| Single-file example | `example` (`make example INPUT=file.csv`) |
+| Talk figures | `presentation_figures` |
+| Open data / units | `open_data`, `open_data_phase_shift`, `open_data_to_raw`, `convert_units` |
+| Sample dataset | `sample_data`, `sample_data_run`, `sample_data_real` (maintainers, real data) |
+| Utility | `figures`, `tests`, `clean` |
+
+\* needs `Data/Final cohort SLH.csv` (not in the open dataset): these targets first run `check_clinical_table`, which stops with a
+clear message when the file is missing.
+
+---|---|
 | Setup | `install`, `requirements-check` (reports missing imports, never overwrites `requirements.txt`) |
 | Data pipeline | `time_step_analysis`, `preprocessing`, `coverage_analysis`, `metrics_preprocessing`, `filtering`, `filtered_metrics_distribution`, `episode_detection`, **`pipeline`** (core chain) |
 | Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis`, `regression_analysis` |

@@ -37,7 +37,7 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
        `patient_comparison.py`): move into a sub-package (e.g. `scripts/slh_illustrations/`) or `paper_figures/`; update the
        Makefile targets, the README map and cross-imports (`generate_zoom_panels` is imported by
        `scripts/presentation_figures/episode_classification_zoom_panels.py`).
-8. [ ] **Review `scripts/statistics/` and `scripts/patient_selection/`**: keep only what feeds a figure, table or statement
+8. [ ] **Review `scripts/statistics/` and `scripts/patient_selection/`** (4 statistics scripts have no Makefile target): keep only what feeds a figure, table or statement
        of the paper (`slh_baseline_metrics_multivariate_exploration.py`, `slh_combined_cgm_phenotype_pca.py`,
        `slh_metrics_visualization_from_files.py`, `slh_patient_characteristics_exploration.py` look exploratory); confirm
        the `compelling_pairs` / `patient_similarity` Makefile targets are needed (they select real patients).
@@ -107,6 +107,7 @@ Steps 3–10 can be done as normal commits on `release-clean` before or after th
 
 ## Done
 
+- **Makefile audit**: all 42 runnable targets executed on the sample data; fixed `agp_sensitivity` / `timeseries_sensitivity` (patient now automatic), the stale `Sensitivity_LinInterp_Modular` path (cdf figure silently failed), `paper` no longer includes `fig5` (needs the clinical table; new `paper_clinical` and `check_clinical_table`), help text; `tests/test_makefile.py` guards targets / help / modules.
 - **Fonts on Linux**: `font.family` is now a sans-serif fallback chain (Arial → Helvetica → Liberation Sans → Nimbus Sans → Arimo → DejaVu Sans) in `src/visualization/style.py`, the talk figure and the plotly scripts; `tests/test_style_fonts.py` simulates a machine without Arial.
 - **Dependencies**: unused `statsmodels` removed from `requirements.txt`; the optional-UMAP warning in `patient_similarity_analysis.py` now says `pip install umap-learn`.
 - **Naming and headers**: both "Figure 5" scripts disambiguated (`generate_figure_5_counterfactual_distribution`, determinants → `generate_figure_6_slh_determinants`, `make fig6`); `generate_figure_3` → `generate_figure_3_patient_comparison`; `generate_supplementary_figure_1` → `..._1_data_quality`; all 66 scripts now start with their path and carry a module command and an output location; obsolete folder names (`Data_Preprocessed_45d`, …) fixed; naming conventions documented in the README.
