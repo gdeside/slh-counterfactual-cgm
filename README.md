@@ -50,7 +50,7 @@ what would the glucose signal, and the consensus CGM metrics derived from it, lo
 4. Builds a counterfactual signal *C(t)* by linear interpolation across each SLH zone, expanded by an offset δ.
 5. Quantifies Δ metrics (TIR, TAR, median glucose, CV, …) between the observed signal *G(t)* and *C(t)*,
    with a sensitivity analysis over δ.
-6. Explores determinants of SLH frequency (CGM metrics, phenotype, HbA1c) and a clock-lock rhythm index Λ.
+6. Explores determinants of SLH frequency (CGM metrics, phenotype, HbA1c).
 7. Produces all manuscript figures and tables, and a HIPAA/GDPR-anonymised open dataset.
 
 **Cohort (manuscript):** 245 paediatric patients (IDs A001–A245), 45-day preprocessed windows, daytime-only SLH (22:00–06:00 excluded).
@@ -66,7 +66,6 @@ The code does not assume this size: the cohort is whatever `Data/Raw/<patient_id
 | Episode merging | gaps ≤ 30 min merged; internal gaps ≤ 15 min | `episode_config.py` |
 | SLH criteria | C1 duration 10–60 min · C2 ≥ 75 % data completeness in a 60-min context window · C3 daytime onset · C4/C5 no hyperglycaemia before/after · C6 crossing condition | `src/episodes/criteria.py` |
 | Counterfactual | linear interpolation over the SLH zone expanded by δ (default **30 min**; tested 0–90 min) | `src/counterfactual/build_counterfactual.py` |
-| Rhythm index Λ | permutation-sensitive clock-lock metric | `src/metrics/rhythm.py` |
 
 All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counterfactual_config`) — nothing is hard-coded in scripts.
 
@@ -102,7 +101,7 @@ counterfactual-cgm-slh/
 │   ├── filtering/                #   cohort filtering
 │   ├── episodes/                 #   episode detection, criteria C1–C6, classification
 │   ├── counterfactual/           #   linear-interpolation counterfactual construction
-│   ├── metrics/                  #   CGM metrics (metrics.py) and clock-lock index (rhythm.py)
+│   ├── metrics/                  #   CGM metrics (metrics.py)
 │   ├── agp/                      #   ambulatory glucose profile
 │   ├── visualization/            #   plotting helpers and colour palette
 │   └── utils/                    #   time and unit-conversion utilities
@@ -111,7 +110,7 @@ counterfactual-cgm-slh/
 │   ├── preprocessing/            #   raw → windows → metrics → filtered cohort; open-data release; unit conversion
 │   ├── episodes_detection/       #   episode detection + classification
 │   ├── counterfactual/           #   counterfactual figures + sensitivity analysis over δ
-│   ├── statistics/               #   descriptive stats, regressions, quartiles, clock-lock index (`src/metrics/rhythm.py`)
+│   ├── statistics/               #   descriptive stats, regressions, quartiles
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
 │   ├── examples/                 #   detection + counterfactual on one standalone file (`make example`)
@@ -457,7 +456,7 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 | Area | Test file |
 |---|---|
 | Data loading, quality flags, coverage | `test_load_data.py`, `test_quality_flags.py`, `test_coverage.py` |
-| CGM metrics and the clock-lock index Λ | `test_metrics.py`, `test_rhythm.py` |
+| CGM metrics | `test_metrics.py` |
 | Episode criteria C1–C6 | `test_criteria.py` |
 | **End to end** on a synthetic trace: detection → SLH/LLH classification → counterfactual → Δ metrics | `test_pipeline_end_to_end.py` |
 | mg/dL ↔ mmol/L conversion | `test_unit_conversion.py` |

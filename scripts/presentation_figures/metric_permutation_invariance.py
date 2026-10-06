@@ -20,11 +20,6 @@ for digit.
 The metrics are computed on the displayed window, not on the whole record, so
 what the audience sees is exactly what is measured.
 
-The counterpart to this figure is the clock-lock index Λ
-(:mod:`src.metrics.rhythm`), the metric that *does* collapse under the same
-permutation; it needs at least ``MIN_DAYS_FOR_RHYTHM`` days and is validated
-cohort-wide in ``scripts/statistics/clock_lock_analysis.py``.
-
 Usage
 -----
     python3 -m scripts.presentation_figures.metric_permutation_invariance
