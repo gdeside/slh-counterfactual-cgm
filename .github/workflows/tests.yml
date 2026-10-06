@@ -1,13 +1,15 @@
 name: tests
 
 on:
-  push:
-    branches: [master]
+  push:                 # every branch, so the badge and the checks work before the first merge to master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+      MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16,3 +18,5 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python -m pytest tests -v
+      - name: Smoke test of the single-file example
+        run: python -m scripts.examples.detect_and_counterfactual --demo --out_dir example_output
