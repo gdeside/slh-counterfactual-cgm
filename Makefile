@@ -21,7 +21,7 @@ RUN     = $(PYTHON) -m
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis regression_analysis \
 	table1 fig2 fig3 fig4 fig5 fig5_determinants suppfig1 suppfig3 suppfig_phenotype cohort_flowchart paper \
-	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_run \
+	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
 
 
@@ -231,6 +231,9 @@ convert_units:  ## Write mmol/L copies of the data files (mg/dL originals untouc
 
 sample_data:  ## Generate 4 synthetic patients + sample_data.zip
 	$(RUN) scripts.sample_data.generate_sample_data --out sample_data --zip
+
+sample_data_real:  ## Maintainers only: 4 fake patients re-assembled from REAL data (needs real CGM_DATA_ROOT; DPO approval before publishing)
+	$(RUN) scripts.sample_data.generate_sample_data_from_real --out sample_data_real --zip
 
 sample_data_run: sample_data  ## Run the core pipeline on sample_data/ (~2 min)
 	CGM_DATA_ROOT=$(CURDIR)/sample_data $(MAKE) pipeline

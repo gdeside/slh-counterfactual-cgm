@@ -172,6 +172,16 @@ make pipeline
 what the outputs look like, and are not expected to reproduce any manuscript number. Steps that need the clinical
 phenotype table (`Data/Final cohort SLH.csv`: Table 1, determinant figures) are not covered.
 
+### A more realistic sample dataset (maintainers, needs the real data)
+
+`scripts/sample_data/generate_sample_data_from_real.py` (`make sample_data_real`) builds 4 **fake patients** from the *shape* of real
+CGM data, for a more realistic illustration than the simulated sample: the filtered real cohort is split into 4 groups by SLH burden
+(high → low); each fake patient interleaves randomly chosen, never-reused **24-h segments from ≥ 5 different real patients**, adds
+patient-level scaling (±5 %) and Gaussian noise (σ = 2 mg/dL), replaces the time by an **arbitrary relative origin** and gets a
+fresh ID (A001–A004); no mapping to real patients is stored. It must be run where the real data are
+(`CGM_DATA_ROOT=<real root> make sample_data_real`) and its output must **not** be committed or released without the data-protection
+officer's approval. Details in the script header.
+
 ---
 
 ## Use the two core steps on your own file

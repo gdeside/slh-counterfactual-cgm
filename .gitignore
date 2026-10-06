@@ -222,3 +222,10 @@ analyzer.py
 
 # Presentation figure outputs (generated; may derive from patient data)
 scripts/presentation_figures/output/
+
+# Output of scripts/examples/detect_and_counterfactual.py
+example_output/
+
+# Fake patients derived from real data (never commit before DPO approval)
+/sample_data_real/
+/sample_data_real.zip

@@ -20,7 +20,9 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
        **(c)** force-push + ask GitHub Support to purge the PR refs (slow, not guaranteed).
        Full old history is saved outside the repo in `../counterfactual-cgm-slh_FULL_HISTORY_BACKUP.bundle`.
 2. [ ] **Ethics / DPO check**: (a) releasing the open dataset and the figures is covered by the approval;
-       (b) the study codes `A###` (code, README, figures) cannot be linked back to patients.
+       (b) the study codes `A###` (code, README, figures) cannot be linked back to patients;
+       (c) the **realistic sample dataset** built from real data (`make sample_data_real`: day-mixing across ≥ 5 patients, noise,
+       relative time) can be published as an illustration dataset.
 
 ## B. Clean the repository content
 
@@ -57,6 +59,12 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 9e. [ ] **Cosmetic leftovers**: comments mentioning "OneDrive" (`src/config/paths.py` lines 51–56,
         `scripts/statistics/slh_patient_characteristics_exploration.py:29`) — reword to "the clinical table in `CGM_DATA_ROOT`".
         prefer them out of the public history). Authorship uses your GitHub noreply address — no personal e-mail leaks.
+
+9g. [ ] **Optional — switch to the realistic sample data** (only after DPO approval, item 2c): run
+        `CGM_DATA_ROOT=<real root> make sample_data_real`, check the 4 fake patients (`make pipeline` on them: SLH burden should
+        decrease from A001 to A004 — it did in the test run: 38 / 27 / 15 / 10 SLH), then replace `sample_data` (Makefile
+        `sample_data` target or a `--from-real` option), re-execute notebooks 01–09 on it, regenerate `sample_data.zip`,
+        and update the README (sample-data description, "synthetic" wording, notebook banners). Never commit the real inputs.
 
 ## C. Validate
 
