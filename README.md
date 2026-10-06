@@ -23,6 +23,7 @@ Code, analysis pipeline and figure scripts for the manuscript:
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Quick start with the sample dataset](#quick-start-with-the-sample-dataset)
+- [Use the two core steps on your own file](#use-the-two-core-steps-on-your-own-file)
 - [Data availability](#data-availability)
 - [How to use the data](#how-to-use-the-data)
 - [How to reproduce](#how-to-reproduce)
@@ -74,7 +75,7 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 
 | Manuscript item | Script | Notes |
 |---|---|---|
-| Fig. 1 — SLH detection schema | `scripts/fig_slh_schema.py` | |
+| Suppl. Fig. 3 — SLH detection schema | `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` | `make suppfig3` |
 | Fig. 2 — SLH/LLH classification summary | `scripts/paper_figures/generate_figure_2_classification_summary.py` | |
 | Fig. 3 — Two patients, similar metrics, different SLH burden (high vs low SLH) | `scripts/paper_figures/generate_figure_3.py` | |
 | Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | needs `make sensitivity_analysis` |
@@ -112,10 +113,11 @@ counterfactual-cgm-slh/
 │   ├── statistics/               #   descriptive stats, regressions, quartiles, clock-lock index (`src/metrics/rhythm.py`)
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
+│   ├── examples/                 #   detection + counterfactual on one standalone file (`make example`)
 │   ├── presentation_figures/     #   talk figures, synthetic-data friendly (`make presentation_figures`; not part of the paper)
 │   └── supplementary_code/       #   exploratory / superseded analyses
 │
-├── notebooks/                    # 8 example notebooks (01_cgm_metrics … 08_phenotype_cgm_slh_association)
+├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
 ├── tests/                        # pytest unit tests
 ├── docs/UNITS.md                 # mg/dL ↔ mmol/L handling
 ├── Makefile                      # all execution commands — `make help`
@@ -169,6 +171,46 @@ make pipeline
 (`Data/…`, `Results/…`, `Figures/…`). The sample data are **synthetic**: they demonstrate that the code runs and
 what the outputs look like, and are not expected to reproduce any manuscript number. Steps that need the clinical
 phenotype table (`Data/Final cohort SLH.csv`: Table 1, determinant figures) are not covered.
+
+---
+
+## Use the two core steps on your own file
+
+To run only **episode detection / SLH classification** and the **counterfactual** on a new CGM file — no pipeline, no
+cohort, no `CGM_DATA_ROOT` — use [`scripts/examples/detect_and_counterfactual.py`](scripts/examples/detect_and_counterfactual.py):
+
+```bash
+make example                                    # synthetic demo trace, runs out of the box
+make example INPUT=my_patient.csv               # your file (.csv / .tsv / .xlsx), glucose in mg/dL
+make example INPUT=my_patient.csv UNIT=mmol/L   # glucose in mmol/L (converted to mg/dL)
+
+# the same, with all options
+python3 -m scripts.examples.detect_and_counterfactual --input my_patient.csv \
+        [--unit mmol/L] [--time_col Time] [--glucose_col Glucose] [--offset 30] [--out_dir example_output]
+```
+
+The file holds **one patient** with a time column and a glucose column (names are auto-detected: `time`/`timestamp`/…,
+`glycemie`/`glucose`/…). Outputs go to `example_output/` (git-ignored): `episodes.csv` (every episode with C1–C6 and its
+SLH/LLH label), `counterfactual.csv` (observed G(t) and counterfactual C(t)), `summary.txt` (counts, ΔTIR, ΔTAR, Δmedian)
+and `counterfactual.png`.
+
+The notebook [`notebooks/09_detect_and_counterfactual_on_your_file.ipynb`](notebooks/09_detect_and_counterfactual_on_your_file.ipynb)
+walks through the same steps (loading, episodes and criteria, counterfactual, effect on the metrics, sensitivity to δ).
+The script is also a short template for calling the library from your own code:
+
+```python
+from src.episodes.detection import detect_hyperglycemia_episodes
+from src.episodes.criteria import classify_episodes
+from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
+
+episodes = detect_hyperglycemia_episodes(df)            # df: columns "time" (datetime) and "glycemie" (mg/dL)
+table = classify_episodes(df, episodes)                 # C1–C6 -> SLH / LLH
+slh = table.loc[table["classification"] == "SLH", ["onset_time", "offset_time"]].to_dict("records")
+counterfactual = build_full_counterfactual_signal(df, slh, offset_min=30, timestep_min=5.0)
+```
+
+Not done here (done by the full pipeline): quality flags, extraction of the 45-day window (≥ 70 % coverage) and cohort
+filtering — give a clean, time-sorted trace from a 5-minute CGM. Thresholds are in `src/episodes/episode_config.py`.
 
 ---
 
@@ -242,7 +284,7 @@ and, for two-patient figures, also the patient with the **fewest** (at least one
 
 | Figure type | How | Example |
 |---|---|---|
-| One patient | `--patient_id <ID>` | `python3 -m scripts.fig_slh_schema --patient_id A174` |
+| One patient | `--patient_id <ID>` | `python3 -m scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema --patient_id A174` |
 | Two patients (Figures 3, 4, 5, `patient_comparison`, two-patient presentation figures) | environment variables `CGM_PATIENT_HIGH` and `CGM_PATIENT_LOW` | see below |
 | `lininterp_*` scripts | set `SELECTED_PID` at the top of the script (default `None` = automatic) | `SELECTED_PID = "A224"` |
 
@@ -308,7 +350,7 @@ make sensitivity_analysis    # all patients × all δ (slowest step)
 make sensitivity_figures
 
 # 4. Manuscript figures / tables
-make paper                   # Fig. 2-5, Suppl. Fig. 1, cohort flowchart
+make paper                   # Fig. 2-5, Suppl. Fig. 1 and 3, cohort flowchart
 make table1 fig5_determinants suppfig_phenotype   # need the clinical phenotype table
 # individual figures: make fig2 fig3 fig4 fig5 … (see the figure map above)
 
@@ -317,9 +359,9 @@ make open_data               # σ = 2 mg/dL noise, shuffled IDs
 make open_data_phase_shift   # + random monitoring-start shift
 ```
 
-Example notebooks (`notebooks/01_…` to `08_…`: metrics, preprocessing + filtering, episode detection, counterfactual,
+Example notebooks (`notebooks/01_…` to `09_…`: metrics, preprocessing + filtering, episode detection, counterfactual,
 sensitivity analysis, median-profile difference (t_max), patient comparison, phenotype/CGM association with n_SLH) run on the sample data
-(`08_…` needs the clinical file for real results and falls back to a flagged random demo phenotype without it):
+(`08_…` needs the clinical file for real results and falls back to a flagged random demo phenotype without it; `09_…` runs detection + counterfactual on a single file, with no pipeline and no `CGM_DATA_ROOT`):
 
 ```bash
 make sample_data_run
@@ -379,6 +421,7 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 | mg/dL ↔ mmol/L conversion | `test_unit_conversion.py` |
 | Automatic / explicit patient selection | `test_patient_selection.py` |
 | Open-data anonymisation, open data → raw conversion, synthetic sample data | `test_open_data.py` |
+| Single-file example (detection + counterfactual on a CSV / Excel file) | `test_example_script.py` |
 
 ---
 
@@ -396,7 +439,7 @@ Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Con
 ## Authors
 
 Guillaume Deside, Zain Syed, Laura Symul, Philippe Lysy.
-Contact: guillaume.deside28@gmail.com
+Contact: guillaume.deside@uclouvain.be
 
 ---
 

@@ -15,13 +15,13 @@ RUN     = $(PYTHON) -m
 .PHONY: help install requirements-check \
 	time_step_analysis preprocessing coverage_analysis metrics_preprocessing filtering \
 	filtered_metrics_distribution episode_detection pipeline \
-	slh_stats compelling_pairs patient_similarity slh_schema slh_funnel slh_overview slh_zoom_panels agp_recurrence patient_comparison \
+	slh_stats compelling_pairs patient_similarity slh_funnel slh_overview slh_zoom_panels agp_recurrence patient_comparison \
 	lininterp_stepbystep lininterp_offset_comp lininterp_45days \
 	sensitivity_analysis lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity \
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis regression_analysis \
-	table1 fig2 fig3 fig4 fig5 fig5_determinants suppfig1 suppfig_phenotype cohort_flowchart paper \
-	presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_run \
+	table1 fig2 fig3 fig4 fig5 fig5_determinants suppfig1 suppfig3 suppfig_phenotype cohort_flowchart paper \
+	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_run \
 	figures tests clean
 
 
@@ -102,9 +102,6 @@ regression_analysis:  ## Random-forest regression of n_SLH (needs the clinical p
 
 # ---- SLH EPISODE FIGURES ----------------------------------------------------
 
-slh_schema:  ## Figure 1 — SLH detection schema
-	$(RUN) scripts.fig_slh_schema
-
 slh_funnel:  ## Episode filtering funnel (single patient)
 	$(RUN) scripts.generate_episode_funnel_single_patient
 
@@ -179,16 +176,22 @@ fig5_determinants:  ## SLH determinants figure (needs clinical phenotype table)
 suppfig1:  ## Suppl. Fig. 1 — data quality and cohort selection
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_1
 
+suppfig3:  ## Suppl. Fig. 3 — SLH detection schema (one patient, automatic choice unless PATIENT_ID given)
+	$(RUN) scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
+
 suppfig_phenotype:  ## Suppl. figure — phenotype determinants (needs clinical phenotype table)
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_phenotype_determinants
 
 cohort_flowchart:  ## Suppl. cohort flowchart (PDF needs rsvg-convert)
 	$(RUN) scripts.paper_figures.generate_cohort_flowchart
 
-paper: fig2 fig3 fig4 fig5 suppfig1 cohort_flowchart  ## Manuscript figures that need no clinical table (see table1 / fig5_determinants)
+paper: fig2 fig3 fig4 fig5 suppfig1 suppfig3 cohort_flowchart  ## Manuscript figures that need no clinical table (see table1 / fig5_determinants)
 
 
 # ---- OPEN DATA & UNITS ------------------------------------------------------
+
+example:  ## Detection + counterfactual on one file (demo trace, or INPUT=file.csv [UNIT=mmol/L])
+	$(RUN) scripts.examples.detect_and_counterfactual $(if $(INPUT),--input $(INPUT) $(if $(UNIT),--unit $(UNIT)),--demo)
 
 presentation_figures:  ## Talk figures (scripts/presentation_figures/, output ignored by git; patients chosen automatically)
 	$(RUN) scripts.presentation_figures.agp_counterfactual_recurrence

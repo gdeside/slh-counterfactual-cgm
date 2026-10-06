@@ -4,7 +4,7 @@ scripts/paper_figures/generate_figure_2_classification_summary.py
 Figure 2 (main text): SLH/LLH episode classification summary.
 
 Promoted from Supplementary Figure 2 to a main-text figure. Cohort-wide
-support figure for the episode classification scheme (see `fig_slh_schema.py`
+support figure for the episode classification scheme (see `generate_supplementary_figure_3_slh_detection_schema.py`
 for the schema itself):
 
   A — Simplified classification waterfall (adapted from panel A of

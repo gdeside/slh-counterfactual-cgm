@@ -1,7 +1,9 @@
 """
-scripts/fig_slh_schema.py
-=========================
-Figure 1 — SLH Detection Schema.
+scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py
+=============================================================================
+Supplementary Figure 3 — SLH detection schema: from hyperglycaemia episodes to confirmed SLH.
+One patient, N consecutive days of CGM trace, each episode colour-coded by its classification (criteria C1–C6),
+with zoomed views of two confirmed SLH episodes.
 
 Panel layout
 ------------
@@ -19,16 +21,18 @@ Panel layout
 
 Inputs
 ------
-  Data/Data_Preprocessed_45d/<patient_id>/<patient_id>_win1_*.xlsx
+  Preprocessed 45-day window of the patient (Data/Preprocessed/) — run `make preprocessing` first.
+  The patient is chosen automatically (most SLH episodes) unless --patient_id is given.
 
 Outputs
 -------
-  Figures/SLH_Schema/<patient_id>_slh_schema.{pdf,png}
+  Figures/Supplementary/SupplementaryFigure3_SLH_Detection_Schema_<patient_id>.{pdf,svg}
 
 Usage
 -----
-    python3 -m scripts.fig_slh_schema [--patient_id ID] [--n_days 5]
-                                     [--zoom_pad 80] [--out_dir <path>]
+    python3 -m scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema [--patient_id ID] [--n_days 5]
+                                                                                     [--zoom_pad 80] [--out_dir <path>]
+    (or: make suppfig3)
 
 Authors
 -------
@@ -72,7 +76,7 @@ from src.visualization.style import apply_publication_style, save_figure
 # =============================================================================
 # PARAMETERS
 # =============================================================================
-FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "SLH_Schema")
+FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "Supplementary")
 
 DEFAULT_PATIENT_ID = None   # None = automatic: patient with the most SLH episodes
 N_DAYS_OVERVIEW = 5
@@ -415,7 +419,7 @@ def process_patient(patient_id, n_days, output_dir):
     window_start, window_end = select_best_overview_window(df, classified, n_days)
     zoom_episodes = select_zoom_episodes(classified, window_start, window_end, n=2)
     
-    output_prefix = os.path.join(output_dir, f"{patient_id}_slh_schema")
+    output_prefix = os.path.join(output_dir, f"SupplementaryFigure3_SLH_Detection_Schema_{patient_id}")
     generate_schema_figure(patient_id, df, classified, window_start, window_end,
                           zoom_episodes, timestep, output_prefix)
     
@@ -428,7 +432,7 @@ def process_patient(patient_id, n_days, output_dir):
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Figure 1 — SLH detection schema (using criteria module)",
+        description="Supplementary Figure 3 — SLH detection schema (using criteria module)",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
@@ -466,7 +470,7 @@ def main():
     merge_mode = "WITH gap merging" if USE_GAP_MERGING else "WITHOUT gap merging"
     
     print("\n" + "=" * 70)
-    print("  Figure 1 — SLH Detection Schema (using criteria module)")
+    print("  Supplementary Figure 3 — SLH Detection Schema (using criteria module)")
     print("=" * 70)
     print(f"  Episode detection: {merge_mode}")
     if USE_GAP_MERGING:
