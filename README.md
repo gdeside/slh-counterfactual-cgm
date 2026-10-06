@@ -50,10 +50,11 @@ what would the glucose signal, and the consensus CGM metrics derived from it, lo
 4. Builds a counterfactual signal *C(t)* by linear interpolation across each SLH zone, expanded by an offset δ.
 5. Quantifies Δ metrics (TIR, TAR, median glucose, CV, …) between the observed signal *G(t)* and *C(t)*,
    with a sensitivity analysis over δ.
-6. Explores determinants of SLH burden (CGM metrics, phenotype, HbA1c) and a clock-lock rhythm index Λ.
+6. Explores determinants of SLH frequency (CGM metrics, phenotype, HbA1c) and a clock-lock rhythm index Λ.
 7. Produces all manuscript figures and tables, and a HIPAA/GDPR-anonymised open dataset.
 
-**Cohort:** 245 paediatric patients (IDs A001–A245), 45-day preprocessed windows, daytime-only SLH (22:00–06:00 excluded).
+**Cohort (manuscript):** 245 paediatric patients (IDs A001–A245), 45-day preprocessed windows, daytime-only SLH (22:00–06:00 excluded).
+The code does not assume this size: the cohort is whatever `Data/Raw/<patient_id>.xlsx` files are found (any ID format).
 
 ---
 
@@ -77,10 +78,10 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 |---|---|---|
 | Suppl. Fig. 3 — SLH detection schema | `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` | `make suppfig3` |
 | Fig. 2 — SLH/LLH classification summary | `scripts/paper_figures/generate_figure_2_classification_summary.py` | |
-| Fig. 3 — Two patients, similar metrics, different SLH burden (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | |
+| Fig. 3 — Two patients, similar metrics, different SLH frequency (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | |
 | Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | needs `make sensitivity_analysis` |
 | Fig. 5 — Distribution of ΔTIR / Δmedian | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | |
-| Fig. 6 — Determinants of SLH burden | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | needs the clinical phenotype table |
+| Fig. 6 — Determinants of SLH frequency | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | needs the clinical phenotype table |
 | Table 1 — Cohort characteristics | `scripts/paper_figures/generate_table1.py` | needs `pysummaries` |
 | Suppl. Fig. — Cohort flowchart | `scripts/paper_figures/generate_cohort_flowchart.py` | needs `rsvg-convert` (`brew install librsvg`) |
 | Suppl. Fig. 1 — Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1_data_quality.py` | |
@@ -186,7 +187,7 @@ phenotype table (`Data/Final cohort SLH.csv`: Table 1, determinant figures) are 
 ### A more realistic sample dataset (maintainers, needs the real data)
 
 `scripts/sample_data/generate_sample_data_from_real.py` (`make sample_data_real`) builds 4 **fake patients** from the *shape* of real
-CGM data, for a more realistic illustration than the simulated sample: the filtered real cohort is split into 4 groups by SLH burden
+CGM data, for a more realistic illustration than the simulated sample: the filtered real cohort is split into 4 groups by SLH frequency
 (high → low); each fake patient interleaves randomly chosen, never-reused **24-h segments from ≥ 5 different real patients**, adds
 patient-level scaling (±5 %) and Gaussian noise (σ = 2 mg/dL), replaces the time by an **arbitrary relative origin** and gets a
 fresh ID (A001–A004); no mapping to real patients is stored. It must be run where the real data are
@@ -288,7 +289,9 @@ Create `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT`, one file per patient,
 | `glycemie` (also accepted: `glycemia`, `glucose`) | glucose in **mg/dL** (convert mmol/L × 18.0182 first) |
 
 The pipeline expects 5-minute sampling and extracts a 45-day window with ≥ 70 % coverage per patient (patients without
-one are listed in `Data/Preprocessed/patients_status.csv`). Then run `make pipeline`.
+one are listed in `Data/Preprocessed/patients_status.csv`). Then run `make pipeline`. The patients processed are all the `*.xlsx` files of `Data/Raw/` (the file name is the patient ID, any format);
+to process only some of them: `python3 -m scripts.preprocessing.cgm_preprocessing --patients ID1 ID2` (the summary tables then cover this
+subset only).
 
 ### Which patients are shown in the illustrations?
 
@@ -309,8 +312,8 @@ and, for two-patient figures, also the patient with the **fewest** (at least one
 | Two patients (Figures 3, 4, 5, `patient_comparison`, two-patient presentation figures) | environment variables `CGM_PATIENT_HIGH` and `CGM_PATIENT_LOW` | see below |
 | `lininterp_*` scripts | set `SELECTED_PID` at the top of the script (default `None` = automatic) | `SELECTED_PID = "A224"` |
 
-`CGM_PATIENT_HIGH` is the patient with a **high** SLH burden (many SLH episodes) and `CGM_PATIENT_LOW` the one with a
-**low** burden; they are the two patients contrasted in Figures 3–5. They are *environment variables*: the
+`CGM_PATIENT_HIGH` is the patient with a **high** SLH frequency (many SLH episodes) and `CGM_PATIENT_LOW` the one with a
+**low** frequency; they are the two patients contrasted in Figures 3–5. They are *environment variables*: the
 `NAME=value` part placed before a command sets them for that command only, so they work with `make` and with `python3 -m`:
 
 ```bash
@@ -323,7 +326,7 @@ export CGM_PATIENT_LOW=A224
 make fig3 fig4 fig5 patient_comparison
 ```
 
-`A174` and `A224` are the two participants shown in the manuscript (high vs low SLH burden); they exist only in the
+`A174` and `A224` are the two participants shown in the manuscript (high vs low SLH frequency); they exist only in the
 original dataset. If an ID is not found in the data, the script prints a warning and falls back to the automatic choice,
 so the same command also runs on the sample or open data (it then shows other patients). Selection logic:
 [`src/utils/patient_selection.py`](src/utils/patient_selection.py).
@@ -460,6 +463,7 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 | mg/dL ↔ mmol/L conversion | `test_unit_conversion.py` |
 | Automatic / explicit patient selection | `test_patient_selection.py` |
 | Open-data anonymisation, open data → raw conversion, synthetic sample data | `test_open_data.py` |
+| Patient discovery (no hard-coded cohort size, any ID format, `--patients`) and 45-day window extraction | `test_patient_discovery.py`, `test_window.py` |
 | Single-file example (detection + counterfactual on a CSV / Excel file) | `test_example_script.py` |
 | Figure fonts fall back cleanly when Arial is missing (Linux) | `test_style_fonts.py` |
 

@@ -134,20 +134,20 @@ def extreme_divergence(pairs: pd.DataFrame, cohort: pd.DataFrame, n: int) -> pd.
 
 
 def tir_matched(pairs: pd.DataFrame, cohort: pd.DataFrame, n: int) -> pd.DataFrame:
-    """Same TIR (gold-standard metric), different SLH burden."""
+    """Same TIR (gold-standard metric), different SLH frequency."""
     close = (pairs["TIR_1"] - pairs["TIR_2"]).abs() <= TIR_MATCH_TOLERANCE
     return pairs[close & (pairs["n_SLH_diff"] > 0)].nlargest(n, "n_SLH_diff").assign(type="TIR_matched")
 
 
 def threshold_borderline(pairs: pd.DataFrame, cohort: pd.DataFrame, n: int) -> pd.DataFrame:
-    """Both participants close to the 70% TIR target, different SLH burden."""
+    """Both participants close to the 70% TIR target, different SLH frequency."""
     near = lambda col: (pairs[col] - TIR_TARGET).abs() <= TIR_TARGET_TOLERANCE
     return (pairs[near("TIR_1") & near("TIR_2") & (pairs["n_SLH_diff"] > 0)]
             .nlargest(n, "n_SLH_diff").assign(type="threshold_borderline"))
 
 
 def representative_vs_extreme(pairs: pd.DataFrame, cohort: pd.DataFrame, n: int) -> pd.DataFrame:
-    """A typical participant (near the cohort centroid) versus one with extreme SLH burden."""
+    """A typical participant (near the cohort centroid) versus one with extreme SLH frequency."""
     typical_cut = pairs.attrs["typical_distance_cut"]
     extreme_cut = cohort["n_SLH"].quantile(EXTREME_SLH_QUANTILE)
     typical = pairs["centroid_distance_1"] <= typical_cut
@@ -157,7 +157,7 @@ def representative_vs_extreme(pairs: pd.DataFrame, cohort: pd.DataFrame, n: int)
 
 
 def matched_mean_different_variability(pairs: pd.DataFrame, cohort: pd.DataFrame, n: int) -> pd.DataFrame:
-    """Same mean glucose, different CV and SLH burden: does SLH capture what CV misses?"""
+    """Same mean glucose, different CV and SLH frequency: does SLH capture what CV misses?"""
     same_mean = (pairs["mean_glucose_1"] - pairs["mean_glucose_2"]).abs() <= MEAN_MATCH_TOLERANCE_MGDL
     diff_cv = (pairs["CV_1"] - pairs["CV_2"]).abs() > MIN_CV_DIFF
     return (pairs[same_mean & diff_cv & (pairs["n_SLH_diff"] > 0)]

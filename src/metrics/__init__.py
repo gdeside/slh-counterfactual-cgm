@@ -54,7 +54,7 @@ from .metrics import (
 from .rhythm import (
     # Functions
     build_day_clock_matrix,
-    burden_concentration,
+    frequency_concentration,
     ceiling_concentration,
     compute_clock_lock,
     compute_rhythm_metrics,
@@ -81,7 +81,7 @@ __all__ = [
     "compute_period_medians",
     "load_patient_metrics",
     "build_day_clock_matrix",
-    "burden_concentration",
+    "frequency_concentration",
     "ceiling_concentration",
     "compute_clock_lock",
     "compute_rhythm_metrics",

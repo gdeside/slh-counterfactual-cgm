@@ -1,7 +1,7 @@
 """
 scripts/paper_figures/generate_supplementary_figure_phenotype_determinants.py
 =============================================================================
-Supplementary figure: patient-phenotype determinants of SLH burden.
+Supplementary figure: patient-phenotype determinants of SLH frequency.
 
 Panels
 ------
@@ -188,7 +188,7 @@ def plot_mutual_information_panel(ax, df: pd.DataFrame) -> dict:
     ax.legend(handles=handles, fontsize=FONT_BODY, frameon=False, loc="lower right")
     ax.set_xlabel(f"Mutual information with {RESPONSE_LABEL_PHENO}",
                   fontsize=FONT_BODY)
-    ax.set_title("Mutual information with SLH burden", fontweight="bold",
+    ax.set_title("Mutual information with SLH frequency", fontweight="bold",
                 loc="left", fontsize=FONT_TITLE)
     ax.tick_params(labelsize=FONT_BODY)
     style_axes(ax)

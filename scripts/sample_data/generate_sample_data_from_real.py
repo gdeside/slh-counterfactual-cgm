@@ -11,8 +11,8 @@ and `make episode_detection` already done). The output contains NO real patient:
 How a fake patient is built
 ---------------------------
 1. SOURCE POOLS — the filtered real cohort is ranked by number of SLH episodes and cut into 4 groups
-   (high, mid-high, mid-low, low burden); fake patient k draws only from group k, so the four fake patients
-   keep different SLH burdens. Each pool must contain at least ``--min_sources`` (default 5) real patients.
+   (high, mid-high, mid-low, low frequency); fake patient k draws only from group k, so the four fake patients
+   keep different SLH frequencies. Each pool must contain at least ``--min_sources`` (default 5) real patients.
 2. DAY MIXING — real patients' 24-h segments (03:00 → 03:00, so the cut falls in the quiet night; days with
    < 95 % of readings are discarded) are drawn at random, each used at most once, in random order. A fake
    patient therefore interleaves days from many different real patients: no real trajectory is kept.
@@ -79,7 +79,7 @@ def split_days(df: pd.DataFrame, start_hour: int = DAY_START_H, min_coverage: fl
 
 
 def assign_pools(ranked_pids: list, n_pools: int = N_FAKE, min_sources: int = 5) -> list:
-    """Split patients, ranked from highest to lowest SLH burden, into ``n_pools`` consecutive groups."""
+    """Split patients, ranked from highest to lowest SLH frequency, into ``n_pools`` consecutive groups."""
     if len(ranked_pids) < n_pools * min_sources:
         raise ValueError(f"Need at least {n_pools * min_sources} patients ({min_sources} per fake patient), "
                          f"found {len(ranked_pids)}. Lower --min_sources or use the full cohort.")

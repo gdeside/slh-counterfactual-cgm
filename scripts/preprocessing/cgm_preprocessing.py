@@ -6,7 +6,7 @@ CGM Data Preprocessing — Optimal 45-Day Window Extraction (5-min only)
 ----------------------------------------------------------------------
 End-to-end preprocessing pipeline for CGM datasets.
 
-For each patient (A001–A245):
+For each patient with a raw file (every <patient_id>.xlsx in Data/Raw):
     1. Load raw data
     2. Detect dominant sampling interval → KEEP ONLY 5-min patients
     3. Attach quality flags (time errors, gaps, glucose outliers)
@@ -41,6 +41,7 @@ Usage
 # =============================================================================
 # LIBRARIES
 # =============================================================================
+import argparse
 from pathlib import Path
 from typing import Tuple, Dict, Optional
 
@@ -54,9 +55,6 @@ from src.config import (
     # Paths
     RAW_PATH,
     PREPROCESSING_PATH,
-    # Patient range
-    PATIENT_START,
-    PATIENT_END,
     # Preprocessing parameters
     WINDOW_DAYS,
     MIN_COVERAGE_PCT,
@@ -68,7 +66,7 @@ from src.config import (
 )
 
 # Core preprocessing modules
-from src.preprocessing.load_data import load_patient_raw_data
+from src.preprocessing.load_data import load_patient_raw_data, resolve_patients
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.preprocessing.quality import attach_quality_flags
 from src.preprocessing.window import (
@@ -80,7 +78,7 @@ from src.preprocessing.window import (
 # =============================================================================
 # UTILITY FUNCTIONS
 # =============================================================================
-def print_configuration() -> None:
+def print_configuration(n_patients: int) -> None:
     """Print pipeline configuration for reproducibility."""
     print("=" * 70)
     print("  CGM PREPROCESSING — CONFIGURATION")
@@ -93,7 +91,7 @@ def print_configuration() -> None:
     print(f"  Valid glucose range: [{GLUCOSE_MIN}, {GLUCOSE_MAX}] mg/dL")
     print(f"  Time-error ratio   : step < {TIME_ERROR_RATIO} × dominant")
     print(f"  Gap threshold      : step > {GAP_MULTIPLE} × dominant")
-    print(f"  Patients analysed  : A{PATIENT_START:03d}–A{PATIENT_END:03d}")
+    print(f"  Patients analysed  : {n_patients} (every <patient_id>.xlsx found in the raw folder)")
     print("=" * 70)
 
 
@@ -215,16 +213,24 @@ def save_exclusion_summary(
 # =============================================================================
 # MAIN EXECUTION
 # =============================================================================
-def main() -> None:
+def parse_arguments(argv=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="CGM preprocessing: optimal 45-day window extraction")
+    parser.add_argument(
+        "--patients", nargs="+", metavar="ID", default=None,
+        help="process only these patient IDs (default: every <patient_id>.xlsx in the raw folder). "
+             "The summary tables then cover this subset only.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv=None) -> None:
     """Run the full CGM preprocessing pipeline."""
-    print_configuration()
+    args = parse_arguments(argv)
+    patient_ids = resolve_patients(args.patients)
+    print_configuration(len(patient_ids))
 
     # Ensure output directory exists
     PREPROCESSING_PATH.mkdir(parents=True, exist_ok=True)
-
-    patient_ids = [
-        f"A{n:03d}" for n in range(PATIENT_START, PATIENT_END + 1)
-    ]
 
     windows_metadata = []
     exclusion_reasons: Dict[str, str] = {}

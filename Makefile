@@ -169,7 +169,7 @@ table1: check_clinical_table  ## Table 1 — cohort characteristics (needs clini
 fig2:  ## Figure 2 — SLH/LLH classification summary
 	$(RUN) scripts.paper_figures.generate_figure_2_classification_summary
 
-fig3:  ## Figure 3 — two patients, similar metrics, different SLH burden
+fig3:  ## Figure 3 — two patients, similar metrics, different SLH frequency
 	$(RUN) scripts.paper_figures.generate_figure_3_patient_comparison
 
 fig4:  ## Figure 4 — counterfactual construction + sensitivity

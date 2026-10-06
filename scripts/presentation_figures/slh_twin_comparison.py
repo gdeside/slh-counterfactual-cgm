@@ -19,7 +19,7 @@ Construction
 ------------
 The twin must satisfy three things at once: the same marginal distribution
 (so every consensus metric is untouched), the same clock-time profile (so the
-AGP is untouched), and a different arrangement of the hyperglycaemic burden
+AGP is untouched), and a different arrangement of the hyperglycaemic frequency
 *within* each day (so the SLH count moves).  It is built in two steps:
 
 1. **Smooth.**  A centred rolling mean over ``SMOOTH_WINDOW_MIN`` gives a

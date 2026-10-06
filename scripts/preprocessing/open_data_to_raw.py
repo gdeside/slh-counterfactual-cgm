@@ -47,7 +47,8 @@ def main() -> None:
 
     out = pd.DataFrame({
         "patient_id": df["patient_id"],
-        "time": ORIGIN + pd.to_timedelta(df["time_h"], unit="h"),
+        # time_h is rounded to 0.001 h (3.6 s): snap back to the 5-min sampling grid (nearest minute)
+        "time": (ORIGIN + pd.to_timedelta(df["time_h"], unit="h")).dt.round("min"),
         "glycemie": glucose,
     })
     RAW_PATH.mkdir(parents=True, exist_ok=True)

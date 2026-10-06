@@ -2,7 +2,7 @@
 scripts/paper_figures/generate_figure_6_slh_determinants.py
 ===========================================================
 Figure 6 — SLH determinants: association of CGM metrics, patient phenotype and
-glycaemic biomarkers with SLH burden (number of SLH episodes).
+glycaemic biomarkers with SLH frequency (number of SLH episodes).
 
 Panels
 ------

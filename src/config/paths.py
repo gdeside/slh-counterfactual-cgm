@@ -59,11 +59,6 @@ POISSON_REGRESSION_PATH = RESULTS_PATH / "Poisson_Regression_SLH_Predictors"
 NB_REGRESSION_PATH      = RESULTS_PATH / "NB_Regression_SLH_Predictors"
 LINEAR_REGRESSION_PATH  = RESULTS_PATH / "Linear_Regression_SLH_Predictors"
 
-# =============================================================================
-# OTHER RUN-TIME PARAMETERS
-# =============================================================================
-PATIENT_START = 1
-PATIENT_END   = 245
 
 
 PATIENTS_STATUS_CSV = PREPROCESSING_PATH / "patients_status.csv"

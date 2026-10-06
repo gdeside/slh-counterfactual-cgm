@@ -43,8 +43,6 @@ from tqdm import tqdm
 # =============================================================================
 from src.config import (
     FIG_DIR,
-    PATIENT_START,
-    PATIENT_END,
     WINDOW_SUMMARY_CSV,
     MIN_COVERAGE_PCT,
     REQUIRED_SAMPLING_MIN,
@@ -54,6 +52,7 @@ from src.config import (
     PATIENT_ID_COL,
 )
 
+from src.preprocessing.load_data import resolve_patients
 from src.preprocessing.timestep import (
     snap_to_canonical,
     dominant_step_of_series,
@@ -501,7 +500,7 @@ def draw_median_tir_scatter(ax, df_all, df_selected):
 # =============================================================================
 def compute_timestep_distribution():
     """Compute raw timestep distribution."""
-    patient_ids = [f"A{n:03d}" for n in range(PATIENT_START, PATIENT_END + 1)]
+    patient_ids = resolve_patients()
     
     raw_steps = {}
     print("  Computing timestep distribution...")

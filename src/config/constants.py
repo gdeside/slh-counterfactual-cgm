@@ -32,9 +32,6 @@ COL_EPISODE_CLASSIFICATION = "classification"
 CLASSIFICATION_SLH = "SLH"
 CLASSIFICATION_LLH = "LLH"
 
-# Patients
-PATIENT_START = 1
-PATIENT_END   = 245
 
 
 # Glucose unit conversion

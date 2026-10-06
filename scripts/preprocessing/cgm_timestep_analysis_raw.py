@@ -42,11 +42,7 @@ from tqdm import tqdm
 # =============================================================================
 # PROJECT IMPORTS
 # =============================================================================
-# Configuration (scientific + figure constants)
-from src.config.constants import (
-    PATIENT_START,
-    PATIENT_END,
-)
+# Configuration (figure constants)
 from src.config.figure_config import (
     FIG_PREPROCESSING_DIR,
 )
@@ -56,7 +52,7 @@ from src.preprocessing.timestep import (
     snap_to_canonical,
     dominant_step_of_series,
 )
-from src.preprocessing.load_data import load_raw_time_column
+from src.preprocessing.load_data import load_raw_time_column, resolve_patients
 
 # Visualization
 from src.visualization.colors import C_5MIN, C_15MIN
@@ -158,15 +154,12 @@ def main() -> None:
     os.makedirs(FIG_PREPROCESSING_DIR, exist_ok=True)
 
     # Patient cohort
-    patient_ids = [
-        f"A{n:03d}" for n in range(PATIENT_START, PATIENT_END + 1)
-    ]
+    patient_ids = resolve_patients()
 
     print("=" * 70)
     print("  CGM RAW TIMESTEP DISTRIBUTION ANALYSIS")
     print("=" * 70)
-    print(f"  Patients analysed : A{PATIENT_START:03d}–A{PATIENT_END:03d} "
-          f"({len(patient_ids)} files)")
+    print(f"  Patients analysed : {len(patient_ids)} raw files")
 
     # Compute dominant timestep per patient
     raw_steps = {}

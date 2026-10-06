@@ -3,7 +3,7 @@ scripts/paper_figures/generate_figure_3_patient_comparison.py
 =============================================================
 Figure 3 (main text): glucose profiles and SLH recurrence patterns in two
 representative patients with similar CGM summary metrics but contrasting SLH
-frequency (high vs low SLH burden; patients chosen via CGM_PATIENT_HIGH / CGM_PATIENT_LOW,
+frequency (high vs low SLH frequency; patients chosen via CGM_PATIENT_HIGH / CGM_PATIENT_LOW,
 or automatically: most / fewest SLH episodes).
 
 Derived from `generate_classification_comparison_figure` in
@@ -88,7 +88,7 @@ from scripts.paper_figures.generate_figure_2_classification_summary import (
 # =============================================================================
 # PARAMETERS
 # =============================================================================
-# High- and low-SLH-burden patients. Automatic by default (most / fewest SLH episodes);
+# High- and low-SLH-frequency patients. Automatic by default (most / fewest SLH episodes);
 # to reproduce the manuscript use CGM_PATIENT_HIGH=<id> CGM_PATIENT_LOW=<id> (see README).
 PATIENT_A, PATIENT_B = resolve_patient_pair()
 

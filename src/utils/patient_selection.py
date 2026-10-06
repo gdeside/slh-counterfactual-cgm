@@ -74,7 +74,7 @@ def resolve_patient_id(requested: str | None = None, role: str = "most") -> str:
 
 
 def resolve_patient_pair(high: str | None = None, low: str | None = None) -> tuple[str, str]:
-    """(patient with high SLH burden, patient with low SLH burden).
+    """(patient with high SLH frequency, patient with low SLH frequency).
 
     Explicit IDs, then ``CGM_PATIENT_HIGH`` / ``CGM_PATIENT_LOW``, then automatic selection
     (most / fewest SLH episodes)."""

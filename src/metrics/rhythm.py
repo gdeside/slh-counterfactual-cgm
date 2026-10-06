@@ -11,7 +11,7 @@ changes.  They encode *how much* time is spent out of range, never *in what
 shape*, and therefore never *when*.
 
 Λ measures the one thing permutation destroys first: whether the out-of-range
-burden falls at the **same clock times every day**.  It answers a question no
+frequency falls at the **same clock times every day**.  It answers a question no
 consensus metric can — *is this patient's hyperglycaemia a schedule or a
 scatter?* — and it separates two therapeutic situations that share a CGM
 report: a reproducible daily pattern (a regimen problem, fixable at a known
@@ -21,7 +21,7 @@ Construction
 ------------
 1. **Day × clock matrix.**  ``H[d, b]`` is the fraction of readings beyond the
    threshold on day ``d`` in clock bin ``b`` (``N_CLOCK_BINS`` bins per 24 h).
-2. **Observed concentration.**  ``F_obs`` is the share of the total burden
+2. **Observed concentration.**  ``F_obs`` is the share of the total frequency
    carried by the worst ``TOP_FRACTION`` of clock bins — by default the worst
    6 h of the day, not necessarily contiguous, so that a regular three-meal
    pattern is not penalised for being multimodal.
@@ -30,15 +30,15 @@ Construction
    circularly shifted by an independent random offset.  That null preserves the
    marginal distribution exactly, every excursion duration exactly, and the
    within-day autocorrelation — it destroys *only* alignment to clock time.
-4. **Intrinsic ceiling.**  A patient with TAR 60 % cannot fit their burden into
+4. **Intrinsic ceiling.**  A patient with TAR 60 % cannot fit their frequency into
    6 h of the day.  ``F_max`` is the concentration reached if every day stacked
-   its whole burden into the same bins, capped cell-by-cell at 1.0.  Without
+   its whole frequency into the same bins, capped cell-by-cell at 1.0.  Without
    this term the index is an artefact of TAR (ρ = −0·48 in the SLH cohort);
    with it, it is independent of every consensus metric.
 
    .. math:: \\Lambda = \\frac{F_{obs} - F_{null}}{F_{max} - F_{null}}
 
-Λ = 0 means the burden is no more clock-locked than chance; Λ = 1 means it is
+Λ = 0 means the frequency is no more clock-locked than chance; Λ = 1 means it is
 as clock-locked as it could possibly be given how much of it there is.  Both
 normalisers are computed from the patient's own record, so Λ is portable to any
 cohort without re-fitting.
@@ -106,7 +106,7 @@ RHYTHM_METRIC_NAMES = [
 def build_day_clock_matrix(times, glucose, threshold: float, above: bool = True,
                            n_bins: int = N_CLOCK_BINS) -> np.ndarray:
     """
-    Build the day × clock-bin burden matrix H.
+    Build the day × clock-bin frequency matrix H.
 
     Parameters
     ----------
@@ -158,10 +158,10 @@ def build_day_clock_matrix(times, glucose, threshold: float, above: bool = True,
 # CONCENTRATION, FLOOR AND CEILING
 # =============================================================================
 
-def burden_concentration(clock_profile: np.ndarray,
+def frequency_concentration(clock_profile: np.ndarray,
                          top_fraction: float = TOP_FRACTION) -> float:
     """
-    Share of the burden carried by the worst ``top_fraction`` of clock bins.
+    Share of the frequency carried by the worst ``top_fraction`` of clock bins.
 
     The bins are selected by rank, not by contiguity, so a regular three-meal
     pattern scores as concentrated even though it is multimodal.
@@ -177,9 +177,9 @@ def burden_concentration(clock_profile: np.ndarray,
 def ceiling_concentration(H: np.ndarray,
                           top_fraction: float = TOP_FRACTION) -> float:
     """
-    Largest concentration reachable given how much burden the patient carries.
+    Largest concentration reachable given how much frequency the patient carries.
 
-    If every day stacked its whole burden into the same ``k`` bins, day ``d``
+    If every day stacked its whole frequency into the same ``k`` bins, day ``d``
     could place at most ``min(mass_d, k)`` there, because a single (day, bin)
     cell cannot exceed 1.0.  This is what makes Λ independent of TAR: it
     divides by what the patient *could* have achieved, not by 1.
@@ -219,7 +219,7 @@ def null_concentration(H: np.ndarray, n_draws: int = N_NULL_DRAWS,
     for i in range(n_draws):
         offsets = rng.integers(0, n_bins, size=n_days)
         rotated = np.take_along_axis(H, (bins[None, :] - offsets[:, None]) % n_bins, axis=1)
-        draws[i] = burden_concentration(np.nanmean(rotated, axis=0), top_fraction)
+        draws[i] = frequency_concentration(np.nanmean(rotated, axis=0), top_fraction)
 
     return draws
 
@@ -239,7 +239,7 @@ def compute_clock_lock(H: np.ndarray, n_draws: int = N_NULL_DRAWS,
     dict with keys
         ``lambda_`` : float
             The index.  0 = no more clock-locked than chance, 1 = maximally
-            clock-locked given the burden.  Slightly negative values are
+            clock-locked given the frequency.  Slightly negative values are
             sampling noise around 0.
         ``p_value`` : float
             Permutation p-value — the share of null draws at least as
@@ -248,7 +248,7 @@ def compute_clock_lock(H: np.ndarray, n_draws: int = N_NULL_DRAWS,
         ``f_observed``, ``f_null``, ``f_max`` : float
             The three concentrations, for diagnostics and plotting.
         ``clock_profile`` : np.ndarray
-            Mean burden per clock bin — the curve Λ summarises.
+            Mean frequency per clock bin — the curve Λ summarises.
         ``n_days`` : int
     """
     empty = dict(lambda_=np.nan, p_value=np.nan, f_observed=np.nan,
@@ -258,7 +258,7 @@ def compute_clock_lock(H: np.ndarray, n_draws: int = N_NULL_DRAWS,
         return {**empty, "n_days": int(H.shape[0]) if H.size else 0}
 
     clock_profile = np.nanmean(H, axis=0)
-    f_observed = burden_concentration(clock_profile, top_fraction)
+    f_observed = frequency_concentration(clock_profile, top_fraction)
     f_max = ceiling_concentration(H, top_fraction)
 
     if not np.isfinite(f_observed) or not np.isfinite(f_max):

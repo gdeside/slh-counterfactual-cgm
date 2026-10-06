@@ -40,6 +40,7 @@ Date
 # =============================================================================
 import os
 import glob
+from pathlib import Path
 
 # =============================================================================
 # THIRD-PARTY LIBRARIES
@@ -311,6 +312,49 @@ def prepare_valid_data(df: pd.DataFrame) -> pd.DataFrame:
     return df[mask][[TIME_COL, GLUCOSE_COL]].dropna().sort_values(TIME_COL).copy()
 
 
+def discover_raw_patients(raw_path=None) -> list[str]:
+    """
+    List the patients that have a raw CGM file: every ``<patient_id>.xlsx`` in ``RAW_PATH``.
+
+    Patient IDs are the file names (any format: ``A001``, ``OD_001``, ...); the cohort is whatever is on disk,
+    so there is no hard-coded number of patients. Excel lock files (``~$...``) and hidden files are ignored.
+
+    Returns
+    -------
+    list of str
+        Sorted patient identifiers.
+    """
+    raw_path = RAW_PATH if raw_path is None else raw_path
+    return sorted(
+        p.stem for p in Path(raw_path).glob("*.xlsx")
+        if not p.name.startswith(("~$", "."))
+    )
+
+
+def resolve_patients(requested=None, raw_path=None) -> list[str]:
+    """
+    Patients to process: all patients found in the raw folder, or the ``requested`` subset.
+
+    Raises
+    ------
+    SystemExit
+        If no raw file exists, or a requested ID has no raw file.
+    """
+    available = discover_raw_patients(raw_path)
+    if not available:
+        raise SystemExit(
+            f"No raw CGM file (<patient_id>.xlsx) found in {RAW_PATH if raw_path is None else raw_path}. "
+            "Check CGM_DATA_ROOT and the Data/Raw folder."
+        )
+    if not requested:
+        return available
+    unknown = [p for p in requested if p not in available]
+    if unknown:
+        raise SystemExit(f"No raw file for: {', '.join(unknown)}. Available: {', '.join(available[:10])}"
+                         f"{' ...' if len(available) > 10 else ''}")
+    return sorted(set(requested))
+
+
 def discover_patients(input_dir: str) -> list[str]:
     """
     Discover all patient IDs that have at least one preprocessed window file.
@@ -323,12 +367,12 @@ def discover_patients(input_dir: str) -> list[str]:
     Returns
     -------
     list of str
-        Sorted list of patient identifiers (subdirectory names matching
-        ``A*``) for which a ``{pid}_win1_*.xlsx`` file exists.
+        Sorted list of patient identifiers (any sub-directory name, e.g. ``A001`` or ``OD_001``)
+        for which a ``{pid}_win1_*.xlsx`` file exists.
     """
     all_dirs = [
-        os.path.basename(d) for d in glob.glob(os.path.join(input_dir, "A*"))
-        if os.path.isdir(d)
+        os.path.basename(d) for d in glob.glob(os.path.join(input_dir, "*"))
+        if os.path.isdir(d) and not os.path.basename(d).startswith((".", "_"))
     ]
     
     patients = []

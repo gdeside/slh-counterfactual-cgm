@@ -11,7 +11,7 @@ Three scatter plots (1 row × 3 columns, 16:9 slide format):
 
 All panels use daytime (06:00–22:00) delta values at the selected offset.
 Linear regression line + Spearman ρ annotation included on each panel.
-Representative patients (high- / low-SLH burden, chosen automatically or via CGM_PATIENT_HIGH / CGM_PATIENT_LOW) are marked with smaller markers than
+Representative patients (high- / low-SLH frequency, chosen automatically or via CGM_PATIENT_HIGH / CGM_PATIENT_LOW) are marked with smaller markers than
 in the manuscript figure.
 
 Usage

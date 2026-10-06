@@ -60,7 +60,7 @@ from src.visualization.agp_plot import plot_agp_panel, plot_recurrence_duration_
 # =============================================================================
 # PARAMETERS 
 # =============================================================================
-# High- / low-SLH-burden patients: CGM_PATIENT_HIGH / CGM_PATIENT_LOW, else automatic (most / fewest SLH episodes)
+# High- / low-SLH-frequency patients: CGM_PATIENT_HIGH / CGM_PATIENT_LOW, else automatic (most / fewest SLH episodes)
 PATIENT_A, PATIENT_B = resolve_patient_pair()
 
 

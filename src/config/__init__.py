@@ -8,7 +8,6 @@ This file exposes all scientific constants, column names, clinical thresholds,
 and figure settings so that scripts and modules can import them cleanly:
 
     from src.config import (
-        PATIENT_START, PATIENT_END,
         THRESHOLD_HYPO, THRESHOLD_HYPER,
         FIG_PREPROCESSING_DIR, DPI_SAVE,
         ...
@@ -111,8 +110,6 @@ from .paths import (
     SCATTER_ANALYSIS_PATH,
     SCATTER_FIGURES_PATH,
     SCATTER_STATS_CSV,
-    PATIENT_START,
-    PATIENT_END,
     WINDOW_SUMMARY_CSV,
     FILTER_STATUS_CSV,
     RANDOM_SEED,
@@ -197,9 +194,6 @@ __all__ = [
     "LANCET_WIDTH_1COL_INCHES", "LANCET_WIDTH_2COL_INCHES", "LANCET_WIDTH_FULL_INCHES",
     "LANCET_MAX_HEIGHT_INCHES", "LANCET_MIN_FONT_PT", "LANCET_MIN_LINEWIDTH_PT",
     "LANCET_MIN_DPI", "lancet_figsize",
-    
-    # Patient range
-    "PATIENT_START", "PATIENT_END",
     
     # Utilities
     "is_night",

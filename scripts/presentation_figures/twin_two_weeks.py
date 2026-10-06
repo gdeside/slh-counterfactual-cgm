@@ -29,7 +29,7 @@ Construction
 ------------
 Record B must reproduce record A's marginal distribution (so every consensus
 metric is untouched) and its clock-time profile (so the AGP is untouched),
-while arranging the hyperglycaemic burden differently *within* each day.  It
+while arranging the hyperglycaemic frequency differently *within* each day.  It
 is built in two steps:
 
 1. **Smooth.**  A centred rolling mean over ``SMOOTH_WINDOW_MIN`` gives a

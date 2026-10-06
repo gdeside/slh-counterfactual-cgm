@@ -75,3 +75,16 @@ def test_sample_data_is_synthetic_reproducible_and_relative():
     assert sample.START.year == 2000                                   # arbitrary t = 0, not a real date
     full = sample.DAYS * 24 * 60 // sample.STEP_MIN
     assert 0.9 * full < len(a) <= full                                 # full grid minus a few sensor gaps
+
+
+def test_open_data_to_raw_snaps_rounded_hours_back_to_the_5_minute_grid(tmp_path, monkeypatch):
+    """time_h is published rounded to 0.001 h, which drifts off the 5-min grid by a few seconds."""
+    csv = tmp_path / "cohort_open_data.csv"
+    steps = np.arange(2000) * 5 / 60
+    pd.DataFrame({"patient_id": "OD_001", "time_h": steps.round(3), "glucose_mgdl": 120.0}).to_csv(csv, index=False)
+    raw = tmp_path / "Data" / "Raw"
+    monkeypatch.setattr(to_raw, "RAW_PATH", raw)
+    monkeypatch.setattr("sys.argv", ["open_data_to_raw", "--input", str(csv)])
+    to_raw.main()
+    df = pd.read_excel(raw / "OD_001.xlsx")
+    assert (df["time"].diff().dropna() == pd.Timedelta(minutes=5)).all()

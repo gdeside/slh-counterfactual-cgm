@@ -56,7 +56,7 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
         prefer them out of the public history). Authorship uses your GitHub noreply address — no personal e-mail leaks.
 
 9g. [ ] **Optional — switch to the realistic sample data** (only after DPO approval, item 2c): run
-        `CGM_DATA_ROOT=<real root> make sample_data_real`, check the 4 fake patients (`make pipeline` on them: SLH burden should
+        `CGM_DATA_ROOT=<real root> make sample_data_real`, check the 4 fake patients (`make pipeline` on them: SLH frequency should
         decrease from A001 to A004 — it did in the test run: 38 / 27 / 15 / 10 SLH), then replace `sample_data` (Makefile
         `sample_data` target or a `--from-real` option), re-execute notebooks 01–09 on it, regenerate `sample_data.zip`,
         and update the README (sample-data description, "synthetic" wording, notebook banners). Never commit the real inputs.
@@ -107,6 +107,7 @@ Steps 3–10 can be done as normal commits on `release-clean` before or after th
 
 ## Done
 
+- **No hard-coded cohort size**: `PATIENT_START/END` (A001–A245) removed; the cohort is discovered from `Data/Raw/*.xlsx` (any ID format), optional `--patients` on `cgm_preprocessing`; `make pipeline` now works end to end on the open-data format (`OD_xxx`) — this also required snapping open-data timestamps back to the 5-min grid and accepting data that already are one 45-day window (`find_optimal_window`, tolerance of two sampling steps). 249 tests.
 - **Makefile audit**: all 42 runnable targets executed on the sample data; fixed `agp_sensitivity` / `timeseries_sensitivity` (patient now automatic), the stale `Sensitivity_LinInterp_Modular` path (cdf figure silently failed), `paper` no longer includes `fig5` (needs the clinical table; new `paper_clinical` and `check_clinical_table`), help text; `tests/test_makefile.py` guards targets / help / modules.
 - **Fonts on Linux**: `font.family` is now a sans-serif fallback chain (Arial → Helvetica → Liberation Sans → Nimbus Sans → Arimo → DejaVu Sans) in `src/visualization/style.py`, the talk figure and the plotly scripts; `tests/test_style_fonts.py` simulates a machine without Arial.
 - **Dependencies**: unused `statsmodels` removed from `requirements.txt`; the optional-UMAP warning in `patient_similarity_analysis.py` now says `pip install umap-learn`.

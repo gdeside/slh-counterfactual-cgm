@@ -117,6 +117,11 @@ def find_optimal_window(
     t_max = df_flagged[TIME_COL].max()
     latest_start = t_max - window_delta
 
+    # Data that already ARE one window (e.g. the released open dataset: 45 days minus one sample) are accepted
+    # when they fall short of the window length by at most two sampling steps; anything shorter is rejected.
+    if latest_start < t_min <= latest_start + timedelta(minutes=2 * sampling_min):
+        latest_start = t_min
+
     if t_min > latest_start:
         return None  # insufficient total span
 

@@ -12,7 +12,7 @@ Analysis
      coloured by n_SLH
   4. List the pairs that are close in metric space (bottom `--distance_percentile`
      of all distances) but differ by at least `--n_slh_diff` SLH episodes:
-     similar CGM profile, different SLH burden
+     similar CGM profile, different SLH frequency
 
 For a ranked selection of pairs for the article see `find_compelling_pairs.py`.
 

@@ -6,7 +6,7 @@ import pytest
 
 from src.metrics.rhythm import (
     build_day_clock_matrix,
-    burden_concentration,
+    frequency_concentration,
     ceiling_concentration,
     compute_clock_lock,
     compute_rhythm_metrics,
@@ -71,20 +71,20 @@ class TestDayClockMatrix:
 
 class TestConcentration:
     def test_uniform_profile_gives_the_top_fraction(self):
-        assert burden_concentration(np.ones(48), top_fraction=0.25) == pytest.approx(0.25)
+        assert frequency_concentration(np.ones(48), top_fraction=0.25) == pytest.approx(0.25)
 
     def test_single_spike_gives_one(self):
         profile = np.zeros(48)
         profile[10] = 1.0
-        assert burden_concentration(profile, top_fraction=0.25) == pytest.approx(1.0)
+        assert frequency_concentration(profile, top_fraction=0.25) == pytest.approx(1.0)
 
-    def test_ceiling_is_one_when_burden_fits_in_the_top_bins(self):
+    def test_ceiling_is_one_when_frequency_fits_in_the_top_bins(self):
         H = np.zeros((10, 48))
-        H[:, :4] = 1.0                      # 4 bins of burden, ceiling holds 12
+        H[:, :4] = 1.0                      # 4 bins of frequency, ceiling holds 12
         assert ceiling_concentration(H, top_fraction=0.25) == pytest.approx(1.0)
 
-    def test_ceiling_falls_below_one_when_burden_overflows(self):
-        H = np.ones((10, 48))               # burden everywhere: can only ever be 25 %
+    def test_ceiling_falls_below_one_when_frequency_overflows(self):
+        H = np.ones((10, 48))               # frequency everywhere: can only ever be 25 %
         assert ceiling_concentration(H, top_fraction=0.25) == pytest.approx(0.25)
 
 
@@ -124,7 +124,7 @@ class TestClockLock:
             df[TIME_COL], df[GLUCOSE_COL].values, 180.0), n_draws=50)
         assert np.isnan(result["lambda_"])
 
-    def test_no_burden_returns_nan(self):
+    def test_no_frequency_returns_nan(self):
         df = make_record(20)                # never crosses 180
         result = compute_clock_lock(build_day_clock_matrix(
             df[TIME_COL], df[GLUCOSE_COL].values, 180.0), n_draws=50)
