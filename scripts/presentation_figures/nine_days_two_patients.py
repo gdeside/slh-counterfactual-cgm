@@ -276,7 +276,6 @@ def plot_cgm_panel(ax, df_win: pd.DataFrame, t_zero: pd.Timestamp,
                     color=color_ctf, lw=1.1, ls="-", alpha=0.85, zorder=4)
 
         # Fake legend handles for this panel
-        from matplotlib.lines import Line2D as _L2D
         ax.plot([], [], color=COLOR_ORIGINAL, lw=0.9, ls="--", alpha=0.70,
                 label="G(t)")
         ax.plot([], [], color=color_ctf, lw=1.1, ls="-",

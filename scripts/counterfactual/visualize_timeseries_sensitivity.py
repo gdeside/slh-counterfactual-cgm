@@ -47,8 +47,6 @@ import matplotlib.pyplot as plt
 
 from src.config import (
     TIME_COL,
-    NIGHT_START_H,
-    NIGHT_END_H,
     SENSITIVITY_PATH,
     FIGURE_WIDTH_INCHES,
     FIGURE_HEIGHT_INCHES,

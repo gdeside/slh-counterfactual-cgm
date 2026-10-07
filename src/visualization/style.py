@@ -12,7 +12,6 @@ a figure sit side by side instead of overwriting one another.  See
 :func:`save_figure` and ``docs/UNITS.md``.
 """
 
-import os
 from pathlib import Path
 
 import matplotlib

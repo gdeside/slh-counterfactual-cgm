@@ -26,7 +26,7 @@ Analyses
 
 Inputs
 ------
-  FINAL_COHORT_CSV  (OneDrive / Data / Final cohort SLH.csv)
+  FINAL_COHORT_CSV  (the clinical table in CGM_DATA_ROOT: Data/Final cohort SLH.csv)
 
 Outputs (RESULTS_PATH / SLH_Patient_Characteristics_Exploration)
 ----------------------------------------------------------------

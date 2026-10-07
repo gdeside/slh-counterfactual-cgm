@@ -36,7 +36,7 @@ CLASSIFICATION_LLH = "LLH"
 
 # Glucose unit conversion
 # 1 mmol/L = 18.0182 mg/dL (molar mass of glucose: 180.156 g/mol)
-from src.utils.unit_conversion import MGDL_PER_MMOLL
+from src.utils.unit_conversion import MGDL_PER_MMOLL  # noqa: F401  (re-exported by src.config)
 
 # Glucose thresholds (mg/dL)
 THRESHOLD_HYPO = 70

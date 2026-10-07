@@ -2,15 +2,13 @@
 
 import pytest
 import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
 
 from src.preprocessing.quality import attach_quality_flags
 
 
 # Constants come from the project config so the tests cannot drift from the code
 from src.config.constants import (
-    TIME_COL, GLUCOSE_COL, TIME_ERROR_RATIO, GAP_MULTIPLE, GLUCOSE_MIN, GLUCOSE_MAX,
+    TIME_COL, GLUCOSE_COL, GLUCOSE_MIN, GLUCOSE_MAX,
 )
 
 

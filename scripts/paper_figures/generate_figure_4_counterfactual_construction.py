@@ -38,18 +38,17 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.dates as mdates
-from matplotlib.lines import Line2D
 from datetime import datetime, time as _dtime
 
 # Import existing functions
-from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
+from src.utils.patient_selection import resolve_patient_pair
 from src.preprocessing.load_data import load_patient_window
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.episodes.detection import detect_hyperglycemia_episodes
 from src.episodes.criteria import classify_episodes
 from src.episodes.episode_config import (
-    H_HYPER, H_CONTEXT, NIGHT_START_H, NIGHT_END_H,
-    GAP_FACTOR, LABEL_SLH,
+    H_HYPER, NIGHT_START_H, NIGHT_END_H, GAP_FACTOR,
+    LABEL_SLH,
 )
 from src.config import TIME_COL, GLUCOSE_COL, FIG_DIR, COL_FLAG_TIME_ERROR, COL_FLAG_OUTLIER_GLUCOSE
 from src.counterfactual.build_counterfactual import build_full_counterfactual_signal

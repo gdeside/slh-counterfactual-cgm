@@ -34,10 +34,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 
 # Import configuration
-from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
+from src.utils.patient_selection import resolve_patient_pair
 from src.config import BASE_PATH
 
 # Import visualization

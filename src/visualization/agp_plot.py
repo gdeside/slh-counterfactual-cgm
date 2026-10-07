@@ -45,7 +45,6 @@ from src.config import (
     THRESHOLD_HYPO,
     COL_EPISODE_START,
     COL_EPISODE_END,
-    COL_EPISODE_DURATION,
     COL_EPISODE_CLASSIFICATION,
     CLASSIFICATION_SLH,
     CLASSIFICATION_LLH,
@@ -67,7 +66,7 @@ from src.visualization.colors import (
     COLOR_RECURRENCE_THRESHOLD,
     COLOR_DURATION_BINS,
 )
-from src.visualization.style import style_axes, apply_publication_style
+from src.visualization.style import style_axes
 
 
 # =============================================================================

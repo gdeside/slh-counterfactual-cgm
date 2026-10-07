@@ -34,7 +34,6 @@ import os
 import sys
 import argparse
 
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
@@ -54,7 +53,7 @@ from src.episodes.load_episodes import load_patient_episodes
 from src.config import TIME_COL, GLUCOSE_COL, COL_FLAG_TIME_ERROR, COL_FLAG_OUTLIER_GLUCOSE
 from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
 from src.agp.compute_agp import compute_agp_profile, compute_recurrence_by_classification
-from src.visualization.style import apply_publication_style, save_figure, style_axes
+from src.visualization.style import apply_publication_style, save_figure
 from src.visualization.colors import OFFSET_COLORS
 from src.visualization.agp_plot import plot_recurrence_classification_panel
 

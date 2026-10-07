@@ -5,7 +5,6 @@ Tests coverage calculation functions for CGM data quality assessment.
 """
 
 import pytest
-import numpy as np
 
 # Import the functions to test
 from src.preprocessing.coverage import (

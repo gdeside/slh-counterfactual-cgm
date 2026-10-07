@@ -48,7 +48,7 @@ SCATTER_FIGURES_PATH  = SCATTER_ANALYSIS_PATH / "Figures"
 SCATTER_STATS_CSV     = SCATTER_ANALYSIS_PATH / "scatter_statistics.csv"
 
 # =============================================================================
-# CLINICAL COHORT FILE (shared OneDrive, not pipeline-generated)
+# CLINICAL TABLE (provided by the user in CGM_DATA_ROOT, not pipeline-generated)
 # =============================================================================
 FINAL_COHORT_CSV = DATA_PATH / "Final cohort SLH.csv"
 

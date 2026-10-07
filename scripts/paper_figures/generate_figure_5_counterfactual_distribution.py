@@ -55,13 +55,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-import matplotlib.patches as mpatches
 import matplotlib.ticker as mticker
-from matplotlib.lines import Line2D
-from scipy import stats
 
 # Import configuration
-from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
+from src.utils.patient_selection import resolve_patient_pair
 from src.config import BASE_PATH, DATA_PATH, SENSITIVITY_PATH
 
 # Import visualization

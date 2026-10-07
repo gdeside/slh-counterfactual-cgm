@@ -46,7 +46,6 @@ from scripts.generate_zoom_panels import (
     STAGE_LABELS,
     ZOOM_WINDOW_H,
     ALPHA_EPISODE,
-    ALPHA_NIGHT,
     _shade_nights,
 )
 
@@ -57,7 +56,7 @@ from src.episodes.detection import detect_hyperglycemia_episodes
 from src.episodes.episode_config import (
     H_HYPER, H_CONTEXT, CONTEXT_WIN_MIN, GAP_FACTOR,
 )
-from src.config import TIME_COL, GLUCOSE_COL, FIG_DIR
+from src.config import TIME_COL, GLUCOSE_COL
 from src.visualization.style import apply_publication_style, save_figure
 from src.visualization.colors import (
     STAGE_COLORS, COLOR_HYPER, COLOR_CONTEXT, COLOR_ORIGINAL,

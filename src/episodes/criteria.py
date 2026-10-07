@@ -36,7 +36,7 @@ from src.episodes.episode_config import APPLY_C1, APPLY_C2, APPLY_C3, APPLY_C4, 
 from src.episodes.episode_config import D_MIN_MIN, D_MAX_MIN
 from src.episodes.episode_config import MIN_DATA_COMPLETENESS, CONTEXT_WIN_MIN
 from src.episodes.episode_config import NIGHT_START_H, NIGHT_END_H
-from src.episodes.episode_config import REQUIRED_SAMPLING_MIN, MIN_EPISODE_POINTS
+from src.episodes.episode_config import REQUIRED_SAMPLING_MIN
 from src.episodes.episode_config import LABEL_SLH, LABEL_LLH
 from src.episodes.episode_config import LABEL_SLH_NON_ISOLATED
 from src.episodes.episode_config import LABEL_DAYTIME, LABEL_NIGHTTIME

@@ -45,12 +45,6 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 9. [ ] **Final consistency checks**: `git grep "/Users/"` empty; `git grep -n "presentation/"` only intended hits; every
        Makefile target points to an existing module; `make help` clean; `make tests` green; no unused imports.
 
-9d. [ ] **Lint pass**: pyflakes reports 157 unused imports and one duplicate definition
-        (`scripts/preprocessing/cgm_filtering.py:28`, `FIG_FILTERING_DIR`); remove them (no undefined names, every script
-        imports cleanly).
-9e. [ ] **Cosmetic leftovers**: comments mentioning "OneDrive" (`src/config/paths.py` lines 51–56,
-        `scripts/statistics/slh_patient_characteristics_exploration.py:29`) — reword to "the clinical table in `CGM_DATA_ROOT`".
-
 ## C. Validate
 
 10. [ ] **Regenerate every manuscript figure/table from the open dataset** (values differ slightly because of the noise;
@@ -97,6 +91,7 @@ Steps 3–10 can be done as normal commits on `release-clean` before or after th
 
 ## Done
 
+- **Lint pass**: 160 unused imports removed in 55 files (pyflakes: 0 unused, 0 undefined names, 0 duplicate definitions; the one remaining hit is `MGDL_PER_MMOLL` in `src/config/constants.py`, kept on purpose because `src.config` re-exports it, marked `noqa`); the "OneDrive" comments reworded; every module still imports, 238 tests and 36 Makefile targets pass on the sample data.
 - **No AI-assistant trace in the new history**: commit trailers removed from every commit of `release-clean` (history rewritten, trees unchanged), no mention left in tracked files. The old remote history (its extra branches and PRs) disappears with the history switch of step 1.
 - **README fixes**: one contact e-mail (`guillaume.deside@uclouvain.be`, also in `CITATION.cff`); structure tree updated (no `supplementary_code/`; `sample_data/`, top-level illustrations, `.github/`, `CITATION.cff`); the four exploratory `scripts/statistics/` scripts documented; `env/bin/python3` removed from script headers.
 - **Clock-lock index Λ removed** (outside the SLH scope): `src/metrics/rhythm.py`, `tests/test_rhythm.py`, its exports, README mentions and the reference in the permutation-invariance talk figure.

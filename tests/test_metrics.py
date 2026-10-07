@@ -2,8 +2,6 @@
 
 import pytest
 import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
 
 from src.metrics.metrics import (
     classify_time_of_day,

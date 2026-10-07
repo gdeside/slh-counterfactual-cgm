@@ -62,7 +62,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
+from src.utils.patient_selection import resolve_patient_pair
 from src.config.constants import TIME_COL, GLUCOSE_COL, COL_EPISODE_START, COL_EPISODE_END
 from src.config.figure_config import FIG_DIR
 

@@ -34,7 +34,6 @@ Usage
 
 import os
 import argparse
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -53,8 +52,6 @@ from src.config import (
 )
 from src.config.figure_config import LANCET_MIN_FONT_PT, lancet_figsize
 from src.counterfactual.counterfactual_config import (
-    APPLY_KERNEL,
-    KERNEL_MIN,
     SELECTED_OFFSET_MIN,
 )
 

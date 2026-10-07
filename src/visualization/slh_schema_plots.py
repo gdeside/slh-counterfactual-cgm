@@ -44,24 +44,20 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 
-import matplotlib.dates as mdates
 import matplotlib.patches as mpatches
-from matplotlib.lines import Line2D
 from matplotlib.ticker import FuncFormatter
 
 from src.config import TIME_COL, GLUCOSE_COL
 
 from src.episodes.episode_config import H_HYPER, H_CONTEXT, H_HYPO
-from src.episodes.episode_config import D_MIN_MIN, D_MAX_MIN
-from src.episodes.episode_config import MIN_DATA_COMPLETENESS, CONTEXT_WIN_MIN
+from src.episodes.episode_config import CONTEXT_WIN_MIN
 from src.episodes.episode_config import NIGHT_START_H, NIGHT_END_H
-from src.episodes.episode_config import REQUIRED_SAMPLING_MIN, MIN_EPISODE_POINTS
 
 from src.visualization.colors import COLOR_SLH, COLOR_LLH, COLOR_EXCLUDED
 from src.visualization.colors import COLOR_BEFORE_WINDOW, COLOR_AFTER_WINDOW
 from src.visualization.colors import COLOR_NIGHT, COLOR_TRACE, COLOR_HYPER, COLOR_CONTEXT, COLOR_HYPO
 
-from src.visualization.style import apply_publication_style, save_figure, style_axes
+from src.visualization.style import style_axes
 from src.visualization.glucose_axis import apply_glucose_axis
 from src.utils.unit_conversion import format_glucose
 

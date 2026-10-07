@@ -52,7 +52,6 @@ from sklearn.metrics import pairwise_distances
 from sklearn.preprocessing import StandardScaler
 
 from src.config import PATIENT_ID_COL
-from src.visualization.style import FONT_CSS_FAMILY
 from src.config.paths import RESULTS_PATH
 
 from scripts.patient_selection.find_compelling_pairs import PROFILE_METRICS, load_cohort

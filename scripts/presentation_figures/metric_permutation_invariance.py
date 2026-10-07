@@ -68,7 +68,7 @@ from src.utils.unit_conversion import (
 from src.visualization.style import apply_publication_style, save_figure
 from src.visualization.colors import (
     COLOR_THRESHOLD_HYPER, COLOR_THRESHOLD_HYPO,
-    COLOR_AGP_TARGET_ZONE, COLOR_ANNOTATION, COLOR_SLH,
+    COLOR_AGP_TARGET_ZONE, COLOR_SLH,
 )
 
 # ---------------------------------------------------------------------------

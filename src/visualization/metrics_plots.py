@@ -37,7 +37,7 @@ from matplotlib.gridspec import GridSpec
 from src.config import FIG_METRICS_DIR
 from src.visualization.colors import CV_GRADIENT, TIR_GRADIENT, DIVERGING, MEAN_GRADIENT, CATEGORICAL_5, WONG_COLORS
 
-from src.visualization.style import apply_publication_style, save_figure, style_axes
+from src.visualization.style import apply_publication_style, save_figure
 from src.visualization.glucose_axis import apply_glucose_axis, apply_glucose_colorbar
 from src.utils.unit_conversion import (
     format_glucose,

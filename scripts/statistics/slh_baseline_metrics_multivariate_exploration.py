@@ -68,7 +68,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
-from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
 from scipy import stats
 from sklearn.decomposition import PCA
@@ -77,13 +76,10 @@ from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import StandardScaler
 
 from src.config import (
-    DPI_SAVE,
     METRICS_CSV,
-    EPISODES_SUMMARY_CSV,
     FILTER_STATUS_CSV,
 )
 from src.config.paths import RESULTS_PATH
-from src.config.figure_config import FIGURE_WIDTH_INCHES
 from src.metrics.metrics import (
     METRIC_MEDIAN_GLUCOSE,
     METRIC_MEAN_GLUCOSE,

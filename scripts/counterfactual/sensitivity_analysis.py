@@ -89,18 +89,13 @@ from src.episodes.load_episodes import prepare_episode_data
 from src.episodes.detection import detect_hyperglycemia_episodes
 from src.episodes.criteria import classify_episodes
 
-from src.utils.time_utils import is_daytime_mask, is_night
+from src.utils.time_utils import is_daytime_mask
 from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
 from src.agp.compute_agp import compute_agp_profile
 
 
 from src.episodes.episode_config import (
-    H_HYPER, H_CONTEXT, H_HYPO,
-    D_MIN_MIN, D_MAX_MIN,
-    MIN_DATA_COMPLETENESS,
-    CONTEXT_WIN_MIN,
-    NIGHT_START_H, NIGHT_END_H,
-    LABEL_SLH, LABEL_LLH,
+    H_HYPER, H_HYPO, LABEL_SLH,
 )
 
 from src.counterfactual.counterfactual_config import (

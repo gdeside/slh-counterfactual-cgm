@@ -129,11 +129,10 @@ from src.visualization.colors import (
 )
 from src.visualization.visualization_helper import (
     shade_nights_on_axis,
-    RelativeDayFormatter,
     setup_relative_time_axis,
 )
 from src.visualization.glucose_axis import apply_glucose_axis
-from src.utils.unit_conversion import format_glucose, glucose_unit_label
+from src.utils.unit_conversion import format_glucose
 
 # =============================================================================
 # CONFIGURATION

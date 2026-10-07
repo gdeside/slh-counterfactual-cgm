@@ -32,7 +32,6 @@ import sys
 import argparse
 from datetime import datetime, time as _dtime, timedelta
 
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
@@ -46,8 +45,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from src.utils.patient_selection import resolve_patient_id
 from src.preprocessing.load_data import load_patient_window
 from src.agp.compute_agp import compute_agp_profile
-from src.config import TIME_COL, GLUCOSE_COL, THRESHOLD_HYPER, THRESHOLD_HYPO
-from src.config import FIG_DIR
+from src.config import TIME_COL, THRESHOLD_HYPER, THRESHOLD_HYPO
 from src.visualization.style import apply_publication_style, save_figure
 from src.visualization.colors import (
     COLOR_AGP_PERCENTILE_95,

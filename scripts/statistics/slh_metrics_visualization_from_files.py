@@ -32,8 +32,6 @@ Usage
 # =============================================================================
 # IMPORTS
 # =============================================================================
-import os
-import sys
 import warnings
 from pathlib import Path
 
@@ -41,7 +39,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import plotly.express as px
 from plotly.subplots import make_subplots
 from tqdm import tqdm
 
@@ -57,7 +54,6 @@ from src.config import (
 )
 
 from src.filtering.load_filtering import load_filtered_patient_list
-from src.episodes.load_episodes import discover_episode_files
 from src.visualization.style import FONT_CSS_FAMILY
 
 # =============================================================================

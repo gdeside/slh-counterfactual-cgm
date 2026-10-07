@@ -18,7 +18,6 @@ Output
 # STANDARD LIBRARY
 # =============================================================================
 import os
-from datetime import datetime, time as dtime, timedelta
 
 # =============================================================================
 # THIRD-PARTY LIBRARIES
@@ -53,9 +52,7 @@ from src.config.figure_config import FIGURE_WIDTH_INCHES
 
 from src.episodes.episode_config import (
     H_HYPER,
-    NIGHT_START_H, 
-    NIGHT_END_H,
-    USE_GAP_MERGING,
+    USE_GAP_MERGING, 
     LABEL_SLH,
 )
 
@@ -71,7 +68,6 @@ from src.counterfactual.counterfactual_config import (
 from src.visualization.style import apply_publication_style, save_figure, style_axes
 from src.visualization.colors import (
     OFFSET_COLORS, 
-    COLOR_NIGHT,
     COLOR_ORIGINAL,
     COLOR_THRESHOLD,
     COLOR_ZONE,

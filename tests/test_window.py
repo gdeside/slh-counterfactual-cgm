@@ -1,7 +1,5 @@
 """45-day window extraction: long recordings, data that already are one window, too-short recordings."""
-import numpy as np
 import pandas as pd
-import pytest
 
 from src.config import WINDOW_DAYS
 from src.preprocessing.window import find_optimal_window

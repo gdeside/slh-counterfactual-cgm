@@ -41,7 +41,6 @@ Output
 import os
 import sys
 import argparse
-from datetime import datetime, time as _dtime, timedelta
 
 import numpy as np
 import pandas as pd
@@ -57,12 +56,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from src.utils.patient_selection import resolve_patient_pair
 from src.preprocessing.load_data import load_patient_window, prepare_valid_data
-from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.episodes.load_episodes import load_patient_episodes
 from src.agp.compute_agp import compute_agp_profile
 from src.config import (
-    TIME_COL, GLUCOSE_COL,
-    THRESHOLD_HYPER, THRESHOLD_HYPO,
+    TIME_COL, THRESHOLD_HYPER,
+    THRESHOLD_HYPO,
 )
 from src.visualization.style import apply_publication_style, save_figure
 from scripts.paper_figures.generate_figure_2_classification_summary import (

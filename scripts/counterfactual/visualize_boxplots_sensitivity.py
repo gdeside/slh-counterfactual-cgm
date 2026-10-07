@@ -63,7 +63,7 @@ import matplotlib.patches as mpatches
 # Import configuration
 from src.config import BASE_PATH
 from src.config.figure_config import LANCET_MIN_FONT_PT, lancet_figsize
-from src.counterfactual.counterfactual_config import OFFSET_VALUES, KERNEL_MIN, APPLY_KERNEL
+from src.counterfactual.counterfactual_config import OFFSET_VALUES
 
 # Import visualization
 from src.visualization.style import (

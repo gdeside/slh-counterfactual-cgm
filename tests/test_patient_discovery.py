@@ -2,7 +2,6 @@
 import pytest
 
 import src.config as config
-from src.preprocessing import load_data
 from src.preprocessing.load_data import discover_patients, discover_raw_patients, resolve_patients
 
 

@@ -22,17 +22,15 @@ Usage:
     python3 -m scripts.patient_comparison
 """
 import os
-from datetime import datetime, time, timedelta
 
 import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 from matplotlib.gridspec import GridSpec
 
-from src.utils.patient_selection import resolve_patient_id, resolve_patient_pair
+from src.utils.patient_selection import resolve_patient_pair
 from src.config.constants import (
     TIME_COL, 
     GLUCOSE_COL,

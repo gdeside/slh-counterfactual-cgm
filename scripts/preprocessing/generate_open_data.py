@@ -114,7 +114,7 @@ from src.config import (
     GLUCOSE_COL,
     FILTER_STATUS_CSV,
 )
-from src.config.paths import RESULTS_PATH, PREPROCESSING_PATH, DATA_PATH
+from src.config.paths import RESULTS_PATH, PREPROCESSING_PATH
 from src.preprocessing.load_data import load_patient_window, discover_patients
 from src.filtering.load_filtering import load_filtered_patient_list
 from src.utils.unit_conversion import (

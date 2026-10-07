@@ -63,7 +63,6 @@ from src.config import (
     DPI_SAVE,
     FIGURE_WIDTH_INCHES,
     EPISODES_PATH,
-    EPISODES_SUMMARY_CSV,
     FILTER_STATUS_CSV,
 )
 from src.config.paths import RESULTS_PATH

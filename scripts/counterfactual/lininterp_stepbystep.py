@@ -55,7 +55,6 @@ from src.episodes.episode_config import (
 
 from src.config import (
     TIME_COL, GLUCOSE_COL,
-    PREPROCESSING_PATH,
     FIG_DIR,
 )
 
@@ -64,7 +63,7 @@ from src.config.figure_config import (
     lancet_figsize,
 )
 
-from src.counterfactual.build_counterfactual import find_local_minimum, build_linear_interpolation, build_counterfactual
+from src.counterfactual.build_counterfactual import build_linear_interpolation, build_counterfactual
 
 from src.visualization.style import (
     apply_lancet_style,
@@ -90,7 +89,7 @@ from src.counterfactual.counterfactual_config import (
     SELECTED_OFFSET_MIN,
 )
 from src.visualization.glucose_axis import apply_glucose_axis
-from src.utils.unit_conversion import format_glucose, glucose_unit_label
+from src.utils.unit_conversion import format_glucose
 
 # =============================================================================
 # PARAMETERS 

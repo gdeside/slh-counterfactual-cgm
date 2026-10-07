@@ -21,10 +21,10 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 from matplotlib.ticker import MultipleLocator, MaxNLocator
 
-from src.config import MIN_COVERAGE_PCT, REQUIRED_SAMPLING_MIN, RANDOM_SEED, DPI_SAVE
+from src.config import MIN_COVERAGE_PCT, REQUIRED_SAMPLING_MIN, RANDOM_SEED
 
 from src.visualization.colors import COLOR_PRIMARY, COLOR_THRESHOLD, COLOR_ANNOTATION, COLOR_BOX_BG
-from src.visualization.style import apply_publication_style, style_axes
+from src.visualization.style import style_axes
 
 # Histogram parameters
 HISTOGRAM_BIN_WIDTH = 2.0     # Bin width in percentage points

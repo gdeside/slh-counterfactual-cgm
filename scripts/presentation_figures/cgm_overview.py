@@ -41,7 +41,6 @@ import sys
 import argparse
 from datetime import datetime, time as _dtime, timedelta
 
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")

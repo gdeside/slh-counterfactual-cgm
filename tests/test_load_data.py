@@ -7,8 +7,6 @@ Tests data loading functions for raw and preprocessed CGM files.
 import pytest
 import pandas as pd
 import numpy as np
-from pathlib import Path
-from datetime import datetime, timedelta
 
 # Import functions to test
 from src.preprocessing.load_data import (
@@ -18,7 +16,6 @@ from src.preprocessing.load_data import (
 )
 
 # Import config constants
-from src.config import RAW_PATH, PREPROCESSING_PATH
 
 
 # ==============================================================================

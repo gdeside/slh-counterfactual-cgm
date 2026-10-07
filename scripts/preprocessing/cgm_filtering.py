@@ -33,7 +33,6 @@ import pandas as pd
 # IMPORTS PROJECT
 # =============================================================================
 from src.config import (
-    FIG_FILTERING_DIR,
     PATIENT_ID_COL,
     FILTER_DIR_PATH,
     FIG_FILTERING_DIR,
@@ -46,9 +45,6 @@ from src.filtering.filtering_config import (
     COL_MEDIAN_GLUCOSE,
     COL_CV,
     COL_TIR,
-    LABEL_MEDIAN_GLUCOSE,
-    LABEL_CV,
-    LABEL_TIR,
 )
 
 from src.filtering.filtering import apply_median_glucose_filter

@@ -30,7 +30,7 @@ import pandas as pd
 from src.config import TIME_COL, GLUCOSE_COL
 
 
-from src.episodes.episode_config import H_HYPER, H_CONTEXT
+from src.episodes.episode_config import H_HYPER
 from src.episodes.episode_config import USE_GAP_MERGING, MERGE_GAP_MIN, MERGE_INTERNAL_GAP_MIN, GAP_FACTOR
 
 from src.episodes.episode_config import REQUIRED_SAMPLING_MIN, MIN_EPISODE_POINTS

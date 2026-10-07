@@ -39,7 +39,6 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.patches as mpatches
 from matplotlib.lines import Line2D
-from matplotlib.patches import FancyArrowPatch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -131,7 +130,7 @@ def _enrich_slh_episodes(df: pd.DataFrame,
 
 def _night_shade(ax, t_start, t_end) -> None:
     """Add night bands (absolute timestamp x-axis)."""
-    from datetime import datetime, time as _dtime, timedelta
+    from datetime import datetime, time as _dtime
     cur = t_start.normalize()
     end = t_end.normalize() + pd.Timedelta(days=1)
     while cur <= end:

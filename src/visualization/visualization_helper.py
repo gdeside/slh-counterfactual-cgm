@@ -23,13 +23,11 @@ All project-level configuration (night hours, figure widths) is imported
 from ``src.config`` and ``src.config.figure_config``.
 """
 
-import os
 from datetime import datetime, time as dtime, timedelta
 
 # =============================================================================
 # THIRD-PARTY LIBRARIES
 # =============================================================================
-import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
@@ -39,48 +37,23 @@ import matplotlib.dates as mdates
 # =============================================================================
 # PROJECT IMPORTS — Data & Processing
 # =============================================================================
-from src.preprocessing.load_data import load_patient_window, prepare_valid_data
-from src.preprocessing.timestep import detect_dominant_sampling_interval
-from src.episodes.detection import detect_hyperglycemia_episodes
-from src.episodes.criteria import classify_episodes
-from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
 
 # =============================================================================
 # PROJECT IMPORTS — Configuration
 # =============================================================================
-from src.config import (
-    TIME_COL, 
-    GLUCOSE_COL,
-    FIG_DIR,
-)
 
-from src.config.figure_config import FIGURE_WIDTH_INCHES
 
 from src.episodes.episode_config import (
-    H_HYPER,
-    NIGHT_START_H, 
+    NIGHT_START_H,
     NIGHT_END_H,
-    USE_GAP_MERGING,
-    LABEL_SLH,
 )
 
-from src.counterfactual.counterfactual_config import (
-    APPLY_KERNEL,
-    KERNEL_MIN,
-    OFFSET_VALUES,
-)
 
 # =============================================================================
 # PROJECT IMPORTS — Visualization
 # =============================================================================
-from src.visualization.style import apply_publication_style, save_figure, style_axes
 from src.visualization.colors import (
-    OFFSET_COLORS, 
     COLOR_NIGHT,
-    COLOR_ORIGINAL,
-    COLOR_THRESHOLD,
-    COLOR_ZONE,
-    COLOR_SLH_HIGHLIGHT,
 )
 
 
