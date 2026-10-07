@@ -74,16 +74,18 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 
 | Manuscript item | Script | Notes |
 |---|---|---|
+| Table 1 — Cohort characteristics | `scripts/paper_figures/generate_table1.py` | `make table1`; needs `pysummaries` and the clinical table |
+| Fig. 2 — SLH/LLH classification summary | `scripts/paper_figures/generate_figure_2_classification_summary.py` | `make fig2` |
+| Fig. 3 — Two patients, similar metrics, different SLH frequency (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | `make fig3` |
+| Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | `make fig4`; needs `make sensitivity_analysis` |
+| Fig. 5 — Distribution of ΔTIR / Δmedian | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | `make fig5`; needs the clinical table |
+| Fig. 6 — Determinants of SLH frequency | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | `make fig6`; needs the clinical table |
+| Suppl. Fig. 1 — Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1_data_quality.py` | `make suppfig1` |
 | Suppl. Fig. 3 — SLH detection schema | `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` | `make suppfig3` |
-| Fig. 2 — SLH/LLH classification summary | `scripts/paper_figures/generate_figure_2_classification_summary.py` | |
-| Fig. 3 — Two patients, similar metrics, different SLH frequency (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | |
-| Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | needs `make sensitivity_analysis` |
-| Fig. 5 — Distribution of ΔTIR / Δmedian | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | |
-| Fig. 6 — Determinants of SLH frequency | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | needs the clinical phenotype table |
-| Table 1 — Cohort characteristics | `scripts/paper_figures/generate_table1.py` | needs `pysummaries` |
-| Suppl. Fig. — Cohort flowchart | `scripts/paper_figures/generate_cohort_flowchart.py` | needs `rsvg-convert` (`brew install librsvg`) |
-| Suppl. Fig. 1 — Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1_data_quality.py` | |
-| Suppl. Fig. — Phenotype determinants | `scripts/paper_figures/generate_supplementary_figure_phenotype_determinants.py` | |
+| Suppl. Fig. — Cohort flowchart | `scripts/paper_figures/generate_cohort_flowchart.py` | `make cohort_flowchart`; needs `rsvg-convert` (`brew install librsvg`) |
+| Suppl. Fig. — Phenotype determinants | `scripts/paper_figures/generate_supplementary_figure_phenotype_determinants.py` | `make suppfig_phenotype`; needs the clinical table |
+
+"Clinical table" = `Data/Final cohort SLH.csv` (not in the open dataset; `make paper` skips these items, `make paper_clinical` runs them).
 
 Run any script as a module from the repository root, e.g.
 `python3 -m scripts.paper_figures.generate_figure_3_patient_comparison`.
@@ -425,18 +427,6 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 
 \* needs `Data/Final cohort SLH.csv` (not in the open dataset): these targets first run `check_clinical_table`, which stops with a
 clear message when the file is missing.
-
----|---|
-| Setup | `install`, `requirements-check` (reports missing imports, never overwrites `requirements.txt`) |
-| Data pipeline | `time_step_analysis`, `preprocessing`, `coverage_analysis`, `metrics_preprocessing`, `filtering`, `filtered_metrics_distribution`, `episode_detection`, **`pipeline`** (core chain) |
-| Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis` |
-| SLH figures | `slh_schema`, `slh_funnel`, `slh_overview`, `slh_zoom_panels`, `agp_recurrence`, `patient_comparison` |
-| Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
-| Sensitivity | `sensitivity_analysis`, `lines_`/`boxplots_`/`cdf_`/`agp_`/`timeseries_sensitivity`, `sensitivity_figures` |
-| Manuscript | `table1`, `fig2`, `fig3`, `fig4`, `fig5`, `fig6`, `suppfig1`, `suppfig_phenotype`, `cohort_flowchart`, **`paper`** |
-| Open data / units | `open_data`, `open_data_phase_shift`, `convert_units` |
-| Sample dataset | `sample_data`, `sample_data_run` |
-| Utility | `figures`, `tests`, `clean` |
 
 ---
 
