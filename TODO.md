@@ -12,7 +12,7 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 
 1. [ ] **Get the clean history onto GitHub — a force-push is NOT enough.** Audit result: the repository is currently
        **private**, 0 forks, 53 PRs. GitHub keeps every PR head as a hidden ref (`refs/pull/N/head`, plus branches such as
-       `<branch>`), and a force-push does **not** remove them: the old notebooks, plots, IDs and real
+       `update-cohort-plots-…`), and a force-push does **not** remove them: the old notebooks, plots, IDs and real
        dates stay reachable by commit hash and become public when the repo is flipped to public. Choose one:
        **(a, recommended)** publish from a **new repository** (create it empty, push `release-clean` as `master`; keep the old
        one private or delete it after checking the backup bundle) — then update the repo URL in README / `CITATION.cff` /
@@ -27,6 +27,7 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 ## B. Clean the repository content
 
 3. [ ] **Remove non-code leftovers**: untracked `TLDE_submission_review.md`, `talk_15min_plan.md` (delete the local
+       files); local junk `.DS_Store`, `.pytest_cache`, editor / tool folders. `env/`, `presentation/`,
        `analyzer.py` are git-ignored (don't re-add).
 4. [ ] **Finish `scripts/supplementary_code/`**: it is now empty (its last file was deleted) — remove the folder, the empty
        `scripts/poster_figures/`, and the `supplementary_code` line in the README structure tree.
@@ -49,13 +50,6 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
         imports cleanly).
 9e. [ ] **Cosmetic leftovers**: comments mentioning "OneDrive" (`src/config/paths.py` lines 51–56,
         `scripts/statistics/slh_patient_characteristics_exploration.py:29`) — reword to "the clinical table in `CGM_DATA_ROOT`".
-        prefer them out of the public history). Authorship uses your GitHub noreply address — no personal e-mail leaks.
-
-9g. [ ] **Optional — switch to the realistic sample data** (only after DPO approval, item 2c): run
-        `CGM_DATA_ROOT=<real root> make sample_data_real`, check the 4 fake patients (`make pipeline` on them: SLH frequency should
-        decrease from A001 to A004 — it did in the test run: 38 / 27 / 15 / 10 SLH), then replace `sample_data` (Makefile
-        `sample_data` target or a `--from-real` option), re-execute notebooks 01–09 on it, regenerate `sample_data.zip`,
-        and update the README (sample-data description, "synthetic" wording, notebook banners). Never commit the real inputs.
 
 ## C. Validate
 
@@ -103,6 +97,7 @@ Steps 3–10 can be done as normal commits on `release-clean` before or after th
 
 ## Done
 
+- **No AI-assistant trace in the new history**: commit trailers removed from every commit of `release-clean` (history rewritten, trees unchanged), no mention left in tracked files. The old remote history (its extra branches and PRs) disappears with the history switch of step 1.
 - **README fixes**: one contact e-mail (`guillaume.deside@uclouvain.be`, also in `CITATION.cff`); structure tree updated (no `supplementary_code/`; `sample_data/`, top-level illustrations, `.github/`, `CITATION.cff`); the four exploratory `scripts/statistics/` scripts documented; `env/bin/python3` removed from script headers.
 - **Clock-lock index Λ removed** (outside the SLH scope): `src/metrics/rhythm.py`, `tests/test_rhythm.py`, its exports, README mentions and the reference in the permutation-invariance talk figure.
 - **No hard-coded cohort size**: `PATIENT_START/END` (A001–A245) removed; the cohort is discovered from `Data/Raw/*.xlsx` (any ID format), optional `--patients` on `cgm_preprocessing`; `make pipeline` now works end to end on the open-data format (`OD_xxx`) — this also required snapping open-data timestamps back to the 5-min grid and accepting data that already are one 45-day window (`find_optimal_window`, tolerance of two sampling steps). 249 tests.
