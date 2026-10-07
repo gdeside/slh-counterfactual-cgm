@@ -197,8 +197,8 @@ paper_clinical: table1 fig5 fig6 suppfig_phenotype  ## Table 1 and figures that 
 
 # ---- OPEN DATA & UNITS ------------------------------------------------------
 
-example:  ## Detection + counterfactual on one file (demo trace, or INPUT=file.csv [UNIT=mmol/L])
-	$(RUN) scripts.examples.detect_and_counterfactual $(if $(INPUT),--input $(INPUT) $(if $(UNIT),--unit $(UNIT)),--demo)
+example:  ## Detection + counterfactual without the pipeline: demo, INPUT=file, or INPUT_DIR=folder [UNIT=mmol/L]
+	$(RUN) scripts.examples.detect_and_counterfactual $(if $(INPUT_DIR),--input_dir $(INPUT_DIR),$(if $(INPUT),--input $(INPUT),--demo)) $(if $(UNIT),--unit $(UNIT))
 
 presentation_figures:  ## Talk figures (scripts/presentation_figures/, output ignored by git; patients chosen automatically)
 	$(RUN) scripts.presentation_figures.agp_counterfactual_recurrence

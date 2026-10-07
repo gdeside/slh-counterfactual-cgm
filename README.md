@@ -19,11 +19,12 @@ Code, analysis pipeline and figure scripts for the manuscript:
 
 - [Overview](#overview)
 - [Method in brief](#method-in-brief)
+- [Three ways to use the code](#three-ways-to-use-the-code)
 - [Manuscript figure and table map](#manuscript-figure-and-table-map)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
 - [Quick start with the sample dataset](#quick-start-with-the-sample-dataset)
-- [Use the two core steps on your own file](#use-the-two-core-steps-on-your-own-file)
+- [Run detection and counterfactual directly on your files (no pipeline)](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline)
 - [Data availability](#data-availability)
 - [How to use the data](#how-to-use-the-data)
 - [How to reproduce](#how-to-reproduce)
@@ -72,6 +73,37 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 
 ---
 
+## Three ways to use the code
+
+| | **A. Full pipeline** (the paper) | **B. One file** | **C. A folder of files** |
+|---|---|---|---|
+| What it does | raw files → 45-day windows → metrics → cohort filter → episodes → counterfactual + sensitivity → manuscript figures and tables | episode detection / classification, counterfactual and effect on the metrics | the same, for every file of a folder (a whole cohort) |
+| Input | `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT` | any CSV / TSV / Excel file of one patient | a folder with one such file per patient (file name = patient ID) |
+| Preprocessing, quality flags, 45-day window, filtering | yes | **no** — give a clean trace | **no** — give clean traces |
+| Command | `make pipeline`, then `make paper` | `make example INPUT=my_patient.csv` | `make example INPUT_DIR=my_folder` |
+| Output | `Data/`, `Results/`, `Figures/` under `CGM_DATA_ROOT` | `example_output/` (episodes, counterfactual, summary, figure) | `example_output/`: per-patient folders + `cohort_summary.csv` + `cohort_episodes.csv` |
+| Reproduces the manuscript | **yes** (with the original data; the open dataset gives close values) | no | no |
+| Details | [How to use the data](#how-to-use-the-data), [How to reproduce](#how-to-reproduce) | [B and C below](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline) | [B and C below](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline) |
+
+Which one? **A** to reproduce or re-run the study; **B** to look at one recording; **C** to analyse a whole set of recordings
+quickly, without organising them in the `Data/Raw/…` layout or filtering the cohort. Counts obtained with B or C differ from
+the pipeline's for the same patients, because the pipeline first extracts a 45-day window with ≥ 70 % coverage and applies the
+cohort filter.
+
+**A in short** — put the files in `<CGM_DATA_ROOT>/Data/Raw/`, then:
+
+```bash
+export CGM_DATA_ROOT=/path/to/your/data
+make pipeline        # preprocessing → metrics → filtering → episode detection (+ sensitivity analysis)
+make paper           # Figures 2–4, Suppl. Fig. 1 and 3
+make paper_clinical  # Table 1, Figures 5–6, phenotype figure (need the clinical table)
+```
+
+No data at hand? `make sample_data_run` runs the whole chain on synthetic patients (see
+[Quick start](#quick-start-with-the-sample-dataset)).
+
+---
+
 ## Manuscript figure and table map
 
 | Manuscript item | Script | Notes |
@@ -116,7 +148,7 @@ counterfactual-cgm-slh/
 │   ├── statistics/               #   descriptive stats, quartiles, scatter plots
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
-│   ├── examples/                 #   detection + counterfactual on one standalone file (`make example`)
+│   ├── examples/                 #   detection + counterfactual on one file or a folder of files (`make example`)
 │   ├── presentation_figures/     #   talk figures, synthetic-data friendly (`make presentation_figures`; not part of the paper)
 │   └── supplementary_code/       #   exploratory / superseded analyses
 │
@@ -195,29 +227,60 @@ officer's approval. Details in the script header.
 
 ---
 
-## Use the two core steps on your own file
+## Run detection and counterfactual directly on your files (no pipeline)
 
-To run only **episode detection / SLH classification** and the **counterfactual** on a new CGM file — no pipeline, no
-cohort, no `CGM_DATA_ROOT` — use [`scripts/examples/detect_and_counterfactual.py`](scripts/examples/detect_and_counterfactual.py):
+[`scripts/examples/detect_and_counterfactual.py`](scripts/examples/detect_and_counterfactual.py) runs **episode detection and
+classification**, the **counterfactual** and the **effect on the glucose metrics** (TIR, TAR, median, CV) straight from CGM
+files — no preprocessing, no filtering, no `Data/Raw` layout, no `CGM_DATA_ROOT`.
+
+**Expected files** (CSV, TSV or Excel), one patient each, with a time column and a glucose column; names are auto-detected
+(`time`/`timestamp`/…, `glycemie`/`glucose`/…) or given with `--time_col` / `--glucose_col`. Glucose in mg/dL (`--unit mmol/L`
+converts). Give clean, time-sorted traces from a 5-minute CGM.
+
+### B. One file
 
 ```bash
 make example                                    # synthetic demo trace, runs out of the box
-make example INPUT=my_patient.csv               # your file (.csv / .tsv / .xlsx), glucose in mg/dL
-make example INPUT=my_patient.csv UNIT=mmol/L   # glucose in mmol/L (converted to mg/dL)
+make example INPUT=my_patient.csv               # your file, glucose in mg/dL
+make example INPUT=my_patient.csv UNIT=mmol/L   # glucose in mmol/L
 
-# the same, with all options
+# all options
 python3 -m scripts.examples.detect_and_counterfactual --input my_patient.csv \
         [--unit mmol/L] [--time_col Time] [--glucose_col Glucose] [--offset 30] [--out_dir example_output]
 ```
 
-The file holds **one patient** with a time column and a glucose column (names are auto-detected: `time`/`timestamp`/…,
-`glycemie`/`glucose`/…). Outputs go to `example_output/` (git-ignored): `episodes.csv` (every episode with C1–C6 and its
-category: SLH / Not isolated / Night / LLH), `counterfactual.csv` (observed G(t) and counterfactual C(t)), `summary.txt` (counts, ΔTIR, ΔTAR, Δmedian)
-and `counterfactual.png`.
+Outputs in `example_output/` (git-ignored): `episodes.csv` (every episode with C1–C6 and its category — SLH / Not isolated /
+Night / LLH), `counterfactual.csv` (observed G(t) and counterfactual C(t)), `summary.txt` (counts, ΔTIR, ΔTAR, Δmedian) and
+`counterfactual.png`.
+
+### C. A folder of files (a whole cohort)
+
+Put one file per patient in a folder — any folder, no required sub-structure. The **file name is the patient ID**
+(`P001.csv` → patient `P001`), and CSV, TSV and Excel files can be mixed.
+
+```bash
+make example INPUT_DIR=my_folder                # every file of the folder
+make example INPUT_DIR=my_folder UNIT=mmol/L
+
+python3 -m scripts.examples.detect_and_counterfactual --input_dir my_folder/ \
+        [--unit mmol/L] [--offset 30] [--out_dir example_output] [--no_plots]
+```
+
+Outputs in `example_output/`:
+
+| File | Content |
+|---|---|
+| `<patient_id>/episodes.csv`, `counterfactual.csv`, `counterfactual.png` | the single-file outputs, for each patient (`--no_plots` skips the figures — faster for large cohorts) |
+| `cohort_episodes.csv` | all episodes of all patients, `patient_id` first |
+| `cohort_summary.csv` | one row per patient: readings, days, number of episodes per category, TIR 70–180 / TAR > 180 / median glucose observed vs counterfactual and the differences Δ = counterfactual − observed |
+| `skipped_files.csv` | files that could not be processed and why (unreadable, columns not found, fewer than 100 readings) — one bad file never stops the others |
+
+In both modes the zone-expansion offset δ is `--offset` (default 30 min; the manuscript tests 0–90 min). The thresholds are in
+`src/episodes/episode_config.py`.
 
 The notebook [`notebooks/09_detect_and_counterfactual_on_your_file.ipynb`](notebooks/09_detect_and_counterfactual_on_your_file.ipynb)
-walks through the same steps (loading, episodes and criteria, counterfactual, effect on the metrics, sensitivity to δ).
-The script is also a short template for calling the library from your own code:
+walks through the same steps for one file (loading, episodes and criteria, counterfactual, effect on the metrics, sensitivity
+to δ). The script is also a short template for calling the library from your own code:
 
 ```python
 from src.episodes.detection import detect_hyperglycemia_episodes
@@ -225,16 +288,17 @@ from src.episodes.criteria import classify_episodes
 from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
 
 episodes = detect_hyperglycemia_episodes(df)            # df: columns "time" (datetime) and "glycemie" (mg/dL)
-table = classify_episodes(df, episodes)                 # C1–C6; "classification" is SLH or not-SLH (see below for the 4 categories)
+table = classify_episodes(df, episodes)                 # C1–C6; "classification" is SLH or not-SLH
 slh = table.loc[table["classification"] == "SLH", ["onset_time", "offset_time"]].to_dict("records")
 counterfactual = build_full_counterfactual_signal(df, slh, offset_min=30, timestep_min=5.0)
 ```
 
-The `classification` column of `classify_episodes` is binary (SLH, or not). The four categories of Figure 2 (SLH / Not isolated / Night / LLH) are
-obtained from the C1–C6 columns, as done by `categorise()` in the example script; episodes failing C2 are excluded first.
+The `classification` column of `classify_episodes` is binary (SLH, or not). The four categories of Figure 2 (SLH / Not isolated /
+Night / LLH) are obtained from the C1–C6 columns, as done by `categorise()` in the example script; episodes failing C2 are set
+aside first.
 
-Not done here (done by the full pipeline): quality flags, extraction of the 45-day window (≥ 70 % coverage) and cohort
-filtering — give a clean, time-sorted trace from a 5-minute CGM. Thresholds are in `src/episodes/episode_config.py`.
+**Not done here** (done by the full pipeline A): quality flags, extraction of the 45-day window (≥ 70 % coverage) and cohort
+filtering. For that reason the episode counts differ from those of the pipeline for the same patients.
 
 ---
 
@@ -251,8 +315,9 @@ filtering — give a clean, time-sorted trace from a 5-minute CGM. Thresholds ar
 
 ## How to use the data
 
-Three kinds of data can be used with this code. In every case, point the code at a working folder with
-`CGM_DATA_ROOT` (default: `./data`); inputs are read from, and outputs written to, sub-folders of it.
+This section is about the **full pipeline (A)**. Three kinds of data can be used with it; point the code at a working folder with
+`CGM_DATA_ROOT` (default: `./data`); inputs are read from, and outputs written to, sub-folders of it. To run only detection and
+the counterfactual on files, without this layout, see [B and C](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline).
 
 | Data | Use it for | How |
 |---|---|---|
@@ -260,7 +325,7 @@ Three kinds of data can be used with this code. In every case, point the code at
 | **Open anonymised dataset** (Zenodo) | re-running the analysis | convert it to the raw layout (below), then `make pipeline` |
 | **Your own CGM exports** | applying the method to new data | put one file per patient in `Data/Raw/` (below) |
 
-### Option 1 — Open dataset (Zenodo)
+### A1 — Open dataset (Zenodo)
 
 The release contains `cohort_open_data.csv` (all patients) and `per_patient/OD_xxx.csv`, with three columns:
 
@@ -281,7 +346,7 @@ time onto an arbitrary origin (2000-01-01 00:00): no real date is involved. Beca
 differ slightly from the manuscript. The phenotype table (`Data/Final cohort SLH.csv`) is **not** part of the open
 dataset, so Table 1 and the determinant figures cannot be reproduced from it.
 
-### Option 2 — Your own CGM data
+### A2 — Your own CGM data (full pipeline)
 
 Create `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT`, one file per patient, with two columns:
 
@@ -424,7 +489,7 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 | Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
 | Sensitivity | `sensitivity_analysis`, `lines_`/`boxplots_`/`cdf_`/`agp_`/`timeseries_sensitivity`, `sensitivity_figures` |
 | Manuscript | `fig2`, `fig3`, `fig4`, `suppfig1`, `suppfig3`, `cohort_flowchart`, **`paper`**; with the clinical table*: `table1`, `fig5`, `fig6`, `suppfig_phenotype`, **`paper_clinical`** |
-| Single-file example | `example` (`make example INPUT=file.csv`) |
+| Single file / folder, no pipeline | `example` (`make example INPUT=file.csv` or `INPUT_DIR=folder`) |
 | Talk figures | `presentation_figures` |
 | Open data / units | `open_data`, `open_data_phase_shift`, `open_data_to_raw`, `convert_units` |
 | Sample dataset | `sample_data`, `sample_data_run`, `sample_data_real` (maintainers, real data) |
@@ -442,20 +507,7 @@ make tests        # or: python3 -m pytest tests -v
 ```
 
 Runs in a few seconds, needs no patient data, and is executed on every push by GitHub Actions
-(`.github/workflows/tests.yml`). Covered:
-
-| Area | Test file |
-|---|---|
-| Data loading, quality flags, coverage | `test_load_data.py`, `test_quality_flags.py`, `test_coverage.py` |
-| CGM metrics | `test_metrics.py` |
-| Episode criteria C1–C6 | `test_criteria.py` |
-| **End to end** on a synthetic trace: detection → episode classification → counterfactual → Δ metrics | `test_pipeline_end_to_end.py` |
-| mg/dL ↔ mmol/L conversion | `test_unit_conversion.py` |
-| Automatic / explicit patient selection | `test_patient_selection.py` |
-| Open-data anonymisation, open data → raw conversion, synthetic sample data | `test_open_data.py` |
-| Patient discovery (no hard-coded cohort size, any ID format, `--patients`) and 45-day window extraction | `test_patient_discovery.py`, `test_window.py` |
-| Single-file example (detection + counterfactual on a CSV / Excel file) | `test_example_script.py` |
-| Figure fonts fall back cleanly when Arial is missing (Linux) | `test_style_fonts.py` |
+(`.github/workflows/tests.yml`). 
 
 ---
 

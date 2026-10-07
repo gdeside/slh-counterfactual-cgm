@@ -2,34 +2,51 @@
 scripts/examples/detect_and_counterfactual.py
 =============================================
 
-Illustration: run the two core steps — hyperglycaemia-episode detection / SLH classification and the
-counterfactual signal — on ONE CGM file, without the full pipeline (no preprocessing, no cohort, no
-``CGM_DATA_ROOT``).
+Run the two core steps — hyperglycaemia-episode detection / classification and the counterfactual signal — and the
+effect on the glucose metrics, directly on CGM files: no preprocessing, no filtering, no ``Data/Raw`` layout, no
+``CGM_DATA_ROOT``.
 
-Input file (CSV, TSV or Excel), one patient, at least two columns:
+Two modes
+---------
+  --input FILE      ONE patient file                          -> episodes, counterfactual, summary, figure
+  --input_dir DIR   a FOLDER of patient files (one per patient; the file name is the patient ID)
+                    -> the same per patient, plus cohort tables (all episodes, one summary row per patient)
+  --demo            a synthetic 3-day trace, so the example runs out of the box
+
+Input files (CSV, TSV or Excel), one patient each, at least two columns:
     time      timestamp of each reading
     glucose   glucose value (default unit mg/dL; use --unit mmol/L for mmol/L)
 Column names are detected automatically (time: time/timestamp/datetime/date; glucose: glycemie/glucose/
-glycemia/sgl/value) or given with --time_col / --glucose_col.
+glycemia/sgl/value) or given with --time_col / --glucose_col. In folder mode every file must use the same layout;
+files that cannot be read or are too short are skipped and listed in ``skipped_files.csv``.
 
 Usage
 -----
     python3 -m scripts.examples.detect_and_counterfactual --demo
     python3 -m scripts.examples.detect_and_counterfactual --input my_patient.csv [--unit mmol/L]
                                                           [--offset 30] [--out_dir example_output]
+    python3 -m scripts.examples.detect_and_counterfactual --input_dir my_folder/ [--unit mmol/L]
+                                                          [--offset 30] [--out_dir example_output] [--no_plots]
+    (or: make example [INPUT=file | INPUT_DIR=folder] [UNIT=mmol/L])
 
-Outputs (in --out_dir)
-----------------------
+Outputs
+-------
+Single file (in --out_dir):
     episodes.csv         every detected episode with the criteria C1–C6 and its category
                          (SLH / Not isolated / Night / LLH — same categories as manuscript Figure 2)
     counterfactual.csv   time, observed glucose G(t), counterfactual C(t)
     summary.txt          episode counts and the effect on time in range / median glucose
     counterfactual.png   observed vs counterfactual signal, SLH episodes shaded
 
-``--demo`` uses a synthetic 3-day trace (arbitrary dates), so the example runs out of the box.
+Folder (in --out_dir):
+    <patient_id>/        episodes.csv, counterfactual.csv, counterfactual.png (not with --no_plots) for each patient
+    cohort_episodes.csv  all episodes of all patients (column patient_id first)
+    cohort_summary.csv   one row per patient: readings, days, episodes per category, TIR / TAR / median / CV
+                         observed vs counterfactual and the differences (Δ = counterfactual − observed)
+    skipped_files.csv    files that could not be processed, with the reason (only if any)
 
 What is NOT done here (done by the full pipeline): quality flags, extraction of the 45-day analysis window
-(>= 70 % coverage), cohort filtering. Give a clean, time-sorted trace of a 5-minute CGM.
+(>= 70 % coverage), cohort filtering. Give clean, time-sorted traces of a 5-minute CGM.
 """
 import argparse
 from pathlib import Path
@@ -52,6 +69,12 @@ from src.utils.unit_conversion import UNIT_MMOLL, mmoll_to_mgdl, normalize_unit
 TIME_NAMES = ("time", "timestamp", "datetime", "date", "date_time")
 GLUCOSE_NAMES = ("glycemie", "glucose", "glycemia", "sgl", "value", "glucose_mgdl")
 DEFAULT_OFFSET_MIN = 30
+MIN_READINGS = 100
+FILE_SUFFIXES = (".csv", ".tsv", ".txt", ".xlsx", ".xls")
+
+
+class TraceError(ValueError):
+    """A CGM file cannot be used (unreadable, columns not found, too short)."""
 
 
 # =============================================================================
@@ -60,22 +83,25 @@ DEFAULT_OFFSET_MIN = 30
 def _find_column(columns, candidates, explicit=None, what="column"):
     if explicit:
         if explicit not in columns:
-            raise SystemExit(f"{what} '{explicit}' not found. Columns: {list(columns)}")
+            raise TraceError(f"{what} '{explicit}' not found. Columns: {list(columns)}")
         return explicit
     lowered = {str(c).strip().lower(): c for c in columns}
     for name in candidates:
         if name in lowered:
             return lowered[name]
-    raise SystemExit(f"Could not find the {what}; pass it explicitly. Columns: {list(columns)}")
+    raise TraceError(f"Could not find the {what}; pass it explicitly. Columns: {list(columns)}")
 
 
 def load_trace(path, unit="mg/dL", time_col=None, glucose_col=None) -> pd.DataFrame:
     """Read one patient file -> DataFrame with columns ``time`` and ``glycemie`` (mg/dL), sorted."""
     path = Path(path)
-    if path.suffix.lower() in (".xlsx", ".xls"):
-        raw = pd.read_excel(path)
-    else:
-        raw = pd.read_csv(path, sep=None, engine="python")           # CSV or TSV, delimiter auto-detected
+    try:
+        if path.suffix.lower() in (".xlsx", ".xls"):
+            raw = pd.read_excel(path)
+        else:
+            raw = pd.read_csv(path, sep=None, engine="python")       # CSV or TSV, delimiter auto-detected
+    except Exception as exc:                                          # unreadable / not a table
+        raise TraceError(f"cannot read {path.name}: {exc}") from exc
     tcol = _find_column(raw.columns, TIME_NAMES, time_col, "time column")
     gcol = _find_column(raw.columns, GLUCOSE_NAMES, glucose_col, "glucose column")
 
@@ -84,8 +110,8 @@ def load_trace(path, unit="mg/dL", time_col=None, glucose_col=None) -> pd.DataFr
     df = df.dropna().sort_values("time").drop_duplicates("time").reset_index(drop=True)
     if normalize_unit(unit) == UNIT_MMOLL:
         df["glycemie"] = mmoll_to_mgdl(df["glycemie"])
-    if len(df) < 100:
-        raise SystemExit(f"Only {len(df)} valid readings — need at least a few days of CGM data.")
+    if len(df) < MIN_READINGS:
+        raise TraceError(f"Only {len(df)} valid readings — need at least a few days of CGM data.")
     return df
 
 
@@ -166,21 +192,113 @@ def plot(table: pd.DataFrame, cf: pd.DataFrame, path: Path) -> None:
 
 
 # =============================================================================
+# FOLDER OF FILES (a whole cohort, no Data/Raw layout)
+# =============================================================================
+def list_patient_files(input_dir) -> list:
+    """Patient files of a folder: CSV / TSV / Excel, hidden files and Excel lock files ignored, sorted by name."""
+    folder = Path(input_dir)
+    if not folder.is_dir():
+        raise TraceError(f"{folder} is not a folder")
+    files = sorted(p for p in folder.iterdir()
+                   if p.is_file() and p.suffix.lower() in FILE_SUFFIXES and not p.name.startswith((".", "~$")))
+    if not files:
+        raise TraceError(f"no CSV / TSV / Excel file found in {folder}")
+    return files
+
+
+def summary_row(patient_id: str, df: pd.DataFrame, table: pd.DataFrame, cf: pd.DataFrame, timestep: float) -> dict:
+    """One line of cohort_summary.csv: episode counts by category and observed vs counterfactual metrics."""
+    obs, cfs = cf["observed"], cf["counterfactual"]
+    m_obs, m_cf = compute_time_in_range_metrics(obs), compute_time_in_range_metrics(cfs)
+    counts = table["category"].value_counts() if len(table) else pd.Series(dtype=int)
+    row = {"patient_id": patient_id, "n_readings": len(df),
+           "n_days": round((df["time"].max() - df["time"].min()).total_seconds() / 86400, 1),
+           "timestep_min": timestep, "n_episodes": len(table)}
+    for c in CATEGORY_ORDER:
+        row[f"n_{c.replace(' ', '_')}"] = int(counts.get(c, 0))
+    row["n_excluded_incomplete_data"] = int(counts.get(EXCLUDED_LABEL, 0))
+    for label, key in [("TIR_70_180_pct", "TIR70180"), ("TAR_180_pct", "TAR180")]:
+        row[f"{label}_observed"] = round(100 * m_obs[key], 2)
+        row[f"{label}_counterfactual"] = round(100 * m_cf[key], 2)
+        row[f"delta_{label}"] = round(100 * (m_cf[key] - m_obs[key]), 2)
+    row["median_mgdl_observed"] = round(float(obs.median()), 1)
+    row["median_mgdl_counterfactual"] = round(float(cfs.median()), 1)
+    row["delta_median_mgdl"] = round(float(cfs.median() - obs.median()), 2)
+    cv = lambda x: float(x.std() / x.mean() * 100) if x.mean() > 0 else float("nan")
+    row["delta_CV_pct"] = round(cv(cfs) - cv(obs), 2)
+    return row
+
+
+def run_folder(input_dir, out_dir, unit="mg/dL", time_col=None, glucose_col=None,
+               offset_min=DEFAULT_OFFSET_MIN, plots=True):
+    """Process every patient file of a folder. Returns (cohort summary, cohort episodes, skipped)."""
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    rows, episodes, skipped = [], [], []
+    files = list_patient_files(input_dir)
+    for k, path in enumerate(files, 1):
+        pid = path.stem
+        print(f"[{k}/{len(files)}] {path.name}", end="  ", flush=True)
+        try:
+            df = load_trace(path, unit, time_col, glucose_col)
+            table, cf, timestep = run(df, offset_min)
+        except Exception as exc:                                    # one bad file must not stop the cohort
+            print(f"SKIPPED ({exc})")
+            skipped.append({"file": path.name, "reason": str(exc)})
+            continue
+        patient_out = out / pid
+        patient_out.mkdir(parents=True, exist_ok=True)
+        table.to_csv(patient_out / "episodes.csv", index=False)
+        cf.to_csv(patient_out / "counterfactual.csv", index=False)
+        if plots:
+            plot(table, cf, patient_out / "counterfactual.png")
+        rows.append(summary_row(pid, df, table, cf, timestep))
+        episodes.append(table.assign(patient_id=pid))
+        print(f"{rows[-1]['n_SLH']} SLH / {len(table)} episodes")
+
+    summary = pd.DataFrame(rows)
+    cohort_episodes = pd.concat(episodes, ignore_index=True) if episodes else pd.DataFrame()
+    if len(cohort_episodes):
+        cohort_episodes = cohort_episodes[["patient_id"] + [c for c in cohort_episodes.columns if c != "patient_id"]]
+    summary.to_csv(out / "cohort_summary.csv", index=False)
+    cohort_episodes.to_csv(out / "cohort_episodes.csv", index=False)
+    if skipped:
+        pd.DataFrame(skipped).to_csv(out / "skipped_files.csv", index=False)
+    return summary, cohort_episodes, skipped
+
+
+# =============================================================================
 # MAIN
 # =============================================================================
 def main(argv=None) -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     src = p.add_mutually_exclusive_group(required=True)
     src.add_argument("--input", help="CGM file of ONE patient (.csv / .tsv / .xlsx)")
+    src.add_argument("--input_dir", help="folder of patient files, one file per patient (file name = patient ID)")
     src.add_argument("--demo", action="store_true", help="use a synthetic 3-day trace")
-    p.add_argument("--unit", default="mg/dL", help="glucose unit of the file: mg/dL (default) or mmol/L")
+    p.add_argument("--unit", default="mg/dL", help="glucose unit of the file(s): mg/dL (default) or mmol/L")
     p.add_argument("--time_col", help="name of the time column (auto-detected by default)")
     p.add_argument("--glucose_col", help="name of the glucose column (auto-detected by default)")
     p.add_argument("--offset", type=float, default=DEFAULT_OFFSET_MIN, help="zone-expansion offset δ in min (default 30)")
     p.add_argument("--out_dir", default="example_output", help="output folder (default: ./example_output)")
+    p.add_argument("--no_plots", action="store_true", help="folder mode: skip the per-patient figures (faster)")
     args = p.parse_args(argv)
 
-    df = demo_trace() if args.demo else load_trace(args.input, args.unit, args.time_col, args.glucose_col)
+    try:
+        if args.input_dir:
+            summary, _, skipped = run_folder(args.input_dir, args.out_dir, args.unit, args.time_col,
+                                             args.glucose_col, args.offset, plots=not args.no_plots)
+            print(f"\n{len(summary)} patient(s) processed, {len(skipped)} skipped.")
+            if len(summary):
+                show = ["patient_id", "n_episodes", "n_SLH", "n_Not_isolated", "n_Night", "n_LLH",
+                        "delta_TIR_70_180_pct", "delta_TAR_180_pct", "delta_median_mgdl"]
+                print(summary[show].to_string(index=False))
+            print(f"\nWritten to {Path(args.out_dir).resolve()}/  (cohort_summary.csv, cohort_episodes.csv, one folder per patient)")
+            return
+
+        df = demo_trace() if args.demo else load_trace(args.input, args.unit, args.time_col, args.glucose_col)
+    except TraceError as exc:
+        raise SystemExit(f"Error: {exc}")
     table, cf, timestep = run(df, args.offset)
 
     out = Path(args.out_dir)
