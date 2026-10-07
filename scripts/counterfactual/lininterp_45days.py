@@ -10,8 +10,12 @@ where counterfactual construction was applied.
 
 No title is drawn inside the artwork.
 
-Usage:
-    python3 -m scripts.counterfactual.lininterp_45days
+Usage
+-----
+    python3 -m scripts.counterfactual.lininterp_45days                       # patient with the most SLH episodes
+    python3 -m scripts.counterfactual.lininterp_45days --patient_id ID       # a given patient
+    python3 -m scripts.counterfactual.lininterp_45days --offset 45 --out_dir DIR
+    (or: make lininterp_45days)
 
 Authors: Guillaume Deside
 
@@ -23,6 +27,7 @@ Output
 # ─────────────────────────────────────────────────────────────────────────────
 # IMPORTS
 # ─────────────────────────────────────────────────────────────────────────────
+import argparse
 import os
 import numpy as np
 import pandas as pd
@@ -86,9 +91,6 @@ from src.utils.unit_conversion import format_glucose
 # PARAMETERS 
 # =============================================================================
 FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "Counterfactual_analysis")
-
-# ── Patient selection ─────────────────────────────────────────────────────────
-SELECTED_PID = None   # None = automatic (patient with the most SLH episodes); or set a patient ID
 
 
 ALPHA_SLH_HIGHLIGHT = 0.35        # Transparency for SLH shading
@@ -244,8 +246,24 @@ def generate_overview_figure(patient_id, df, all_episodes_df, slh_episodes,
 # =============================================================================
 # MAIN EXECUTION
 # =============================================================================
-def main():
+def parse_arguments(argv=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="45-day overview of the observed signal G(t) and the counterfactual C(t).",
+    )
+    parser.add_argument("--patient_id", default=None,
+                        help="patient to show (default: the patient with the most SLH episodes)")
+    parser.add_argument("--offset", type=float, default=SELECTED_OFFSET_MIN,
+                        help=f"zone-expansion offset δ in minutes (default: {SELECTED_OFFSET_MIN:g})")
+    parser.add_argument("--out_dir", default=FIGURES_OUTPUT_PATH,
+                        help="output folder, a sub-folder per patient is created "
+                             "(default: <CGM_DATA_ROOT>/Figures/Counterfactual_analysis)")
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
     """Main execution pipeline."""
+    args = parse_arguments(argv)
+    offset_min, figures_dir = args.offset, args.out_dir
     merge_mode = "WITH gap merging" if USE_GAP_MERGING else "WITHOUT gap merging"
     
     print("=" * 70)
@@ -254,7 +272,7 @@ def main():
     print(f"  Episode detection: {merge_mode}")
     if USE_GAP_MERGING:
         print(f"    MERGE_GAP_MIN = {MERGE_GAP_MIN} min")
-    print(f"  Zone offset (δ): {SELECTED_OFFSET_MIN} min")
+    print(f"  Zone offset (δ): {offset_min:g} min")
     kernel_str = f"k={KERNEL_MIN} min" if APPLY_KERNEL else "no kernel"
     print(f"  Smoothing: {kernel_str}")
     print("=" * 70)
@@ -264,7 +282,7 @@ def main():
     # ═════════════════════════════════════════════════════════════════════════
     
     # Load patient
-    patient_id = resolve_patient_id(SELECTED_PID, role="most")
+    patient_id = resolve_patient_id(args.patient_id, role="most")
     df_raw = load_patient_window(patient_id)
     if df_raw is None:
         raise FileNotFoundError(f"Cannot load {patient_id}")
@@ -293,15 +311,15 @@ def main():
     print(f"  SLH episodes: {len(slh_episodes)}")
     
     # Generate figure
-    os.makedirs(FIGURES_OUTPUT_PATH, exist_ok=True)
-    output_dir = os.path.join(FIGURES_OUTPUT_PATH, patient_id)
+    os.makedirs(figures_dir, exist_ok=True)
+    output_dir = os.path.join(figures_dir, patient_id)
     os.makedirs(output_dir, exist_ok=True)
     
     # 45-day overview
     overview_prefix = os.path.join(output_dir, "overview_45d")
     generate_overview_figure(
         patient_id, df, classification_df, slh_episodes, 
-        SELECTED_OFFSET_MIN, timestep, overview_prefix
+        offset_min, timestep, overview_prefix
     )
     
     print("\n" + "=" * 70)

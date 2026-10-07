@@ -132,7 +132,7 @@ lininterp_offset_comp:  ## Offset comparison (delta = 0...90 min)
 	$(RUN) scripts.counterfactual.lininterp_offset_comp
 
 lininterp_45days:  ## 45-day G(t) vs C(t) overview
-	$(RUN) scripts.counterfactual.lininterp_45days
+	$(RUN) scripts.counterfactual.lininterp_45days $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 
 # ---- SENSITIVITY ANALYSIS ---------------------------------------------------

@@ -386,7 +386,8 @@ and, for two-patient figures, also the patient with the **fewest** (at least one
 |---|---|---|
 | One patient | `--patient_id <ID>` | `python3 -m scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema --patient_id A174` |
 | Two patients (Figures 3, 4, 5, `patient_comparison`, two-patient presentation figures) | environment variables `CGM_PATIENT_HIGH` and `CGM_PATIENT_LOW` | see below |
-| `lininterp_*` scripts | set `SELECTED_PID` at the top of the script (default `None` = automatic) | `SELECTED_PID = "A224"` |
+| `lininterp_45days` | `--patient_id <ID>` (also `--offset`, `--out_dir`) | `make lininterp_45days PATIENT_ID=A224` |
+| `lininterp_stepbystep`, `lininterp_offset_comp` | set `SELECTED_PID` at the top of the script (default `None` = automatic) | `SELECTED_PID = "A224"` |
 
 `CGM_PATIENT_HIGH` is the patient with a **high** SLH frequency (many SLH episodes) and `CGM_PATIENT_LOW` the one with a
 **low** frequency; they are the two patients contrasted in Figures 3–5. They are *environment variables*: the
