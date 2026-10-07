@@ -163,7 +163,7 @@ sensitivity_figures: lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_
 table1: check_clinical_table  ## Table 1 — cohort characteristics (needs clinical phenotype table)
 	$(RUN) scripts.paper_figures.generate_table1
 
-fig2:  ## Figure 2 — SLH/LLH classification summary
+fig2:  ## Figure 2 — episode classification summary (SLH / Not isolated / Night / LLH)
 	$(RUN) scripts.paper_figures.generate_figure_2_classification_summary
 
 fig3:  ## Figure 3 — two patients, similar metrics, different SLH frequency
@@ -172,7 +172,7 @@ fig3:  ## Figure 3 — two patients, similar metrics, different SLH frequency
 fig4:  ## Figure 4 — counterfactual construction + sensitivity
 	$(RUN) scripts.paper_figures.generate_figure_4_counterfactual_construction
 
-fig5: check_clinical_table  ## Figure 5 — distribution of delta-TIR / delta-median
+fig5: check_clinical_table  ## Figure 5 — distribution of delta-TIR / delta-median / max delta-AGP + correlation matrix
 	$(RUN) scripts.paper_figures.generate_figure_5_counterfactual_distribution
 
 fig6: check_clinical_table  ## Figure 6 — SLH determinants (needs clinical phenotype table)

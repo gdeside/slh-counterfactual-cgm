@@ -71,7 +71,7 @@ from src.utils.unit_conversion import (
     to_display,
 )
 
-# Reuse the correlation-matrix data/computation from Figure 5 (SLH determinants)
+# Reuse the correlation-matrix data/computation from Figure 6 (SLH determinants)
 # rather than duplicating it -- only the plotting function is overridden below
 # to mask the (redundant, symmetric) upper triangle.
 from scripts.paper_figures.generate_figure_6_slh_determinants import (

@@ -112,7 +112,7 @@ No data at hand? `make sample_data_run` runs the whole chain on synthetic patien
 | Fig. 2 — Episode classification summary (SLH / Not isolated / Night / LLH) | `scripts/paper_figures/generate_figure_2_classification_summary.py` | `make fig2` |
 | Fig. 3 — Two patients, similar metrics, different SLH frequency (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | `make fig3` |
 | Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | `make fig4`; needs `make sensitivity_analysis` |
-| Fig. 5 — Distribution of ΔTIR / Δmedian | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | `make fig5`; needs the clinical table |
+| Fig. 5 — Distribution of ΔTIR / Δmedian / max ΔAGP, with the correlation matrix | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | `make fig5`; needs the clinical table |
 | Fig. 6 — Determinants of SLH frequency | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | `make fig6`; needs the clinical table |
 | Suppl. Fig. 1 — Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1_data_quality.py` | `make suppfig1` |
 | Suppl. Fig. 3 — SLH detection schema | `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` | `make suppfig3` |
@@ -495,7 +495,7 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 | Patient selection | `compelling_pairs`, `patient_similarity` |
 | SLH illustrations | `slh_funnel`, `slh_overview`, `slh_zoom_panels`, `agp_recurrence`, `patient_comparison` |
 | Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
-| Sensitivity | `sensitivity_analysis`, `lines_`/`boxplots_`/`cdf_`/`agp_`/`timeseries_sensitivity`, `sensitivity_figures` |
+| Sensitivity | `sensitivity_analysis`, `lines_sensitivity`, `boxplots_sensitivity`, `cdf_sensitivity`, `agp_sensitivity`, `timeseries_sensitivity`, `sensitivity_figures` |
 | Manuscript | `fig2`, `fig3`, `fig4`, `suppfig1`, `suppfig3`, `cohort_flowchart`, **`paper`**; with the clinical table*: `table1`, `fig5`, `fig6`, `suppfig_phenotype`, **`paper_clinical`** |
 | Single file / folder, no pipeline | `example` (`make example INPUT=file.csv` or `INPUT_DIR=folder`) |
 | Talk figures | `presentation_figures` |

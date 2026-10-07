@@ -101,8 +101,8 @@ concentrations, since the conversion is purely multiplicative.
 shows glucose, so the two versions coexist instead of overwriting each other:
 
 ```
-Figure4_Counterfactual_Construction_A174_vs_A224_mgdl.pdf
-Figure4_Counterfactual_Construction_A174_vs_A224_mmoll.pdf
+Figure4_Counterfactual_Construction_<high>_vs_<low>_mgdl.pdf
+Figure4_Counterfactual_Construction_<high>_vs_<low>_mmoll.pdf
 ```
 
 Producing both is just the same script run twice:
