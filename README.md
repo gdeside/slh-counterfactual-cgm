@@ -97,6 +97,10 @@ export CGM_DATA_ROOT=/path/to/your/data
 make pipeline        # preprocessing → metrics → filtering → episode detection (+ sensitivity analysis)
 make paper           # Figures 2–4, Suppl. Fig. 1 and 3
 make paper_clinical  # Table 1, Figures 5–6, phenotype figure (need the clinical table)
+
+# illustrations for a patient of your choice (default: the patient with the most SLH episodes)
+make suppfig3 lininterp_45days PATIENT_ID=A224
+CGM_PATIENT_HIGH=A174 CGM_PATIENT_LOW=A224 make fig3 fig4     # two patients: high vs low SLH frequency
 ```
 
 No data at hand? `make sample_data_run` runs the whole chain on synthetic patients (see
@@ -380,17 +384,23 @@ unless you tell it which ones to use.
 and, for two-patient figures, also the patient with the **fewest** (at least one). The chosen IDs are printed
 (`[auto] patient with most SLH episodes: …`).
 
-**Choosing your own patients**
+**Choosing your own patients — with `make`**
 
-| Figure type | How | Example |
-|---|---|---|
-| One patient | `--patient_id <ID>` | `python3 -m scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema --patient_id A174` |
-| Two patients (Figures 3, 4, 5, `patient_comparison`, two-patient presentation figures) | environment variables `CGM_PATIENT_HIGH` and `CGM_PATIENT_LOW` | see below |
-| `lininterp_45days`, `lininterp_stepbystep`, `lininterp_offset_comp`, `visualize_sensitivity_lines`, `visualize_agp_sensitivity`, `visualize_timeseries_sensitivity` | `--patient_id <ID>` (also `--offset`, `--offsets`, `--n_episodes`, `--out_dir` where relevant; run with `-h`) | `make lininterp_45days PATIENT_ID=A224` (same `PATIENT_ID=` for the other five targets) |
+One patient: add `PATIENT_ID=<id>` to the command (any number of targets can share it):
 
-`CGM_PATIENT_HIGH` is the patient with a **high** SLH frequency (many SLH episodes) and `CGM_PATIENT_LOW` the one with a
-**low** frequency; they are the two patients contrasted in Figures 3–5. They are *environment variables*: the
-`NAME=value` part placed before a command sets them for that command only, so they work with `make` and with `python3 -m`:
+```bash
+make suppfig3 PATIENT_ID=A224                                   # Supplementary Figure 3 (detection schema)
+make lininterp_45days PATIENT_ID=A224                           # 45-day observed vs counterfactual
+make lininterp_45days lininterp_stepbystep suppfig3 PATIENT_ID=A224    # several figures, same patient
+make lininterp_45days                                           # no PATIENT_ID: patient with the most SLH episodes
+```
+
+`PATIENT_ID=` works with: `suppfig3`, `lininterp_45days`, `lininterp_stepbystep`, `lininterp_offset_comp`, `lines_sensitivity`,
+`agp_sensitivity`, `timeseries_sensitivity`, `slh_funnel`, `slh_overview`, `slh_zoom_panels`.
+
+Two patients (Figures 3–5, `patient_comparison`: high vs low SLH frequency): use the environment variables `CGM_PATIENT_HIGH`
+and `CGM_PATIENT_LOW`, which are the patient with many SLH episodes and the one with few. The `NAME=value` part placed before a
+command sets them for that command only, so they work with `make` and with `python3 -m`:
 
 ```bash
 # Figures 3, 4 and 5 for two chosen patients
@@ -400,6 +410,14 @@ CGM_PATIENT_HIGH=A174 CGM_PATIENT_LOW=A224 make fig3 fig4 fig5
 export CGM_PATIENT_HIGH=A174
 export CGM_PATIENT_LOW=A224
 make fig3 fig4 fig5 patient_comparison
+```
+
+**Without `make`** — every one of these scripts accepts `--patient_id <ID>` (and, where relevant, `--offset`, `--offsets`,
+`--n_episodes`, `--out_dir`; run with `-h`):
+
+```bash
+python3 -m scripts.counterfactual.lininterp_45days --patient_id A224 --offset 45
+python3 -m scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema --patient_id A224
 ```
 
 `A174` and `A224` are the two participants shown in the manuscript (high vs low SLH frequency); they exist only in the

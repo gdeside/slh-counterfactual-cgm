@@ -108,13 +108,13 @@ scatter_analysis:  ## n_SLH vs delta-metric scatter plots
 # ---- SLH EPISODE FIGURES ----------------------------------------------------
 
 slh_funnel:  ## Episode filtering funnel (single patient)
-	$(RUN) scripts.generate_episode_funnel_single_patient
+	$(RUN) scripts.generate_episode_funnel_single_patient $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 slh_overview:  ## 45-day episode overview
-	$(RUN) scripts.generate_overview_figure
+	$(RUN) scripts.generate_overview_figure $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 slh_zoom_panels:  ## Zoom panels per classification criterion
-	$(RUN) scripts.generate_zoom_panels
+	$(RUN) scripts.generate_zoom_panels $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 agp_recurrence:  ## AGP + recurrence figures
 	$(RUN) scripts.cgm_agp_recurrence
