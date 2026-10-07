@@ -107,8 +107,8 @@ scatter_analysis:  ## n_SLH vs delta-metric scatter plots
 
 # ---- SLH EPISODE FIGURES ----------------------------------------------------
 
-slh_funnel:  ## Episode filtering funnel (single patient)
-	$(RUN) scripts.generate_episode_funnel_single_patient $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
+slh_funnel:  ## Episode classification funnel of one patient (Figure 2 categories)
+	$(RUN) scripts.episodes_detection.episode_funnel_single_patient $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 slh_overview:  ## 45-day episode overview
 	$(RUN) scripts.generate_overview_figure $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))

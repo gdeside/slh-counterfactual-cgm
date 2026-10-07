@@ -147,7 +147,7 @@ counterfactual-cgm-slh/
 │
 ├── scripts/                      # Executable analysis scripts (`python3 -m scripts.<pkg>.<name>`)
 │   ├── preprocessing/            #   raw → windows → metrics → filtered cohort; open-data release; unit conversion
-│   ├── episodes_detection/       #   episode detection + classification
+│   ├── episodes_detection/       #   episode detection + classification; single-patient classification funnel (`make slh_funnel`)
 │   ├── counterfactual/           #   counterfactual figures + sensitivity analysis over δ
 │   ├── statistics/               #   descriptive stats, quartiles, scatter plots; exploratory scripts (below)
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
@@ -155,7 +155,7 @@ counterfactual-cgm-slh/
 │   ├── examples/                 #   detection + counterfactual on one file or a folder of files (`make example`)
 │   ├── presentation_figures/     #   talk figures, synthetic-data friendly (`make presentation_figures`; not part of the paper)
 │   ├── sample_data/              #   synthetic sample patients (`make sample_data`) and the generator built from real data (maintainers)
-│   └── *.py                      #   single-patient illustrations at the top level (episode funnel, overview, zoom panels, AGP recurrence, patient comparison)
+│   └── *.py                      #   single-patient illustrations at the top level (overview, zoom panels, AGP recurrence, patient comparison)
 │
 ├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
 ├── tests/                        # pytest suite (238 tests; no patient data needed) — `make tests`

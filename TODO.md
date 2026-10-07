@@ -32,8 +32,7 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 5. [ ] **Confirm the last manuscript numbers** (only you know them): the cohort flowchart and the phenotype-determinants figure are
        still "Suppl. Fig. —" without a number (rename the scripts / Makefile targets once known, e.g. `suppfig2`), there is no script for
        Fig. 1, and `generate_cohort_flowchart.py` may be dropped altogether (see the discussion: hand-drawn SVG, no computation).
-6. [ ] **Tidy the loose scripts at the root of `scripts/`** (`cgm_agp_recurrence.py`,
-       `generate_episode_funnel_single_patient.py`, `generate_overview_figure.py`, `generate_zoom_panels.py`,
+6. [ ] **Tidy the loose scripts at the root of `scripts/`** (`cgm_agp_recurrence.py`, `generate_overview_figure.py`, `generate_zoom_panels.py`,
        `patient_comparison.py`): move into a sub-package (e.g. `scripts/slh_illustrations/`) or `paper_figures/`; update the
        Makefile targets, the README map and cross-imports (`generate_zoom_panels` is imported by
        `scripts/presentation_figures/episode_classification_zoom_panels.py`).

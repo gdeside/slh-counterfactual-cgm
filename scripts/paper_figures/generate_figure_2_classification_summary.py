@@ -251,7 +251,8 @@ def panel_label_y(axis_height_in: float, pad_in: float = 0.16) -> float:
 # =============================================================================
 # PANEL A: Simplified classification waterfall
 # =============================================================================
-def plot_simplified_waterfall(ax, funnel_stats: dict, axis_height_in: float) -> None:
+def plot_simplified_waterfall(ax, funnel_stats: dict, axis_height_in: float,
+                             panel_label: str | None = "A", xlabel: str | None = None) -> None:
     """
     Single-panel waterfall funnel (adapted from `plot_simplified_funnel`'s
     panel A in scripts/statistics/slh_llh_stats.py): C1 (duration) ->
@@ -307,10 +308,11 @@ def plot_simplified_waterfall(ax, funnel_stats: dict, axis_height_in: float) -> 
     ax.set_yticks(y)
     ax.set_yticklabels(labels, fontsize=7.5)
     style_axes(ax)
-    ax.set_xlabel("Total number of hyperglycemic episodes across study "
-                  "participants in their 45-day observation window",
+    ax.set_xlabel(xlabel or ("Total number of hyperglycemic episodes across study "
+                             "participants in their 45-day observation window"),
                   fontsize=FONT_SIZE_BASE)
-    add_panel_label(ax, "A", y=panel_label_y(axis_height_in))
+    if panel_label:
+        add_panel_label(ax, panel_label, y=panel_label_y(axis_height_in))
 
 
 # =============================================================================
