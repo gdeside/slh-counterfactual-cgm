@@ -31,7 +31,7 @@ Outputs (RESULTS_PATH / Patient_Pair_Selection)
 
 Usage
 -----
-    env/bin/python3 -m scripts.patient_selection.find_compelling_pairs [--no_filter] [--n_pairs 5]
+    python3 -m scripts.patient_selection.find_compelling_pairs [--no_filter] [--n_pairs 5]
 
 Authors: Guillaume Deside
 """

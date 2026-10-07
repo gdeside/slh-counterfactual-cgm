@@ -44,10 +44,6 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 9. [ ] **Final consistency checks**: `git grep "/Users/"` empty; `git grep -n "presentation/"` only intended hits; every
        Makefile target points to an existing module; `make help` clean; `make tests` green; no unused imports.
 
-9c. [ ] **README fixes**: contact e-mail differs between README (`guillaume.deside@uclouvain.be`) and `CITATION.cff`
-        (`guillaume.deside28@gmail.com`) — keep one; the structure tree still lists `scripts/supplementary_code/` (folder
-        no longer exists) and omits `.github/`; mention that `scripts/statistics/` has 4 exploratory scripts with no Makefile target
-        (or delete them, step 8).
 9d. [ ] **Lint pass**: pyflakes reports 157 unused imports and one duplicate definition
         (`scripts/preprocessing/cgm_filtering.py:28`, `FIG_FILTERING_DIR`); remove them (no undefined names, every script
         imports cleanly).
@@ -107,6 +103,7 @@ Steps 3–10 can be done as normal commits on `release-clean` before or after th
 
 ## Done
 
+- **README fixes**: one contact e-mail (`guillaume.deside@uclouvain.be`, also in `CITATION.cff`); structure tree updated (no `supplementary_code/`; `sample_data/`, top-level illustrations, `.github/`, `CITATION.cff`); the four exploratory `scripts/statistics/` scripts documented; `env/bin/python3` removed from script headers.
 - **Clock-lock index Λ removed** (outside the SLH scope): `src/metrics/rhythm.py`, `tests/test_rhythm.py`, its exports, README mentions and the reference in the permutation-invariance talk figure.
 - **No hard-coded cohort size**: `PATIENT_START/END` (A001–A245) removed; the cohort is discovered from `Data/Raw/*.xlsx` (any ID format), optional `--patients` on `cgm_preprocessing`; `make pipeline` now works end to end on the open-data format (`OD_xxx`) — this also required snapping open-data timestamps back to the 5-min grid and accepting data that already are one 45-day window (`find_optimal_window`, tolerance of two sampling steps). 249 tests.
 - **Makefile audit**: all 42 runnable targets executed on the sample data; fixed `agp_sensitivity` / `timeseries_sensitivity` (patient now automatic), the stale `Sensitivity_LinInterp_Modular` path (cdf figure silently failed), `paper` no longer includes `fig5` (needs the clinical table; new `paper_clinical` and `check_clinical_table`), help text; `tests/test_makefile.py` guards targets / help / modules.

@@ -62,7 +62,7 @@ nighttime episode as "Night" instead of "Not isolated".)
 
 Usage
 -----
-    env/bin/python3 -m scripts.paper_figures.generate_figure_2_classification_summary
+    python3 -m scripts.paper_figures.generate_figure_2_classification_summary
 
 Outputs (FIG_DIR / Manuscript_Figures)
 ---------------------------------------

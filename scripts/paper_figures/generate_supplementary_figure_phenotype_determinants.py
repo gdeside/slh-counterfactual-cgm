@@ -24,7 +24,7 @@ were correct for that file's own 7-panel layout but not for this one.
 
 Usage
 -----
-    env/bin/python3 -m scripts.paper_figures.generate_supplementary_figure_phenotype_determinants
+    python3 -m scripts.paper_figures.generate_supplementary_figure_phenotype_determinants
 
 Artwork specification
 ---------------------

@@ -35,7 +35,7 @@ Outputs (RESULTS_PATH / Patient_Pair_Selection / Similarity_Analysis)
 
 Usage
 -----
-    env/bin/python3 -m scripts.patient_selection.patient_similarity_analysis [--no_filter]
+    python3 -m scripts.patient_selection.patient_similarity_analysis [--no_filter]
         [--distance_percentile 10] [--n_slh_diff 20]
 
 Authors: Guillaume Deside

@@ -43,7 +43,7 @@ panel F now spells out what each shaded colour means (previously unlabelled).
 
 Usage
 -----
-    env/bin/python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
+    python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
 
 Outputs (FIG_DIR / Manuscript_Figures)
 ---------------------------------------

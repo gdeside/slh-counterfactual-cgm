@@ -145,20 +145,28 @@ counterfactual-cgm-slh/
 │   ├── preprocessing/            #   raw → windows → metrics → filtered cohort; open-data release; unit conversion
 │   ├── episodes_detection/       #   episode detection + classification
 │   ├── counterfactual/           #   counterfactual figures + sensitivity analysis over δ
-│   ├── statistics/               #   descriptive stats, quartiles, scatter plots
+│   ├── statistics/               #   descriptive stats, quartiles, scatter plots; exploratory scripts (below)
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
 │   ├── examples/                 #   detection + counterfactual on one file or a folder of files (`make example`)
 │   ├── presentation_figures/     #   talk figures, synthetic-data friendly (`make presentation_figures`; not part of the paper)
-│   └── supplementary_code/       #   exploratory / superseded analyses
+│   ├── sample_data/              #   synthetic sample patients (`make sample_data`) and the generator built from real data (maintainers)
+│   └── *.py                      #   single-patient illustrations at the top level (episode funnel, overview, zoom panels, AGP recurrence, patient comparison)
 │
 ├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
 ├── tests/                        # pytest unit tests
 ├── docs/UNITS.md                 # mg/dL ↔ mmol/L handling
+├── .github/workflows/tests.yml   # CI: pytest + example smoke test on every push
 ├── Makefile                      # all execution commands — `make help`
 ├── requirements.txt
+├── CITATION.cff                  # how to cite (Zenodo DOI)
 └── LICENSE                       # MIT
 ```
+
+`scripts/statistics/` also holds four exploratory scripts without a `make` target, run as modules when needed:
+`slh_baseline_metrics_multivariate_exploration` (CGM metrics vs n_SLH), `slh_combined_cgm_phenotype_pca` (combined CGM + phenotype PCA),
+`slh_metrics_visualization_from_files` (interactive Plotly figures) and `slh_patient_characteristics_exploration` (phenotype vs n_SLH;
+its functions are reused by the supplementary phenotype figure). The last two need the clinical table or earlier pipeline outputs.
 
 **Naming conventions.** Every script is run as `python3 -m scripts.<package>.<name>` (or through `make`) and starts with a header
 giving its path, what it does, its **module command** (`Usage`) and its **output location** (`Output`).

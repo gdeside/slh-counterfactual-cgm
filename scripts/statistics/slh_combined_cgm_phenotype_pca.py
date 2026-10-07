@@ -38,7 +38,7 @@ Outputs (RESULTS_PATH / SLH_Combined_CGM_Phenotype_PCA)
 
 Usage
 -----
-    env/bin/python3 -m scripts.statistics.slh_combined_cgm_phenotype_pca [--no_filter]
+    python3 -m scripts.statistics.slh_combined_cgm_phenotype_pca [--no_filter]
 
 Author
 ------

@@ -57,7 +57,7 @@ the plot stay on the panel.
 
 Usage
 -----
-    env/bin/python3 -m scripts.statistics.slh_patient_characteristics_exploration [--no_filter]
+    python3 -m scripts.statistics.slh_patient_characteristics_exploration [--no_filter]
 
 Authors
 -------

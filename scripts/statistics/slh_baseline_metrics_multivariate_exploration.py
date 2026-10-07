@@ -47,7 +47,7 @@ Outputs (written under RESULTS_PATH/SLH_Baseline_Exploration)
 
 Usage
 -----
-    env/bin/python3 -m scripts.statistics.slh_baseline_metrics_multivariate_exploration [--no_filter] [--tsne_perplexity 15]
+    python3 -m scripts.statistics.slh_baseline_metrics_multivariate_exploration [--no_filter] [--tsne_perplexity 15]
 
 Authors
 -------
