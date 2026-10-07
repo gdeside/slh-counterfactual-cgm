@@ -29,8 +29,6 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
 3. [ ] **Remove non-code leftovers**: untracked `TLDE_submission_review.md`, `talk_15min_plan.md` (delete the local
        files); local junk `.DS_Store`, `.pytest_cache`, editor / tool folders. `env/`, `presentation/`,
        `analyzer.py` are git-ignored (don't re-add).
-4. [ ] **Finish `scripts/supplementary_code/`**: it is now empty (its last file was deleted) — remove the folder, the empty
-       `scripts/poster_figures/`, and the `supplementary_code` line in the README structure tree.
 5. [ ] **Confirm the last manuscript numbers** (only you know them): the cohort flowchart and the phenotype-determinants figure are
        still "Suppl. Fig. —" without a number (rename the scripts / Makefile targets once known, e.g. `suppfig2`), there is no script for
        Fig. 1, and `generate_cohort_flowchart.py` may be dropped altogether (see the discussion: hand-drawn SVG, no computation).
@@ -43,7 +41,7 @@ GitHub release triggers the Zenodo snapshot, which cannot be edited afterwards.
        of the paper (`slh_baseline_metrics_multivariate_exploration.py`, `slh_combined_cgm_phenotype_pca.py`,
        `slh_metrics_visualization_from_files.py`, `slh_patient_characteristics_exploration.py` look exploratory); confirm
        the `compelling_pairs` / `patient_similarity` Makefile targets are needed (they select real patients).
-9. [ ] **Final consistency checks**: `git grep "/Users/"` empty; `git grep -n "presentation/"` only intended hits; every
+9. [ ] **Final consistency checks** (and delete `TODO.md` from the archived version): `git grep "/Users/"` empty; `git grep -n "presentation/"` only intended hits; every
        Makefile target points to an existing module; `make help` clean; `make tests` green; no unused imports.
 
 ## C. Validate
@@ -92,6 +90,7 @@ Steps 3–10 can be done as normal commits on `release-clean` before or after th
 
 ## Done
 
+- **Empty folders**: `scripts/supplementary_code/` and `scripts/poster_figures/` no longer exist, and the README structure tree matches the real directories (checked folder by folder; `TODO.md`, `tests/` count and `requirements.txt` documented).
 - **Figure map re-checked** against the scripts and the Makefile: every path, module and `make` target quoted in the README exists, all 10 `paper_figures` scripts are listed in manuscript order (Table 1, Fig. 2–6, Suppl. 1 and 3, two unnumbered supplementary items), the Makefile table lists every target (sensitivity targets spelled out), Fig. 5 title and the stale "Figure 5 (determinants)" comment fixed, example file names in `docs/UNITS.md` no longer use real patient IDs.
 - **Lint pass**: 160 unused imports removed in 55 files (pyflakes: 0 unused, 0 undefined names, 0 duplicate definitions; the one remaining hit is `MGDL_PER_MMOLL` in `src/config/constants.py`, kept on purpose because `src.config` re-exports it, marked `noqa`); the "OneDrive" comments reworded; every module still imports, 238 tests and 36 Makefile targets pass on the sample data.
 - **No AI-assistant trace in the new history**: commit trailers removed from every commit of `release-clean` (history rewritten, trees unchanged), no mention left in tracked files. The old remote history (its extra branches and PRs) disappears with the history switch of step 1.

@@ -154,11 +154,12 @@ counterfactual-cgm-slh/
 │   └── *.py                      #   single-patient illustrations at the top level (episode funnel, overview, zoom panels, AGP recurrence, patient comparison)
 │
 ├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
-├── tests/                        # pytest unit tests
+├── tests/                        # pytest suite (238 tests; no patient data needed) — `make tests`
 ├── docs/UNITS.md                 # mg/dL ↔ mmol/L handling
 ├── .github/workflows/tests.yml   # CI: pytest + example smoke test on every push
 ├── Makefile                      # all execution commands — `make help`
-├── requirements.txt
+├── requirements.txt              # pinned dependencies (Python ≥ 3.11)
+├── TODO.md                       # pre-release checklist (maintainers; removed from the archived version)
 ├── CITATION.cff                  # how to cite (Zenodo DOI)
 └── LICENSE                       # MIT
 ```
