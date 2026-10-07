@@ -52,15 +52,6 @@ SCATTER_STATS_CSV     = SCATTER_ANALYSIS_PATH / "scatter_statistics.csv"
 # =============================================================================
 FINAL_COHORT_CSV = DATA_PATH / "Final cohort SLH.csv"
 
-# =============================================================================
-# CLINICAL REGRESSION RESULTS (written to OneDrive, under BASE_PATH/Results)
-# =============================================================================
-POISSON_REGRESSION_PATH = RESULTS_PATH / "Poisson_Regression_SLH_Predictors"
-NB_REGRESSION_PATH      = RESULTS_PATH / "NB_Regression_SLH_Predictors"
-LINEAR_REGRESSION_PATH  = RESULTS_PATH / "Linear_Regression_SLH_Predictors"
-
-
-
 PATIENTS_STATUS_CSV = PREPROCESSING_PATH / "patients_status.csv"
 METRICS_CSV = METRICS_PATH / "metrics_all_patients.csv"
 FILTER_STATUS_CSV = FILTER_DIR_PATH / "median_glucose_110to170_patient_status.csv"

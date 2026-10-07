@@ -399,7 +399,7 @@ def classify_episodes(df: pd.DataFrame, episodes: list[dict]) -> pd.DataFrame:
     as SLH (Short-Lasting Hyperglycemia). Episodes that fail any criterion are
     classified as LLH (Long-Lasting Hyperglycemia). This is the original
     binary label, kept unchanged for backward compatibility with everything
-    downstream that reads it (Num_SLH, Table 1, regressions, etc.).
+    downstream that reads it (Num_SLH, Table 1, etc.).
 
     Two additional columns give the paper's literal definition on top of it,
     without changing the columns above:

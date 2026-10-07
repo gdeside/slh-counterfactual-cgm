@@ -40,6 +40,6 @@ def test_removed_targets_stay_removed():
 
 
 def test_clinical_targets_check_the_table_first():
-    for t in ("table1", "fig5", "fig6", "suppfig_phenotype", "regression_analysis"):
+    for t in ("table1", "fig5", "fig6", "suppfig_phenotype"):
         assert re.search(rf"^{t}:\s*check_clinical_table", MAKEFILE, re.M), t
     assert "check_clinical_table" not in re.search(r"^paper:.*$", MAKEFILE, re.M).group(0)

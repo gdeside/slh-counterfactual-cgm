@@ -51,10 +51,10 @@ what would the glucose signal, and the consensus CGM metrics derived from it, lo
 5. Quantifies Δ metrics (TIR, TAR, median glucose, CV, …) between the observed signal *G(t)* and *C(t)*,
    with a sensitivity analysis over δ.
 6. Explores determinants of SLH frequency (CGM metrics, phenotype, HbA1c).
-7. Produces all manuscript figures and tables, and a HIPAA/GDPR-anonymised open dataset.
+7. Produces all manuscript figures and tables
 
 **Cohort (manuscript):** 245 paediatric patients (IDs A001–A245), 45-day preprocessed windows, daytime-only SLH (22:00–06:00 excluded).
-The code does not assume this size: the cohort is whatever `Data/Raw/<patient_id>.xlsx` files are found (any ID format).
+
 
 ---
 
@@ -63,11 +63,10 @@ The code does not assume this size: the cohort is whatever `Data/Raw/<patient_id
 | Step | Definition | Where |
 |---|---|---|
 | Hyperglycaemia | glucose > 180 mg/dL (context threshold 140 mg/dL) | `src/episodes/episode_config.py` |
-| Episode merging | gaps ≤ 30 min merged; internal gaps ≤ 15 min | `episode_config.py` |
 | SLH criteria | C1 duration 10–60 min · C2 ≥ 75 % data completeness in a 60-min context window · C3 daytime onset · C4/C5 no hyperglycaemia before/after · C6 crossing condition | `src/episodes/criteria.py` |
 | Counterfactual | linear interpolation over the SLH zone expanded by δ (default **30 min**; tested 0–90 min) | `src/counterfactual/build_counterfactual.py` |
 
-All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counterfactual_config`) — nothing is hard-coded in scripts.
+All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counterfactual_config`).
 
 ---
 
@@ -110,7 +109,7 @@ counterfactual-cgm-slh/
 │   ├── preprocessing/            #   raw → windows → metrics → filtered cohort; open-data release; unit conversion
 │   ├── episodes_detection/       #   episode detection + classification
 │   ├── counterfactual/           #   counterfactual figures + sensitivity analysis over δ
-│   ├── statistics/               #   descriptive stats, regressions, quartiles
+│   ├── statistics/               #   descriptive stats, quartiles, scatter plots
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
 │   ├── examples/                 #   detection + counterfactual on one standalone file (`make example`)
@@ -127,10 +126,7 @@ counterfactual-cgm-slh/
 
 **Naming conventions.** Every script is run as `python3 -m scripts.<package>.<name>` (or through `make`) and starts with a header
 giving its path, what it does, its **module command** (`Usage`) and its **output location** (`Output`).
-`scripts/paper_figures/` uses `generate_<figure or table>[_<content>]` — numbered after the manuscript
-(`generate_figure_3_patient_comparison`, `generate_figure_5_counterfactual_distribution`, `generate_figure_6_slh_determinants`,
-`generate_supplementary_figure_3_slh_detection_schema`, …); the other packages are named after the step they perform
-(`cgm_preprocessing`, `episode_detection`, `lininterp_stepbystep`, …); talk figures live in `scripts/presentation_figures/`.
+
 
 ---
 
@@ -147,7 +143,7 @@ pip install -r requirements.txt
 ```
 
 **Fonts.** Figures use Arial when it is installed; otherwise matplotlib falls back silently to a metric-compatible font
-(Helvetica, Liberation Sans, Nimbus Sans or DejaVu Sans, which ships with matplotlib) — nothing to install on Linux, though
+(Helvetica, Liberation Sans, Nimbus Sans or DejaVu Sans, which ships with matplotlib) - nothing to install on Linux, though
 `sudo apt install fonts-liberation` gives the closest match to Arial.
 
 **Point the code at your data.** Set the `CGM_DATA_ROOT` environment variable (or edit `BASE_PATH` in
@@ -415,7 +411,7 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 |---|---|
 | Setup | `install`, `requirements-check` (reports missing imports, never overwrites `requirements.txt`), `check_clinical_table` |
 | Data pipeline | `time_step_analysis`, `preprocessing`, `coverage_analysis`, `metrics_preprocessing`, `filtering`, `filtered_metrics_distribution`, `episode_detection`, **`pipeline`** (core chain) |
-| Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis`, `regression_analysis`* |
+| Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis` |
 | Patient selection | `compelling_pairs`, `patient_similarity` |
 | SLH illustrations | `slh_funnel`, `slh_overview`, `slh_zoom_panels`, `agp_recurrence`, `patient_comparison` |
 | Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
@@ -433,7 +429,7 @@ clear message when the file is missing.
 ---|---|
 | Setup | `install`, `requirements-check` (reports missing imports, never overwrites `requirements.txt`) |
 | Data pipeline | `time_step_analysis`, `preprocessing`, `coverage_analysis`, `metrics_preprocessing`, `filtering`, `filtered_metrics_distribution`, `episode_detection`, **`pipeline`** (core chain) |
-| Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis`, `regression_analysis` |
+| Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis` |
 | SLH figures | `slh_schema`, `slh_funnel`, `slh_overview`, `slh_zoom_panels`, `agp_recurrence`, `patient_comparison` |
 | Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
 | Sensitivity | `sensitivity_analysis`, `lines_`/`boxplots_`/`cdf_`/`agp_`/`timeseries_sensitivity`, `sensitivity_figures` |

@@ -22,7 +22,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 	lininterp_stepbystep lininterp_offset_comp lininterp_45days \
 	sensitivity_analysis lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity \
 	timeseries_sensitivity sensitivity_figures \
-	quartile_analysis scatter_analysis regression_analysis \
+	quartile_analysis scatter_analysis \
 	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_phenotype cohort_flowchart paper \
 	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
@@ -103,9 +103,6 @@ quartile_analysis:  ## Quartile stratification by n_SLH
 
 scatter_analysis:  ## n_SLH vs delta-metric scatter plots
 	$(RUN) scripts.statistics.scatter_analysis
-
-regression_analysis: check_clinical_table  ## Random-forest regression of n_SLH (needs the clinical phenotype table)
-	$(RUN) scripts.statistics.slh_regression_analysis
 
 
 # ---- SLH EPISODE FIGURES ----------------------------------------------------
