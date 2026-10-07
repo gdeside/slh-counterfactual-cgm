@@ -666,6 +666,12 @@ def main():
         help="Process specific metric only (default: all metrics)"
     )
     parser.add_argument(
+        "--offset",
+        type=float,
+        default=SELECTED_OFFSET,
+        help="zone-expansion offset δ (minutes) shown on the CDFs (default: %(default)g; must exist in the sensitivity data)"
+    )
+    parser.add_argument(
         "--patients",
         nargs='+',
         default=DEFAULT_PATIENTS,
@@ -673,6 +679,7 @@ def main():
     )
     
     args = parser.parse_args()
+    selected_offset = int(args.offset) if float(args.offset).is_integer() else args.offset
     if not args.patients:
         args.patients = list(resolve_patient_pair())
     PATIENT_COLORS.update(zip(args.patients, PATIENT_COLOR_CYCLE))
@@ -683,7 +690,7 @@ def main():
     print(f"  Input:     {COHORT_CSV}")
     print(f"  Quartiles: {QUARTILE_CSV}")
     print(f"  Output:    {FIGURES_OUTPUT_DIR}")
-    print(f"  Selected δ: {SELECTED_OFFSET} min")
+    print(f"  Selected δ: {selected_offset} min")
     if args.metric:
         print(f"  Metric:    {args.metric} (single)")
     else:
@@ -702,8 +709,8 @@ def main():
         print(f"    Rows:     {len(df)}")
         
         # Check if selected offset exists
-        if SELECTED_OFFSET not in df["offset"].values:
-            print(f"\n  [ERROR] Selected offset δ = {SELECTED_OFFSET} min not found in data")
+        if selected_offset not in df["offset"].values:
+            print(f"\n  [ERROR] Selected offset δ = {selected_offset} min not found in data")
             print(f"  Available offsets: {sorted(df['offset'].unique())}")
             return
             
@@ -731,7 +738,7 @@ def main():
         print(f"\n  [!] No valid patient IDs provided - continuing without markers")
     
     # Process metrics
-    process_all_metrics(df, valid_patients, SELECTED_OFFSET, args.metric)
+    process_all_metrics(df, valid_patients, selected_offset, args.metric)
     
     print("\n" + "=" * 70)
     print(f"  Output: {FIGURES_OUTPUT_DIR}")

@@ -15,8 +15,12 @@ Every glucose number drawn on the figure — axis ticks, anchor values, peak
 and counterfactual annotations — is rendered in the current display unit, so
 ``CGM_GLUCOSE_UNIT=mmol/L`` produces a figure with no mg/dL left in it.
 
-Usage:
-    python -m scripts.counterfactual.lininterp_stepbystep
+Usage
+-----
+    python3 -m scripts.counterfactual.lininterp_stepbystep                      # patient with the most SLH episodes
+    python3 -m scripts.counterfactual.lininterp_stepbystep --patient_id ID      # a given patient
+    python3 -m scripts.counterfactual.lininterp_stepbystep --offset 45 --n_episodes 5 --out_dir DIR
+    (or: make lininterp_stepbystep [PATIENT_ID=ID])
 
 Authors: Guillaume Deside
 
@@ -28,6 +32,7 @@ Output
 # ─────────────────────────────────────────────────────────────────────────────
 # IMPORTS
 # ─────────────────────────────────────────────────────────────────────────────
+import argparse
 import os
 
 import numpy as np
@@ -96,12 +101,9 @@ from src.utils.unit_conversion import format_glucose
 # =============================================================================
 FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "Counterfactual_analysis")
 
-# ── Patient selection ─────────────────────────────────────────────────────────
-SELECTED_PID = None   # None = automatic (patient with the most SLH episodes); or set a patient ID
-
 # ── Visualization parameters ──────────────────────────────────────────────────
 PLOT_WINDOW_H = 3              # Hours of signal shown on each side of episode
-N_EPISODES_TO_PLOT = 3         # Number of episodes to illustrate
+N_EPISODES_TO_PLOT = 3         # Number of episodes to illustrate (default of --n_episodes)
 
 # ── Type sizes (nothing below 7 pt at final size) ────────────────────
 FONT_ANNOTATION = LANCET_MIN_FONT_PT        # In-plot annotations and legends
@@ -449,8 +451,25 @@ def generate_stepbystep_figure(episode, episode_num, df, offset_min,
 # MAIN EXECUTION
 # ─────────────────────────────────────────────────────────────────────────────
 
-def main():
+def parse_arguments(argv=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Step-by-step construction of the counterfactual (4-panel figure per SLH episode).")
+    parser.add_argument("--patient_id", default=None,
+                        help="patient to show (default: the patient with the most SLH episodes)")
+    parser.add_argument("--offset", type=float, default=SELECTED_OFFSET_MIN,
+                        help=f"zone-expansion offset δ in minutes (default: {SELECTED_OFFSET_MIN:g})")
+    parser.add_argument("--n_episodes", type=int, default=N_EPISODES_TO_PLOT,
+                        help=f"number of SLH episodes to illustrate (default: {N_EPISODES_TO_PLOT})")
+    parser.add_argument("--out_dir", default=FIGURES_OUTPUT_PATH,
+                        help="output folder, a sub-folder per patient is created "
+                             "(default: <CGM_DATA_ROOT>/Figures/Counterfactual_analysis)")
+    return parser.parse_args(argv)
+
+
+def main(argv=None):
     """Main execution pipeline."""
+    args = parse_arguments(argv)
+    offset_min, n_episodes, figures_dir = args.offset, args.n_episodes, args.out_dir
     merge_mode = "WITH gap merging" if USE_GAP_MERGING else "WITHOUT gap merging"
     
     print("=" * 70)
@@ -460,13 +479,13 @@ def main():
     if USE_GAP_MERGING:
         print(f"    MERGE_GAP_MIN = {MERGE_GAP_MIN} min")
         print(f"    MERGE_INTERNAL_GAP_MIN = {MERGE_INTERNAL_GAP_MIN} min")
-    print(f"  Zone offset (δ): {SELECTED_OFFSET_MIN} min")
+    print(f"  Zone offset (δ): {offset_min:g} min")
     kernel_str = f"k={KERNEL_MIN} min" if APPLY_KERNEL else "no kernel"
     print(f"  Smoothing: {kernel_str}")
     print("=" * 70)
     
     # Load patient
-    patient_id = resolve_patient_id(SELECTED_PID, role="most")
+    patient_id = resolve_patient_id(args.patient_id, role="most")
     df_raw = load_patient_window(patient_id)
     if df_raw is None:
         raise FileNotFoundError(f"Cannot load {patient_id}")
@@ -489,7 +508,7 @@ def main():
     
     # Select episodes to illustrate (with sufficient margins)
     window_delta = pd.Timedelta(hours=PLOT_WINDOW_H)
-    zone_delta = pd.Timedelta(minutes=SELECTED_OFFSET_MIN)
+    zone_delta = pd.Timedelta(minutes=offset_min)
     
     eligible = [
         ep for ep in slh_episodes
@@ -499,7 +518,7 @@ def main():
             (ep["offset_time"] + zone_delta <= df[TIME_COL].iloc[-1]))
     ]
     
-    n_selected = min(N_EPISODES_TO_PLOT, len(eligible))
+    n_selected = min(n_episodes, len(eligible))
     
     if n_selected == 0:
         print("  No eligible SLH episodes with sufficient margins.")
@@ -512,8 +531,8 @@ def main():
     print(f"  Selected for figures: {n_selected}")
     
     # Generate figures
-    os.makedirs(FIGURES_OUTPUT_PATH, exist_ok=True)
-    output_dir = os.path.join(FIGURES_OUTPUT_PATH, patient_id)
+    os.makedirs(figures_dir, exist_ok=True)
+    output_dir = os.path.join(figures_dir, patient_id)
     os.makedirs(output_dir, exist_ok=True)
     
     print("\n  Generating step-by-step figures...")
@@ -524,7 +543,7 @@ def main():
         
         output_prefix = os.path.join(output_dir, f"steps_ep{ep_i:02d}")
         generate_stepbystep_figure(
-            ep, ep_i, df, SELECTED_OFFSET_MIN, timestep, patient_id, output_prefix
+            ep, ep_i, df, offset_min, timestep, patient_id, output_prefix
         )
     
     print("\n" + "=" * 70)

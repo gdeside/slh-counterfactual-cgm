@@ -5,8 +5,12 @@ Linear Interpolation Counterfactual — Offset Comparison Figures
 ================================================================
 Generates figures comparing different zone expansion offset (δ) values.
 
-Usage:
-    python3 -m scripts.counterfactual.lininterp_offset_comp
+Usage
+-----
+    python3 -m scripts.counterfactual.lininterp_offset_comp                     # patient with the most SLH episodes
+    python3 -m scripts.counterfactual.lininterp_offset_comp --patient_id ID     # a given patient
+    python3 -m scripts.counterfactual.lininterp_offset_comp --offsets 0 30 60 --n_episodes 5 --out_dir DIR
+    (or: make lininterp_offset_comp [PATIENT_ID=ID])
 
 Authors: Guillaume Deside
 
@@ -17,6 +21,7 @@ Output
 # =============================================================================
 # STANDARD LIBRARY
 # =============================================================================
+import argparse
 import os
 
 # =============================================================================
@@ -85,12 +90,9 @@ from src.utils.unit_conversion import format_glucose
 # ── Paths ─────────────────────────────────────────────────────────────────────
 FIGURES_OUTPUT_PATH = os.path.join(FIG_DIR, "Counterfactual_analysis")
 
-# ── Patient selection ─────────────────────────────────────────────────────────
-SELECTED_PID = None   # None = automatic (patient with the most SLH episodes); or set a patient ID
-
 # ── Visualization parameters ──────────────────────────────────────────────────
 PLOT_WINDOW_H = 3              # Hours of signal shown on each side of episode
-N_EPISODES_TO_PLOT = 3         # Number of episodes to illustrate
+N_EPISODES_TO_PLOT = 3         # Number of episodes to illustrate (default of --n_episodes)
 
 
 def enrich_slh_episodes_with_peak_info(df: pd.DataFrame, classification_df: pd.DataFrame, 
@@ -390,8 +392,27 @@ def generate_offset_comparison_overlay(episode, episode_num, df, offsets,
 # MAIN EXECUTION
 # =============================================================================
  
-def main():
+def parse_arguments(argv=None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Comparison of the counterfactual for several zone-expansion offsets δ.")
+    parser.add_argument("--patient_id", default=None,
+                        help="patient to show (default: the patient with the most SLH episodes)")
+    parser.add_argument("--offsets", type=float, nargs="+", default=list(OFFSET_VALUES), metavar="MIN",
+                        help=f"offsets δ to compare, in minutes (default: {' '.join(str(o) for o in OFFSET_VALUES)})")
+    parser.add_argument("--n_episodes", type=int, default=N_EPISODES_TO_PLOT,
+                        help=f"number of SLH episodes to illustrate (default: {N_EPISODES_TO_PLOT})")
+    parser.add_argument("--out_dir", default=FIGURES_OUTPUT_PATH,
+                        help="output folder, a sub-folder per patient is created "
+                             "(default: <CGM_DATA_ROOT>/Figures/Counterfactual_analysis)")
+    args = parser.parse_args(argv)
+    args.offsets = sorted({int(o) if float(o).is_integer() else o for o in args.offsets})
+    return args
+
+
+def main(argv=None):
     """Main execution pipeline."""
+    args = parse_arguments(argv)
+    offsets, n_episodes, figures_dir = args.offsets, args.n_episodes, args.out_dir
     merge_mode = "WITH gap merging" if USE_GAP_MERGING else "WITHOUT gap merging"
     
     print("=" * 70)
@@ -400,11 +421,11 @@ def main():
     print(f"  Episode detection: {merge_mode}")
     kernel_str = f"k={KERNEL_MIN} min" if APPLY_KERNEL else "no kernel"
     print(f"  Smoothing: {kernel_str}")
-    print(f"  Offsets (δ): {OFFSET_VALUES} min")
+    print(f"  Offsets (δ): {offsets} min")
     print("=" * 70)
     
     # Load patient data
-    selected_pid = resolve_patient_id(SELECTED_PID, role="most")
+    selected_pid = resolve_patient_id(args.patient_id, role="most")
     df_raw = load_patient_window(selected_pid)
     if df_raw is None:
         raise FileNotFoundError(f"Cannot load {selected_pid}")
@@ -427,7 +448,7 @@ def main():
     
     # Select episodes with sufficient margins
     window_delta = pd.Timedelta(hours=PLOT_WINDOW_H)
-    zone_delta = pd.Timedelta(minutes=max(OFFSET_VALUES))
+    zone_delta = pd.Timedelta(minutes=max(offsets))
     
     eligible = [
         ep for ep in slh_episodes
@@ -437,7 +458,7 @@ def main():
             (ep["offset_time"] + zone_delta <= df[TIME_COL].iloc[-1]))
     ]
     
-    n_selected = min(N_EPISODES_TO_PLOT, len(eligible))
+    n_selected = min(n_episodes, len(eligible))
     
     if n_selected == 0:
         print("  No eligible SLH episodes with sufficient margins.")
@@ -450,8 +471,8 @@ def main():
     print(f"  Selected for figures: {n_selected}")
     
     # Generate figures
-    os.makedirs(FIGURES_OUTPUT_PATH, exist_ok=True)
-    output_dir = os.path.join(FIGURES_OUTPUT_PATH, selected_pid)
+    os.makedirs(figures_dir, exist_ok=True)
+    output_dir = os.path.join(figures_dir, selected_pid)
     os.makedirs(output_dir, exist_ok=True)
     
     print("\n  Generating offset comparison figures...")
@@ -461,11 +482,11 @@ def main():
         
         print(f"      Multi-panel figure...")
         output_prefix = os.path.join(output_dir, f"multipanel_ep{ep_i:02d}")
-        generate_offset_comparison_multipanel(ep, ep_i, df, OFFSET_VALUES, timestep, selected_pid, output_prefix)
+        generate_offset_comparison_multipanel(ep, ep_i, df, offsets, timestep, selected_pid, output_prefix)
         
         print(f"      Overlay figure...")
         output_prefix = os.path.join(output_dir, f"overlay_ep{ep_i:02d}")
-        generate_offset_comparison_overlay(ep, ep_i, df, OFFSET_VALUES, timestep, selected_pid, output_prefix)
+        generate_offset_comparison_overlay(ep, ep_i, df, offsets, timestep, selected_pid, output_prefix)
     
     print("\n" + "=" * 70)
     print(f"Output: {output_dir}/")

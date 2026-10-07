@@ -32,7 +32,7 @@ Authors: Guillaume Deside
 Usage
 -----
     python3 -m scripts.counterfactual.visualize_agp_sensitivity [--help for options]
-    (or: make agp_sensitivity)
+    (or: make agp_sensitivity [PATIENT_ID=ID])
 """
 
 import os

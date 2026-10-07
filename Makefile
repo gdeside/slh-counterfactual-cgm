@@ -126,10 +126,10 @@ patient_comparison:  ## Side-by-side patient comparison
 # ---- COUNTERFACTUAL CONSTRUCTION --------------------------------------------
 
 lininterp_stepbystep:  ## Step-by-step construction figure
-	$(RUN) scripts.counterfactual.lininterp_stepbystep
+	$(RUN) scripts.counterfactual.lininterp_stepbystep $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 lininterp_offset_comp:  ## Offset comparison (delta = 0...90 min)
-	$(RUN) scripts.counterfactual.lininterp_offset_comp
+	$(RUN) scripts.counterfactual.lininterp_offset_comp $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 lininterp_45days:  ## 45-day G(t) vs C(t) overview
 	$(RUN) scripts.counterfactual.lininterp_45days $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
@@ -141,7 +141,7 @@ sensitivity_analysis:  ## Core computation (all patients x all delta) — slowes
 	$(RUN) scripts.counterfactual.sensitivity_analysis
 
 lines_sensitivity:  ## Delta metric vs delta line plots
-	$(RUN) scripts.counterfactual.visualize_sensitivity_lines
+	$(RUN) scripts.counterfactual.visualize_sensitivity_lines $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 boxplots_sensitivity:  ## Cohort delta-metric boxplots per delta
 	$(RUN) scripts.counterfactual.visualize_boxplots_sensitivity
@@ -150,10 +150,10 @@ cdf_sensitivity:  ## CDF of delta metric per delta
 	$(RUN) scripts.counterfactual.visualize_cdf_sensitivity
 
 agp_sensitivity:  ## AGP sensitivity overlay
-	$(RUN) scripts.counterfactual.visualize_agp_sensitivity
+	$(RUN) scripts.counterfactual.visualize_agp_sensitivity $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 timeseries_sensitivity:  ## Original vs counterfactual time series
-	$(RUN) scripts.counterfactual.visualize_timeseries_sensitivity
+	$(RUN) scripts.counterfactual.visualize_timeseries_sensitivity $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
 sensitivity_figures: lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity timeseries_sensitivity  ## All sensitivity figures
 

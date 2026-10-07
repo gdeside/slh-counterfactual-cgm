@@ -14,15 +14,12 @@ Input:  Results/Sensitivity_Analysis/Signals/{patient_id}_signals.csv
 Output: Results/Sensitivity_Analysis/Figures/{patient_id}/
             {patient_id}_sensitivity_lines.pdf/.png
 
-Usage:
-    python3 visualize_sensitivity_lines.py --patient_id ID
-
 Authors: Guillaume Deside
 
 Usage
 -----
-    python3 -m scripts.counterfactual.visualize_sensitivity_lines [--help for options]
-    (or: make lines_sensitivity)
+    python3 -m scripts.counterfactual.visualize_sensitivity_lines [--patient_id ID]   # default: patient with the most SLH episodes
+    (or: make lines_sensitivity [PATIENT_ID=ID])
 """
 
 import os

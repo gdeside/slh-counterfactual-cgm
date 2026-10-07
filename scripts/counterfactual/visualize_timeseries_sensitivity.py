@@ -31,7 +31,7 @@ Authors: Guillaume Deside
 Usage
 -----
     python3 -m scripts.counterfactual.visualize_timeseries_sensitivity [--help for options]
-    (or: make timeseries_sensitivity)
+    (or: make timeseries_sensitivity [PATIENT_ID=ID])
 """
 
 import os
