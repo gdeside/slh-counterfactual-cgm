@@ -36,7 +36,7 @@ Usage
     # See what would be converted, and which columns, without writing
     python3 -m scripts.preprocessing.convert_data_units --dry-run
 
-    # Write mmol/L copies under <BASE_PATH>/Converted_mmolL/
+    # Write mmol/L copies under <BASE_PATH>/Converted_mmoll/
     python3 -m scripts.preprocessing.convert_data_units
 
     # Only some targets, to a chosen directory
@@ -45,7 +45,7 @@ Usage
 
     # Convert a mmol/L tree back to mg/dL
     python3 -m scripts.preprocessing.convert_data_units \
-        --to mg/dL --source-dir <BASE_PATH>/Converted_mmolL --output-dir /tmp/back
+        --to mg/dL --source-dir <BASE_PATH>/Converted_mmoll --output-dir /tmp/back
 
 Author
 ------
@@ -57,7 +57,7 @@ Date
 
 Output
 ------
-    <CGM_DATA_ROOT>/Converted_mmolL/  (mirror of the converted data files; mg/dL originals untouched)
+    <CGM_DATA_ROOT>/Converted_mmoll/  (mirror of the converted data files; mg/dL originals untouched)
 """
 
 # =============================================================================

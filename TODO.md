@@ -88,35 +88,3 @@ git push origin --delete cleanup-for-publication
 This does NOT delete `refs/pull/*`; ask GitHub Support to purge them, or prefer a new repository (step 1 (a)).
 Steps 3–10 can be done as normal commits on `release-clean` before or after this switch.
 
-## Done
-
-- **Empty folders**: `scripts/supplementary_code/` and `scripts/poster_figures/` no longer exist, and the README structure tree matches the real directories (checked folder by folder; `TODO.md`, `tests/` count and `requirements.txt` documented).
-- **Figure map re-checked** against the scripts and the Makefile: every path, module and `make` target quoted in the README exists, all 10 `paper_figures` scripts are listed in manuscript order (Table 1, Fig. 2–6, Suppl. 1 and 3, two unnumbered supplementary items), the Makefile table lists every target (sensitivity targets spelled out), Fig. 5 title and the stale "Figure 5 (determinants)" comment fixed, example file names in `docs/UNITS.md` no longer use real patient IDs.
-- **Lint pass**: 160 unused imports removed in 55 files (pyflakes: 0 unused, 0 undefined names, 0 duplicate definitions; the one remaining hit is `MGDL_PER_MMOLL` in `src/config/constants.py`, kept on purpose because `src.config` re-exports it, marked `noqa`); the "OneDrive" comments reworded; every module still imports, 238 tests and 36 Makefile targets pass on the sample data.
-- **No AI-assistant trace in the new history**: commit trailers removed from every commit of `release-clean` (history rewritten, trees unchanged), no mention left in tracked files. The old remote history (its extra branches and PRs) disappears with the history switch of step 1.
-- **README fixes**: one contact e-mail (`guillaume.deside@uclouvain.be`, also in `CITATION.cff`); structure tree updated (no `supplementary_code/`; `sample_data/`, top-level illustrations, `.github/`, `CITATION.cff`); the four exploratory `scripts/statistics/` scripts documented; `env/bin/python3` removed from script headers.
-- **Clock-lock index Λ removed** (outside the SLH scope): `src/metrics/rhythm.py`, `tests/test_rhythm.py`, its exports, README mentions and the reference in the permutation-invariance talk figure.
-- **No hard-coded cohort size**: `PATIENT_START/END` (A001–A245) removed; the cohort is discovered from `Data/Raw/*.xlsx` (any ID format), optional `--patients` on `cgm_preprocessing`; `make pipeline` now works end to end on the open-data format (`OD_xxx`) — this also required snapping open-data timestamps back to the 5-min grid and accepting data that already are one 45-day window (`find_optimal_window`, tolerance of two sampling steps). 249 tests.
-- **Makefile audit**: all 42 runnable targets executed on the sample data; fixed `agp_sensitivity` / `timeseries_sensitivity` (patient now automatic), the stale `Sensitivity_LinInterp_Modular` path (cdf figure silently failed), `paper` no longer includes `fig5` (needs the clinical table; new `paper_clinical` and `check_clinical_table`), help text; `tests/test_makefile.py` guards targets / help / modules.
-- **Fonts on Linux**: `font.family` is now a sans-serif fallback chain (Arial → Helvetica → Liberation Sans → Nimbus Sans → Arimo → DejaVu Sans) in `src/visualization/style.py`, the talk figure and the plotly scripts; `tests/test_style_fonts.py` simulates a machine without Arial.
-- **Dependencies**: unused `statsmodels` removed from `requirements.txt`; the optional-UMAP warning in `patient_similarity_analysis.py` now says `pip install umap-learn`.
-- **Naming and headers**: both "Figure 5" scripts disambiguated (`generate_figure_5_counterfactual_distribution`, determinants → `generate_figure_6_slh_determinants`, `make fig6`); `generate_figure_3` → `generate_figure_3_patient_comparison`; `generate_supplementary_figure_1` → `..._1_data_quality`; all 66 scripts now start with their path and carry a module command and an output location; obsolete folder names (`Data_Preprocessed_45d`, …) fixed; naming conventions documented in the README.
-- `scripts/fig_slh_schema.py` → `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` (`make suppfig3`, output in `Figures/Supplementary/`, part of `make paper`).
-- **Single-file example**: `scripts/examples/detect_and_counterfactual.py` (`make example`, README section, tests; 220 tests pass) and notebook `09_detect_and_counterfactual_on_your_file.ipynb` (executed on a synthetic trace, "Illustration only" banner).
-- **History and safety**: orphan branch `release-clean` created (largest blob 1.4 MB, no old notebooks / GIF / presentation
-  outputs); full old history backed up as a git bundle.
-- **Notebooks**: the 8 notebooks re-executed on synthetic sample data (fake patients A001–A004, time relative to an
-  arbitrary t = 0 = 2000-01-01), each with an "Illustration only" banner; no real dates or paths remain.
-- **Paths**: `src/config/paths.py` uses `CGM_DATA_ROOT` (default `./data`); no hard-coded `/Users/…` left.
-- **Patient IDs**: no hard-coded `A159/A174/A224` defaults; `src/utils/patient_selection.py` (automatic most/fewest-SLH
-  choice, `--patient_id`, `CGM_PATIENT_HIGH/LOW`), documented in the README.
-- **Presentation figures**: `scripts/presentation_figures/` published (19 scripts, code only), headers/paths fixed, same
-  episode categories as Figure 2, `make presentation_figures` runs on the sample data, outputs git-ignored; duplicates kept
-  locally in the git-ignored `presentation/_dropped/`.
-- **Makefile**: `clock_lock` removed; targets for every figure/table, `pipeline`, `open_data_to_raw`, `presentation_figures`.
-- **Tests and CI**: 216 tests (incl. end-to-end synthetic trace, unit conversion, patient selection, open data);
-  `.github/workflows/tests.yml`.
-- **README**: cleaned for Zenodo (title, DOI, citation, authors), data-usage section, patient-selection section, badges
-  (tests, Python, licences, DOI); `CITATION.cff` added.
-- **Other**: stale `src/config.py` removed; `make install` works; `requirements.txt` tested on a clean venv; Python ≥ 3.11
-  documented (tested on 3.13); sample dataset tested end to end; open-data → raw converter; no csv/xlsx/parquet/pkl tracked.
