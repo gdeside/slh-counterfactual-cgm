@@ -20,7 +20,8 @@ Usage
 
 Outputs (in --out_dir)
 ----------------------
-    episodes.csv         every detected episode with the criteria C1–C6 and its SLH / LLH label
+    episodes.csv         every detected episode with the criteria C1–C6 and its category
+                         (SLH / Not isolated / Night / LLH — same categories as manuscript Figure 2)
     counterfactual.csv   time, observed glucose G(t), counterfactual C(t)
     summary.txt          episode counts and the effect on time in range / median glucose
     counterfactual.png   observed vs counterfactual signal, SLH episodes shaded
@@ -45,6 +46,7 @@ from src.episodes.detection import detect_hyperglycemia_episodes
 from src.episodes.episode_config import H_HYPER, LABEL_SLH
 from src.metrics.metrics import compute_time_in_range_metrics
 from src.preprocessing.timestep import detect_dominant_sampling_interval
+from scripts.paper_figures.generate_figure_2_classification_summary import assign_fine_category, CATEGORY_ORDER
 from src.utils.unit_conversion import UNIT_MMOLL, mmoll_to_mgdl, normalize_unit
 
 TIME_NAMES = ("time", "timestamp", "datetime", "date", "date_time")
@@ -101,11 +103,25 @@ def demo_trace() -> pd.DataFrame:
 # =============================================================================
 # CORE: detection -> classification -> counterfactual
 # =============================================================================
+EXCLUDED_LABEL = "Excluded (incomplete data)"
+
+
+def categorise(table: pd.DataFrame) -> pd.DataFrame:
+    """Add the Figure 2 ``category`` column: LLH (C1 fails) / Not isolated (C4–C6) / Night (C3) / SLH.
+    Episodes failing C2 (data completeness) cannot be judged and are labelled ``Excluded (incomplete data)``."""
+    out = table.copy()
+    out["category"] = EXCLUDED_LABEL
+    complete = out["C2"].astype(bool)
+    if complete.any():
+        out.loc[complete, "category"] = assign_fine_category(out[complete])["category"].to_numpy()
+    return out
+
+
 def run(df: pd.DataFrame, offset_min: float = DEFAULT_OFFSET_MIN):
     """Return (episode table, counterfactual DataFrame, timestep in minutes)."""
     timestep = detect_dominant_sampling_interval(df)                       # e.g. 5.0 min
     episodes = detect_hyperglycemia_episodes(df)                           # runs of glucose > 180 mg/dL
-    table = classify_episodes(df, episodes)                                # criteria C1–C6 -> SLH / LLH
+    table = categorise(classify_episodes(df, episodes))                    # criteria C1–C6 -> SLH / Not isolated / Night / LLH
     slh = (table.loc[table["classification"] == LABEL_SLH, ["onset_time", "offset_time"]]
            .to_dict("records"))
     counterfactual = build_full_counterfactual_signal(df, slh, offset_min, timestep)
@@ -118,8 +134,12 @@ def summarise(table: pd.DataFrame, cf: pd.DataFrame, offset_min: float) -> str:
     n_slh = int((table["classification"] == LABEL_SLH).sum()) if len(table) else 0
     obs_m = compute_time_in_range_metrics(cf["observed"])
     cf_m = compute_time_in_range_metrics(cf["counterfactual"])
-    lines = [f"Readings: {len(cf)}   Episodes (> {H_HYPER} mg/dL): {len(table)}   SLH: {n_slh}   "
-             f"other: {len(table) - n_slh}   offset δ: {offset_min:g} min",
+    counts = table["category"].value_counts() if len(table) else pd.Series(dtype=int)
+    by_category = "  ".join(f"{c}: {int(counts.get(c, 0))}" for c in CATEGORY_ORDER)
+    if int(counts.get(EXCLUDED_LABEL, 0)):
+        by_category += f"  {EXCLUDED_LABEL}: {int(counts[EXCLUDED_LABEL])}"
+    lines = [f"Readings: {len(cf)}   Episodes (> {H_HYPER} mg/dL): {len(table)}   offset δ: {offset_min:g} min",
+             f"Categories   {by_category}",
              f"TIR 70–180 %  observed {100 * obs_m['TIR70180']:.1f}   counterfactual {100 * cf_m['TIR70180']:.1f}   "
              f"Δ {100 * (cf_m['TIR70180'] - obs_m['TIR70180']):+.2f}",
              f"TAR > 180 %   observed {100 * obs_m['TAR180']:.1f}   counterfactual {100 * cf_m['TAR180']:.1f}   "

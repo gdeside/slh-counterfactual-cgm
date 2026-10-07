@@ -26,6 +26,7 @@ def test_csv_with_other_column_names_and_mmoll(tmp_path):
     assert np.allclose(loaded["glycemie"], demo["glycemie"], atol=0.01)
     table, cf, timestep = ex.run(loaded)
     assert timestep == 5.0 and (table["classification"] == "SLH").sum() == 2
+    assert table["category"].value_counts().to_dict() == {"SLH": 2, "Night": 1, "LLH": 1}   # Figure 2 categories
 
 
 def test_excel_input(tmp_path):

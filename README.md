@@ -46,7 +46,8 @@ what would the glucose signal, and the consensus CGM metrics derived from it, lo
 
 1. Preprocesses raw CGM exports into 45-day windows (≥ 70 % coverage, 5-min sampling) and computes standard CGM metrics.
 2. Filters the cohort (median-glucose criterion) and detects hyperglycaemic episodes (> 180 mg/dL).
-3. Classifies each episode as **SLH** or **LLH** (long-lasting) using a six-criterion scheme (C1–C6).
+3. Classifies each episode with a six-criterion scheme (C1–C6) into four categories, as in Figure 2: **SLH** (short, isolated,
+   complete data, daytime), **Not isolated**, **Night** (would be SLH but starts at night) and **LLH** (long-lasting).
 4. Builds a counterfactual signal *C(t)* by linear interpolation across each SLH zone, expanded by an offset δ.
 5. Quantifies Δ metrics (TIR, TAR, median glucose, CV, …) between the observed signal *G(t)* and *C(t)*,
    with a sensitivity analysis over δ.
@@ -63,7 +64,8 @@ what would the glucose signal, and the consensus CGM metrics derived from it, lo
 | Step | Definition | Where |
 |---|---|---|
 | Hyperglycaemia | glucose > 180 mg/dL (context threshold 140 mg/dL) | `src/episodes/episode_config.py` |
-| SLH criteria | C1 duration 10–60 min · C2 ≥ 75 % data completeness in a 60-min context window · C3 daytime onset · C4/C5 no hyperglycaemia before/after · C6 crossing condition | `src/episodes/criteria.py` |
+| Criteria | C1 duration 10–60 min · C2 ≥ 75 % data completeness in a 60-min context window · C3 daytime onset · C4/C5 no hyperglycaemia before/after · C6 crossing condition | `src/episodes/criteria.py` |
+| Episode categories (Figure 2) | episodes failing C2 are set aside (cannot be judged); then **C1 fails → LLH** · **C4/C5/C6 not all met → Not isolated** · **C3 fails → Night** (would be SLH, but onset at night) · **all met → SLH** | `scripts/paper_figures/generate_figure_2_classification_summary.py` |
 | Counterfactual | linear interpolation over the SLH zone expanded by δ (default **30 min**; tested 0–90 min) | `src/counterfactual/build_counterfactual.py` |
 
 All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counterfactual_config`).
@@ -75,7 +77,7 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 | Manuscript item | Script | Notes |
 |---|---|---|
 | Table 1 — Cohort characteristics | `scripts/paper_figures/generate_table1.py` | `make table1`; needs `pysummaries` and the clinical table |
-| Fig. 2 — SLH/LLH classification summary | `scripts/paper_figures/generate_figure_2_classification_summary.py` | `make fig2` |
+| Fig. 2 — Episode classification summary (SLH / Not isolated / Night / LLH) | `scripts/paper_figures/generate_figure_2_classification_summary.py` | `make fig2` |
 | Fig. 3 — Two patients, similar metrics, different SLH frequency (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | `make fig3` |
 | Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | `make fig4`; needs `make sensitivity_analysis` |
 | Fig. 5 — Distribution of ΔTIR / Δmedian | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | `make fig5`; needs the clinical table |
@@ -162,7 +164,7 @@ Results/                         # all outputs are written here
 ## Quick start with the sample dataset
 
 No access to patient data is needed to try the pipeline. `scripts/sample_data/` generates **4 synthetic patients**
-(A001–A004, 50 days, 5-min sampling, sensor gaps, meal excursions producing both SLH and LLH episodes;
+(A001–A004, 50 days, 5-min sampling, sensor gaps, meal excursions producing SLH episodes as well as non-SLH ones (not isolated, night, LLH);
 fixed seed). The same file is attached to each GitHub release as `sample_data.zip`.
 
 ```bash
@@ -210,7 +212,7 @@ python3 -m scripts.examples.detect_and_counterfactual --input my_patient.csv \
 
 The file holds **one patient** with a time column and a glucose column (names are auto-detected: `time`/`timestamp`/…,
 `glycemie`/`glucose`/…). Outputs go to `example_output/` (git-ignored): `episodes.csv` (every episode with C1–C6 and its
-SLH/LLH label), `counterfactual.csv` (observed G(t) and counterfactual C(t)), `summary.txt` (counts, ΔTIR, ΔTAR, Δmedian)
+category: SLH / Not isolated / Night / LLH), `counterfactual.csv` (observed G(t) and counterfactual C(t)), `summary.txt` (counts, ΔTIR, ΔTAR, Δmedian)
 and `counterfactual.png`.
 
 The notebook [`notebooks/09_detect_and_counterfactual_on_your_file.ipynb`](notebooks/09_detect_and_counterfactual_on_your_file.ipynb)
@@ -223,10 +225,13 @@ from src.episodes.criteria import classify_episodes
 from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
 
 episodes = detect_hyperglycemia_episodes(df)            # df: columns "time" (datetime) and "glycemie" (mg/dL)
-table = classify_episodes(df, episodes)                 # C1–C6 -> SLH / LLH
+table = classify_episodes(df, episodes)                 # C1–C6; "classification" is SLH or not-SLH (see below for the 4 categories)
 slh = table.loc[table["classification"] == "SLH", ["onset_time", "offset_time"]].to_dict("records")
 counterfactual = build_full_counterfactual_signal(df, slh, offset_min=30, timestep_min=5.0)
 ```
+
+The `classification` column of `classify_episodes` is binary (SLH, or not). The four categories of Figure 2 (SLH / Not isolated / Night / LLH) are
+obtained from the C1–C6 columns, as done by `categorise()` in the example script; episodes failing C2 are excluded first.
 
 Not done here (done by the full pipeline): quality flags, extraction of the 45-day window (≥ 70 % coverage) and cohort
 filtering — give a clean, time-sorted trace from a 5-minute CGM. Thresholds are in `src/episodes/episode_config.py`.
@@ -356,10 +361,10 @@ make preprocessing           # 45-day windows
 make coverage_analysis       # coverage distribution
 make metrics_preprocessing   # CGM metrics (TIR, TAR, SD, CV, …)
 make filtering               # median-glucose filter
-make episode_detection       # episode detection + SLH/LLH classification
+make episode_detection       # episode detection + classification (C1–C6)
 
 # 2. Statistics
-make slh_stats               # SLH/LLH descriptive statistics
+make slh_stats               # episode-category descriptive statistics
 make quartile_analysis       # stratification by n_SLH
 make scatter_analysis        # n_SLH vs Δ metrics
 
@@ -444,7 +449,7 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 | Data loading, quality flags, coverage | `test_load_data.py`, `test_quality_flags.py`, `test_coverage.py` |
 | CGM metrics | `test_metrics.py` |
 | Episode criteria C1–C6 | `test_criteria.py` |
-| **End to end** on a synthetic trace: detection → SLH/LLH classification → counterfactual → Δ metrics | `test_pipeline_end_to_end.py` |
+| **End to end** on a synthetic trace: detection → episode classification → counterfactual → Δ metrics | `test_pipeline_end_to_end.py` |
 | mg/dL ↔ mmol/L conversion | `test_unit_conversion.py` |
 | Automatic / explicit patient selection | `test_patient_selection.py` |
 | Open-data anonymisation, open data → raw conversion, synthetic sample data | `test_open_data.py` |
