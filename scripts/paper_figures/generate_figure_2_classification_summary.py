@@ -8,7 +8,7 @@ support figure for the episode classification scheme (see `generate_supplementar
 for the schema itself):
 
   A — Simplified classification waterfall (adapted from panel A of
-      `plot_simplified_funnel` in scripts/statistics/slh_llh_stats.py):
+      `plot_simplified_funnel` in scripts/statistics/slh_llh_cohort_descriptive_stats.py):
       All hyperglycemia episodes -> Duration -> Context (C4+C5+C6) ->
       Data completeness (C2) -> Daytime (C3) -> SLH. Bars for the
       intermediate (still-mixed) steps are neutral grey; the final SLH bar
@@ -217,7 +217,7 @@ def compute_funnel_stats(raw_df: pd.DataFrame) -> dict:
     """
     Compute the 5-step simplified funnel: C1 (duration) -> C4+C5+C6 (context)
     -> C2 (completeness) -> C3 (daytime) -> SLH. Mirrors
-    `plot_simplified_funnel` in scripts/statistics/slh_llh_stats.py.
+    `plot_simplified_funnel` in scripts/statistics/slh_llh_cohort_descriptive_stats.py.
     """
     c1, c2, c3 = raw_df["C1"], raw_df["C2"], raw_df["C3"]
     c456 = raw_df["C4"] & raw_df["C5"] & raw_df["C6"]
@@ -255,10 +255,10 @@ def plot_simplified_waterfall(ax, funnel_stats: dict, axis_height_in: float,
                              panel_label: str | None = "A", xlabel: str | None = None) -> None:
     """
     Single-panel waterfall funnel (adapted from `plot_simplified_funnel`'s
-    panel A in scripts/statistics/slh_llh_stats.py): C1 (duration) ->
+    panel A in scripts/statistics/slh_llh_cohort_descriptive_stats.py): C1 (duration) ->
     C4+C5+C6 (context) -> C2 (completeness) -> C3 (daytime) -> SLH.
 
-    Colors are chosen to match panels B-D rather than reusing slh_llh_stats's
+    Colors are chosen to match panels B-D rather than reusing slh_llh_cohort_descriptive_stats's
     own (unrelated) FUNNEL_COLORS palette: intermediate, still-mixed pools
     are neutral grey, the final SLH bar uses CATEGORY_COLORS["SLH"], and each
     exclusion annotation is colored by the category those episodes join

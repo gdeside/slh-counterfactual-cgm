@@ -90,7 +90,7 @@ pipeline: preprocessing metrics_preprocessing filtering episode_detection sensit
 # ---- STATISTICS -------------------------------------------------------------
 
 slh_stats:  ## SLH/LLH cohort descriptive statistics
-	$(RUN) scripts.statistics.slh_llh_stats
+	$(RUN) scripts.statistics.slh_llh_cohort_descriptive_stats
 
 compelling_pairs:  ## Participant pairs illustrating SLH beyond standard metrics
 	$(RUN) scripts.patient_selection.find_compelling_pairs

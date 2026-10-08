@@ -1,6 +1,6 @@
 """
-scripts/statistics/slh_llh_stats.py
-===================================
+scripts/statistics/slh_llh_cohort_descriptive_stats.py
+======================================================
 Cohort-level descriptive statistics for SLH / LLH episodes.
 
 Computes and reports the following for the Results section:
@@ -37,7 +37,7 @@ Outputs
 
 Usage
 -----
-    python3 -m scripts.statistics.slh_llh_stats [--no_filter]
+    python3 -m scripts.statistics.slh_llh_cohort_descriptive_stats [--no_filter]
 
 Authors
 -------
