@@ -184,13 +184,16 @@ suppfig1:  ## Suppl. Fig. 1 — data quality and cohort selection
 suppfig3:  ## Suppl. Fig. 3 — SLH detection schema (one patient, automatic choice unless PATIENT_ID given)
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_3_slh_detection_schema $(if $(PATIENT_ID),--patient_id $(PATIENT_ID))
 
+suppfig_onset_time:  ## Suppl. figure — SLH/LLH onset time of day for every patient (supports Fig. 2D)
+	$(RUN) scripts.paper_figures.generate_supplementary_figure_onset_time_per_patient
+
 suppfig_phenotype: check_clinical_table  ## Suppl. figure — phenotype determinants (needs clinical phenotype table)
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_phenotype_determinants
 
 cohort_flowchart:  ## Suppl. cohort flowchart (PDF needs rsvg-convert)
 	$(RUN) scripts.paper_figures.generate_cohort_flowchart
 
-paper: fig2 fig3 fig4 suppfig1 suppfig3 cohort_flowchart  ## Manuscript figures that need no clinical table
+paper: fig2 fig3 fig4 suppfig1 suppfig3 suppfig_onset_time cohort_flowchart  ## Manuscript figures that need no clinical table
 
 paper_clinical: table1 fig5 fig6 suppfig_phenotype  ## Table 1 and figures that need the clinical phenotype table
 
