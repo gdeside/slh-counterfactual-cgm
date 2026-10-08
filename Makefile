@@ -23,7 +23,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 	sensitivity_analysis lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity \
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis \
-	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_phenotype cohort_flowchart paper \
+	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_onset_time suppfig_phenotype cohort_flowchart paper \
 	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
 
