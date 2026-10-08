@@ -18,7 +18,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 .PHONY: help install check_clinical_table paper_clinical requirements-check \
 	time_step_analysis preprocessing coverage_analysis metrics_preprocessing filtering \
 	filtered_metrics_distribution episode_detection pipeline \
-	slh_stats compelling_pairs patient_similarity slh_funnel slh_overview slh_zoom_panels agp_recurrence patient_comparison \
+	slh_llh_cohort_descriptive_stats compelling_pairs patient_similarity slh_funnel slh_overview slh_zoom_panels agp_recurrence patient_comparison \
 	lininterp_stepbystep lininterp_offset_comp lininterp_45days \
 	sensitivity_analysis lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity \
 	timeseries_sensitivity sensitivity_figures \
@@ -89,7 +89,7 @@ pipeline: preprocessing metrics_preprocessing filtering episode_detection sensit
 
 # ---- STATISTICS -------------------------------------------------------------
 
-slh_stats:  ## SLH/LLH cohort descriptive statistics
+slh_llh_cohort_descriptive_stats:  ## SLH/LLH cohort descriptive statistics
 	$(RUN) scripts.statistics.slh_llh_cohort_descriptive_stats
 
 compelling_pairs:  ## Participant pairs illustrating SLH beyond standard metrics

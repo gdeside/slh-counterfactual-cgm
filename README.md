@@ -456,7 +456,7 @@ make filtering               # median-glucose filter
 make episode_detection       # episode detection + classification (C1–C6)
 
 # 2. Statistics
-make slh_stats               # episode-category descriptive statistics
+make slh_llh_cohort_descriptive_stats  # episode-category descriptive statistics
 make quartile_analysis       # stratification by n_SLH
 make scatter_analysis        # n_SLH vs Δ metrics
 
@@ -510,7 +510,7 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 |---|---|
 | Setup | `install`, `requirements-check` (reports missing imports, never overwrites `requirements.txt`), `check_clinical_table` |
 | Data pipeline | `time_step_analysis`, `preprocessing`, `coverage_analysis`, `metrics_preprocessing`, `filtering`, `filtered_metrics_distribution`, `episode_detection`, **`pipeline`** (core chain) |
-| Statistics | `slh_stats`, `quartile_analysis`, `scatter_analysis` |
+| Statistics | `slh_llh_cohort_descriptive_stats`, `quartile_analysis`, `scatter_analysis` |
 | Patient selection | `compelling_pairs`, `patient_similarity` |
 | SLH illustrations | `slh_funnel`, `slh_overview`, `slh_zoom_panels`, `agp_recurrence`, `patient_comparison` |
 | Counterfactual | `lininterp_stepbystep`, `lininterp_offset_comp`, `lininterp_45days` |
