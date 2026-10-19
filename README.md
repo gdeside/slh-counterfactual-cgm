@@ -1,9 +1,9 @@
-# Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code and open dataset
+# Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code
 
 [![Tests](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml/badge.svg)](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-%E2%89%A5%203.11-blue.svg)](#installation)
 [![License: MIT](https://img.shields.io/badge/code%20license-MIT-green.svg)](LICENSE)
-[![Data: CC BY 4.0](https://img.shields.io/badge/data%20license-CC%20BY%204.0-lightgrey.svg)](#data-availability)
+[![Example data: ShanghaiT1DM, CC BY 4.0](https://img.shields.io/badge/example%20data-ShanghaiT1DM%20(CC%20BY%204.0)-lightgrey.svg)](#data-availability)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23102518.svg)](https://doi.org/10.5281/zenodo.23102518)
 
 Code, analysis pipeline and figure scripts for the manuscript:
@@ -11,7 +11,7 @@ Code, analysis pipeline and figure scripts for the manuscript:
 > *Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making*
 > Deside G, Syed Z, Symul L, Lysy P. *The Lancet Diabetes & Endocrinology* (submitted; preprint on medRxiv).
 >
-> Archived on Zenodo: [10.5281/zenodo.23102518](https://doi.org/10.5281/zenodo.23102518)
+> Code archived on Zenodo (code only, **no patient data**): [10.5281/zenodo.23102518](https://doi.org/10.5281/zenodo.23102518)
 
 ---
 
@@ -23,16 +23,16 @@ Code, analysis pipeline and figure scripts for the manuscript:
 - [Manuscript figure and table map](#manuscript-figure-and-table-map)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
-- [Quick start with the sample dataset](#quick-start-with-the-sample-dataset)
+- [Example with the ShanghaiT1DM data](#example-with-the-shanghait1dm-data)
 - [Run detection and counterfactual directly on your files (no pipeline)](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline)
 - [Data availability](#data-availability)
-- [How to use the data](#how-to-use-the-data)
+- [Full pipeline on your own data](#full-pipeline-on-your-own-data)
 - [How to reproduce](#how-to-reproduce)
 - [Glucose units](#glucose-units-mgdl-and-mmoll)
 - [Makefile reference](#makefile-reference)
 - [Tests](#tests)
 - [Citation](#citation)
-- [Authors](#authors)
+- [Authors and contact](#authors-and-contact)
 - [License](#license)
 
 ---
@@ -82,8 +82,8 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 | Preprocessing, quality flags, 45-day window, filtering | yes | **no** - give a clean trace | **no** - give clean traces |
 | Command | `make pipeline`, then `make paper` | `make example INPUT=my_patient.csv` | `make example INPUT_DIR=my_folder` |
 | Output | `Data/`, `Results/`, `Figures/` under `CGM_DATA_ROOT` | `example_output/` (episodes, counterfactual, summary, figure) | `example_output/`: per-patient folders + `cohort_summary.csv` + `cohort_episodes.csv` |
-| Reproduces the manuscript | **yes** (with the original data; the open dataset gives close values) | no | no |
-| Details | [How to use the data](#how-to-use-the-data), [How to reproduce](#how-to-reproduce) | [B and C below](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline) | [B and C below](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline) |
+| Reproduces the manuscript | **yes**, with the study data (available on request, see [Data availability](#data-availability)) | no | no |
+| Details | [Full pipeline on your own data](#full-pipeline-on-your-own-data), [How to reproduce](#how-to-reproduce) | [B and C below](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline) | [B and C below](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline) |
 
 Which one? **A** to reproduce or re-run the study; **B** to look at one recording; **C** to analyse a whole set of recordings
 quickly, without organising them in the `Data/Raw/…` layout or filtering the cohort. Counts obtained with B or C differ from
@@ -103,8 +103,8 @@ make suppfig3 lininterp_45days PATIENT_ID=A224
 CGM_PATIENT_HIGH=A174 CGM_PATIENT_LOW=A224 make fig3 fig4     # two patients: high vs low SLH frequency
 ```
 
-No data at hand? `make sample_data_run` runs the whole chain on synthetic patients (see
-[Quick start](#quick-start-with-the-sample-dataset)).
+No data at hand? Try **B/C** on the [ShanghaiT1DM example data](#example-with-the-shanghait1dm-data)
+(`make shanghai_example`). Those recordings (15-min CGM, about 7 days) are too short for the 45-day pipeline.
 
 ---
 
@@ -128,7 +128,7 @@ Every manuscript figure is saved in its **own folder** under `Figures/Manuscript
 `…_panel_B…`, etc. (cropped from the same rendering, so panels are identical to what the combined figure shows). Figure 6
 keeps its separately rendered panels in `Figure6_Determinants/`. The cohort flowchart and Table 1 are not matplotlib figures.
 
-"Clinical table" = `Data/Final cohort SLH.csv` (not in the open dataset; `make paper` skips these items, `make paper_clinical` runs them).
+"Clinical table" = `Data/Final cohort SLH.csv` (study data, not in this repository; `make paper` skips these items, `make paper_clinical` runs them).
 
 Run any script as a module from the repository root, e.g.
 `python3 -m scripts.paper_figures.generate_figure_3_patient_comparison`.
@@ -151,17 +151,18 @@ counterfactual-cgm-slh/
 │   └── utils/                    #   time and unit-conversion utilities
 │
 ├── scripts/                      # Executable analysis scripts (`python3 -m scripts.<pkg>.<name>`)
-│   ├── preprocessing/            #   raw → windows → metrics → filtered cohort; open-data release; unit conversion
+│   ├── preprocessing/            #   raw → windows → metrics → filtered cohort; unit conversion
 │   ├── episodes_detection/       #   episode detection + classification; single-patient classification funnel (`make slh_funnel`)
 │   ├── counterfactual/           #   counterfactual figures + sensitivity analysis over δ
 │   ├── statistics/               #   descriptive stats, quartiles, scatter plots; exploratory scripts (below)
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
-│   ├── examples/                 #   detection + counterfactual on one file or a folder of files (`make example`)
+│   ├── examples/                 #   detection + counterfactual on one file or a folder (`make example`); ShanghaiT1DM converter
 │   ├── presentation_figures/     #   talk figures, synthetic-data friendly (`make presentation_figures`; not part of the paper)
 │   ├── sample_data/              #   synthetic sample patients (`make sample_data`) and the generator built from real data (maintainers)
 │   └── *.py                      #   single-patient illustrations at the top level (overview, zoom panels, AGP recurrence, patient comparison)
 │
+├── example_data/ShanghaiT1DM/    # example data (NOT in the repository): raw/ = original files, converted/ = project format
 ├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
 ├── tests/                        # pytest suite (238 tests; no patient data needed) - `make tests`
 ├── docs/UNITS.md                 # mg/dL ↔ mmol/L handling
@@ -169,7 +170,7 @@ counterfactual-cgm-slh/
 ├── Makefile                      # all execution commands - `make help`
 ├── requirements.txt              # pinned dependencies (Python ≥ 3.11)
 ├── TODO.md                       # pre-release checklist (maintainers; removed from the archived version)
-├── CITATION.cff                  # how to cite (Zenodo DOI)
+├── CITATION.cff                  # how to cite (Zenodo DOI, code only)
 └── LICENSE                       # MIT
 ```
 
@@ -211,37 +212,45 @@ Results/                         # all outputs are written here
 
 ---
 
-## Quick start with the sample dataset
+## Example with the ShanghaiT1DM data
 
-No access to patient data is needed to try the pipeline. `scripts/sample_data/` generates **4 synthetic patients**
-(A001–A004, 50 days, 5-min sampling, sensor gaps, meal excursions producing SLH episodes as well as non-SLH ones (not isolated, night, LLH);
-fixed seed). The same file is attached to each GitHub release as `sample_data.zip`.
+The example data of this repository are the **ShanghaiT1DM** recordings:
 
-```bash
-# Option A - generate locally
-make sample_data                 # → sample_data/ and sample_data.zip
-make sample_data_run             # preprocessing → metrics → filtering → episodes → sensitivity (~2 min)
+> Zhu, Jinhao (2022). *Diabetes Datasets-ShanghaiT1DM and ShanghaiT2DM*. figshare. Dataset.
+> [https://doi.org/10.6084/m9.figshare.20444397.v3](https://doi.org/10.6084/m9.figshare.20444397.v3) (CC BY 4.0)
 
-# Option B - from the release asset
-unzip sample_data.zip
-export CGM_DATA_ROOT=$PWD/sample_data
-make pipeline
+They are **not distributed with this code** (the Zenodo archive contains code only): download them from figshare. Each patient
+file (e.g. `1001_0_20210730.xlsx`) holds about a week of CGM sampled every 15 minutes, in mg/dL, with insulin and meal records.
+
+> ⚠️ **The data are modified.** To match the format and units of this project, `scripts/examples/convert_shanghai_t1dm.py`
+> keeps only the time stamp and the CGM column, expresses glucose in mg/dL (converted from mmol/L if needed), **resamples the
+> 15-min CGM to a 5-min grid by linear interpolation** (gaps longer than 20 min are left empty) and renames the columns
+> `time` / `glycemie`. Interpolated points are not measurements, and the results below illustrate what the code does; they say
+> nothing about ShanghaiT1DM itself. The converted files are *not* the original ShanghaiT1DM files and the original authors do not
+> endorse them. The converter writes a `MODIFIED_DATA_NOTICE.md` next to its output to say so.
+
+**Where to put the files**
+
+```
+example_data/ShanghaiT1DM/
+├── raw/          <- put the ORIGINAL figshare files here (patient .xlsx files; Shanghai_T1DM_Summary.xlsx is ignored)
+└── converted/    <- written by the converter: <patient_id>.csv (time, glycemie in mg/dL, 5 min) + MODIFIED_DATA_NOTICE.md
 ```
 
-`CGM_DATA_ROOT` overrides `BASE_PATH` in `src/config/paths.py`; all outputs are written under it
-(`Data/…`, `Results/…`, `Figures/…`). The sample data are **synthetic**: they demonstrate that the code runs and
-what the outputs look like, and are not expected to reproduce any manuscript number. Steps that need the clinical
-phenotype table (`Data/Final cohort SLH.csv`: Table 1, determinant figures) are not covered.
+`raw/` and `converted/` are git-ignored: the data stay on your machine. To add the other patients, drop their files in `raw/`
+and run the commands again; the folder is not limited to one patient.
 
-### A more realistic sample dataset (maintainers, needs the real data)
+```bash
+make shanghai_convert     # raw/ → converted/   (the data are modified, see above)
+make shanghai_example     # convert, then episodes + counterfactual for every converted patient → example_output/
+```
 
-`scripts/sample_data/generate_sample_data_from_real.py` (`make sample_data_real`) builds 4 **fake patients** from the *shape* of real
-CGM data, for a more realistic illustration than the simulated sample: the filtered real cohort is split into 4 groups by SLH frequency
-(high → low); each fake patient interleaves randomly chosen, never-reused **24-h segments from ≥ 5 different real patients**, adds
-patient-level scaling (±5 %) and Gaussian noise (σ = 2 mg/dL), replaces the time by an **arbitrary relative origin** and gets a
-fresh ID (A001–A004); no mapping to real patients is stored. It must be run where the real data are
-(`CGM_DATA_ROOT=<real root> make sample_data_real`) and its output must **not** be committed or released without the data-protection
-officer's approval. Details in the script header.
+`example_output/` contains `cohort_summary.csv`, `cohort_episodes.csv` and one folder per patient (episodes, counterfactual, figure);
+see [Run on your files](#c-a-folder-of-files-a-whole-cohort) for the content. The converter options are `--input_dir`, `--out_dir` and
+`--max_gap` (`python3 -m scripts.examples.convert_shanghai_t1dm -h`).
+
+For another dataset, convert it to one CSV / Excel file per patient with a time column and a glucose column in mg/dL on a
+5-minute grid, then use the section below.
 
 ---
 
@@ -322,49 +331,24 @@ filtering. For that reason the episode counts differ from those of the pipeline 
 
 ## Data availability
 
-- **Raw CGM data** are patient-level clinical data and **cannot be shared** publicly.
-- An **anonymised open dataset** (HIPAA Safe Harbor + GDPR: relative timestamps, Gaussian glucose noise, shuffled IDs)
-  is generated by `make open_data` and deposited at **[10.5281/zenodo.23102518](https://doi.org/10.5281/zenodo.23102518)** under CC BY 4.0.
-  Its `DATACARD.md` documents the de-identification steps.
-- Because noise is added to glucose values, results computed from the open dataset will differ slightly from
-  those reported in the manuscript.
+- **This repository and its Zenodo archive contain code only. No patient data are shared.**
+- **Study data.** The CGM data used in the manuscript are patient-level clinical data. They are available on request from the
+  corresponding author of the paper, **Philippe Lysy**.
+- **Example data.** The examples use the public **ShanghaiT1DM** dataset (Zhu, Jinhao, 2022, figshare,
+  [10.6084/m9.figshare.20444397.v3](https://doi.org/10.6084/m9.figshare.20444397.v3), CC BY 4.0), which you download yourself.
+  It is **modified** by the converter of this repository (see [Example](#example-with-the-shanghait1dm-data)); numbers obtained
+  from it are not manuscript results.
 
 ---
 
-## How to use the data
+## Full pipeline on your own data
 
-This section is about the **full pipeline (A)**. Three kinds of data can be used with it; point the code at a working folder with
-`CGM_DATA_ROOT` (default: `./data`); inputs are read from, and outputs written to, sub-folders of it. To run only detection and
-the counterfactual on files, without this layout, see [B and C](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline).
+This section is about the **full pipeline (A)**; it needs data in the layout below, for example the study data (on request) or
+your own recordings. Point the code at a working folder with `CGM_DATA_ROOT` (default: `./data`); inputs are read from, and outputs
+written to, sub-folders of it. To run only detection and the counterfactual on files, without this layout, see
+[B and C](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline).
 
-| Data | Use it for | How |
-|---|---|---|
-| **Synthetic sample** (`make sample_data`) | trying the code, the notebooks | `export CGM_DATA_ROOT=$PWD/sample_data` then `make pipeline` |
-| **Open anonymised dataset** (Zenodo) | re-running the analysis | convert it to the raw layout (below), then `make pipeline` |
-| **Your own CGM exports** | applying the method to new data | put one file per patient in `Data/Raw/` (below) |
-
-### A1 - Open dataset (Zenodo)
-
-The release contains `cohort_open_data.csv` (all patients) and `per_patient/OD_xxx.csv`, with three columns:
-
-| Column | Meaning |
-|---|---|
-| `patient_id` | anonymous code (`OD_001` …); the mapping to original IDs does not exist |
-| `time_h` | relative time since monitoring start (hours, 5-min steps) |
-| `glucose_mgdl` (or `glucose_mmoll`) | glucose with added Gaussian noise (mg/dL, or mmol/L) |
-
-```bash
-export CGM_DATA_ROOT=$PWD/od_run                       # any empty folder
-make open_data_to_raw OPEN_DATA_CSV=/path/to/cohort_open_data.csv
-make pipeline                                          # preprocessing → metrics → filtering → episodes → sensitivity
-```
-
-`open_data_to_raw` writes `Data/Raw/<patient_id>.xlsx` (columns `time`, `glycemie` in mg/dL) and maps the relative
-time onto an arbitrary origin (2000-01-01 00:00): no real date is involved. Because noise was added to glucose, results
-differ slightly from the manuscript. The phenotype table (`Data/Final cohort SLH.csv`) is **not** part of the open
-dataset, so Table 1 and the determinant figures cannot be reproduced from it.
-
-### A2 - Your own CGM data (full pipeline)
+### Your CGM data
 
 Create `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT`, one file per patient, with two columns:
 
@@ -382,7 +366,7 @@ subset only).
 
 Scripts that illustrate one patient (episode detection, counterfactual construction, AGP, …) or two patients
 (Figures 3–5, patient comparison) **do not hard-code participant IDs**. Participant IDs differ between datasets
-(original study codes, `A001`… in the sample data, `OD_001`… in the open dataset), so the code picks patients itself
+(original study codes, `A001`… in the synthetic sample data, file names in the ShanghaiT1DM example), so the code picks patients itself
 unless you tell it which ones to use.
 
 **Default (automatic).** From the filtered cohort, the script takes the patient with the **most** SLH episodes
@@ -426,8 +410,8 @@ python3 -m scripts.paper_figures.generate_supplementary_figure_3_slh_detection_s
 ```
 
 `A174` and `A224` are the two participants shown in the manuscript (high vs low SLH frequency); they exist only in the
-original dataset. If an ID is not found in the data, the script prints a warning and falls back to the automatic choice,
-so the same command also runs on the sample or open data (it then shows other patients). Selection logic:
+study data. If an ID is not found in the data, the script prints a warning and falls back to the automatic choice,
+so the same command also runs on other data (it then shows other patients). Selection logic:
 [`src/utils/patient_selection.py`](src/utils/patient_selection.py).
 
 ### Presentation figures
@@ -442,7 +426,7 @@ them; outputs go to `scripts/presentation_figures/output/` (git-ignored).
 | Folder under `CGM_DATA_ROOT` | Content |
 |---|---|
 | `Data/Preprocessed/`, `Data/Metrics/`, `Data/Filtered/`, `Data/Episodes/` | windows, CGM metrics, filtered cohort, classified episodes |
-| `Results/` | tables and sensitivity-analysis outputs (`Results/Open_Data/` for the anonymised release) |
+| `Results/` | tables and sensitivity-analysis outputs |
 | `Figures/` | all figures (PDF + SVG) |
 
 ---
@@ -476,14 +460,10 @@ make sensitivity_figures
 make paper                   # Fig. 2-4, Suppl. Fig. 1 and 3, cohort flowchart (no clinical table needed)
 make paper_clinical          # Table 1, Fig. 5-6, Suppl. phenotype figure (need Data/Final cohort SLH.csv)
 # individual figures: make fig2 fig3 fig4 fig5 … (see the figure map above)
-
-# 5. Open-data release
-make open_data               # σ = 2 mg/dL noise, shuffled IDs
-make open_data_phase_shift   # + random monitoring-start shift
 ```
 
 Example notebooks (`notebooks/01_…` to `09_…`: metrics, preprocessing + filtering, episode detection, counterfactual,
-sensitivity analysis, median-profile difference (t_max), patient comparison, phenotype/CGM association with n_SLH) run on the sample data
+sensitivity analysis, median-profile difference (t_max), patient comparison, phenotype/CGM association with n_SLH) run on the synthetic sample patients generated by the code (`make sample_data_run`)
 (`08_…` needs the clinical file for real results and falls back to a flagged random demo phenotype without it; `09_…` runs detection + counterfactual on a single file, with no pipeline and no `CGM_DATA_ROOT`):
 
 ```bash
@@ -500,7 +480,6 @@ The pipeline computes and stores glucose in **mg/dL**; mmol/L is a presentation 
 ```bash
 python3 -m scripts.preprocessing.convert_data_units            # mmol/L copies of data files
 CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
-python3 -m scripts.preprocessing.generate_open_data --unit mmol/L
 ```
 
 Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [`docs/UNITS.md`](docs/UNITS.md).
@@ -522,12 +501,13 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 | Sensitivity | `sensitivity_analysis`, `lines_sensitivity`, `boxplots_sensitivity`, `cdf_sensitivity`, `agp_sensitivity`, `timeseries_sensitivity`, `sensitivity_figures` |
 | Manuscript | `fig2`, `fig3`, `fig4`, `suppfig1`, `suppfig3`, `cohort_flowchart`, **`paper`**; with the clinical table*: `table1`, `fig5`, `fig6`, `suppfig_phenotype`, **`paper_clinical`** |
 | Single file / folder, no pipeline | `example` (`make example INPUT=file.csv` or `INPUT_DIR=folder`) |
+| ShanghaiT1DM example data | `shanghai_convert`, `shanghai_example` |
 | Talk figures | `presentation_figures` |
-| Open data / units | `open_data`, `open_data_phase_shift`, `open_data_to_raw`, `convert_units` |
+| Units | `convert_units` |
 | Sample dataset | `sample_data`, `sample_data_run`, `sample_data_real` (maintainers, real data) |
 | Utility | `figures`, `tests`, `clean` |
 
-\* needs `Data/Final cohort SLH.csv` (not in the open dataset): these targets first run `check_clinical_table`, which stops with a
+\* needs `Data/Final cohort SLH.csv` (study data, not in this repository): these targets first run `check_clinical_table`, which stops with a
 clear message when the file is missing.
 
 ---
@@ -545,23 +525,27 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 
 ## Citation
 
-If you use this code or the open dataset, please cite:
+If you use this code, please cite the Zenodo archive (code only) and the manuscript:
 
 ```
-Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making. The Lancet Diabetes & Endocrinology (submitted; medRxiv). Code and data: Zenodo, doi:10.5281/zenodo.23102518
+Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making. The Lancet Diabetes & Endocrinology (submitted; medRxiv). Code: Zenodo, doi:10.5281/zenodo.23102518
 ```
 
+If you use the example data, also cite the dataset: Zhu, Jinhao (2022). *Diabetes Datasets-ShanghaiT1DM and ShanghaiT2DM*. figshare.
+Dataset. https://doi.org/10.6084/m9.figshare.20444397.v3 - and state that the data were modified by this project's converter.
 
 ---
 
-## Authors
+## Authors and contact
 
 Guillaume Deside, Zain Syed, Laura Symul, Philippe Lysy.
-Contact: guillaume.deside@uclouvain.be
+
+- **Code** (this repository, issues, questions): Guillaume Deside - guillaume.deside@uclouvain.be
+- **Study data** (available on request): Philippe Lysy, corresponding author of the manuscript.
 
 ---
 
 ## License
 
 Code: **MIT** (see [`LICENSE`](LICENSE)).
-Open anonymised dataset: **CC BY 4.0** (see `Results/Open_Data/DATACARD.md`).
+The ShanghaiT1DM example data are not part of this repository; they belong to their authors and are released under **CC BY 4.0**.

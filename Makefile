@@ -12,7 +12,7 @@ RUN     = $(PYTHON) -m
 
 .DEFAULT_GOAL := help
 
-# Clinical phenotype table (not in the repository, not in the open dataset)
+# Clinical phenotype table (not in the repository; available on request, see README)
 CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 
 .PHONY: help install check_clinical_table paper_clinical requirements-check \
@@ -24,7 +24,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis \
 	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_onset_time suppfig_phenotype suppfig_s10 cohort_flowchart paper \
-	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_real sample_data_run \
+	example shanghai_convert shanghai_example presentation_figures convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
 
 
@@ -48,7 +48,7 @@ help:  ## List all targets
 
 check_clinical_table:  ## Check that the clinical phenotype table exists (needed by table1, fig5, fig6, ...)
 	@test -f "$(CLINICAL_TABLE)" || { echo "Clinical table not found: $(CLINICAL_TABLE)"; \
-	  echo "  -> this target needs 'Data/Final cohort SLH.csv' under CGM_DATA_ROOT (not part of the open dataset)."; exit 1; }
+	  echo "  -> this target needs 'Data/Final cohort SLH.csv' under CGM_DATA_ROOT (not in the repository)."; exit 1; }
 
 
 install:  ## Install dependencies (requirements.txt)
@@ -201,7 +201,7 @@ paper: fig2 fig3 fig4 suppfig1 suppfig3 suppfig_onset_time cohort_flowchart  ## 
 paper_clinical: table1 fig5 fig6 suppfig_phenotype suppfig_s10  ## Table 1 and figures that need the clinical phenotype table
 
 
-# ---- OPEN DATA & UNITS ------------------------------------------------------
+# ---- EXAMPLE DATA & UNITS ---------------------------------------------------
 
 example:  ## Detection + counterfactual without the pipeline: demo, INPUT=file, or INPUT_DIR=folder [UNIT=mmol/L]
 	$(RUN) scripts.examples.detect_and_counterfactual $(if $(INPUT_DIR),--input_dir $(INPUT_DIR),$(if $(INPUT),--input $(INPUT),--demo)) $(if $(UNIT),--unit $(UNIT))
@@ -227,14 +227,11 @@ presentation_figures:  ## Talk figures (scripts/presentation_figures/, output ig
 	$(RUN) scripts.presentation_figures.slh_twin_comparison
 	$(RUN) scripts.presentation_figures.twin_two_weeks
 
-open_data:  ## Anonymised dataset (HIPAA + GDPR: relative time + noise)
-	$(RUN) scripts.preprocessing.generate_open_data
+shanghai_convert:  ## Put the ShanghaiT1DM files (example_data/ShanghaiT1DM/raw/) into the project format -> converted/ (MODIFIED data)
+	$(RUN) scripts.examples.convert_shanghai_t1dm
 
-open_data_phase_shift:  ## Anonymised dataset + random monitoring-start shift
-	$(RUN) scripts.preprocessing.generate_open_data --phase_shift
-
-open_data_to_raw:  ## Convert the open dataset CSV into Data/Raw/*.xlsx (OPEN_DATA_CSV=path/to/cohort_open_data.csv)
-	$(RUN) scripts.preprocessing.open_data_to_raw $(if $(OPEN_DATA_CSV),--input $(OPEN_DATA_CSV))
+shanghai_example: shanghai_convert  ## Detection + counterfactual on the converted ShanghaiT1DM example data -> example_output/
+	$(RUN) scripts.examples.detect_and_counterfactual --input_dir example_data/ShanghaiT1DM/converted
 
 convert_units:  ## Write mmol/L copies of the data files (mg/dL originals untouched)
 	$(RUN) scripts.preprocessing.convert_data_units
