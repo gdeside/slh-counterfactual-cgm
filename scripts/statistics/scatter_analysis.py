@@ -14,14 +14,13 @@ Uses pre-computed results from:
 Outputs for each metric:
 - Scatter plot with regression line
 - Spearman correlation with 95% CI
-- Points colored by beneficial/detrimental direction
 - Statistical annotations
 
 Artwork specification
 ---------------------
 No title is drawn inside the artwork.
 
-Glucose-valued deltas (mean, median, SD) follow the process-wide display
+Glucose-valued deltas (mean, median) follow the process-wide display
 unit, so ``CGM_GLUCOSE_UNIT=mmol/L`` produces figures with no mg/dL left in
 them; percentage metrics are unit-independent.
 
@@ -38,7 +37,6 @@ import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from matplotlib.lines import Line2D
 from scipy import stats
 
@@ -67,8 +65,6 @@ from src.visualization.style import (
     style_axes,
 )
 from src.visualization.colors import (
-    COLOR_BENEFICIAL,
-    COLOR_DETRIMENTAL,
     COLOR_NEUTRAL,
     COLOR_REGRESSION,
     COLOR_ZERO_LINE,
@@ -96,8 +92,8 @@ METRICS = [
     "TBR<70",
     "mean",
     "median",
-    "sd",
-    "cv",
+    # "sd",   # ΔSD and ΔCV disabled
+    # "cv",
 ]
 
 # Metric display properties.  The unit is kept separate from the name so that
@@ -109,8 +105,8 @@ METRIC_LABELS = {
     "TBR<70":    "ΔTBR <70",
     "mean":      "ΔMean glucose",
     "median":    "ΔMedian glucose",
-    "sd":        "ΔSD",
-    "cv":        "ΔCV",
+    # "sd":        "ΔSD",
+    # "cv":        "ΔCV",
 }
 
 METRIC_UNITS = {
@@ -120,8 +116,8 @@ METRIC_UNITS = {
     "TBR<70":    "(%)",
     "mean":      "(mg/dL)",
     "median":    "(mg/dL)",
-    "sd":        "(mg/dL)",
-    "cv":        "(%)",
+    # "sd":        "(mg/dL)",
+    # "cv":        "(%)",
 }
 
 #: Axis label for the x variable, used identically everywhere.
@@ -151,18 +147,6 @@ def format_p_value(p: float) -> str:
         return "p<0.0001"
 
     return f"p={float(f'{p:.2g}'):g}"
-
-# Beneficial direction (+1 = higher is better, -1 = lower is better)
-METRIC_DIRECTION = {
-    "TIR70-180": +1,
-    "TAR>180":   -1,
-    "TAR>250":   -1,
-    "TBR<70":    -1,
-    "mean":      -1,
-    "median":    -1,
-    "sd":        -1,
-    "cv":        -1,
-}
 
 # ── Daytime vs all-day delta column prefix ───────────────────────────────────
 # "delta_"         -> all-day deltas (default)
@@ -324,58 +308,6 @@ def compute_statistics(data: pd.DataFrame, metric: str,
 PANEL_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
-def assign_point_colors(delta_values: np.ndarray, metric: str) -> list:
-    """
-    Assign colors to points based on beneficial/detrimental direction.
-
-    Parameters
-    ----------
-    delta_values : np.ndarray
-        Delta metric values
-    metric : str
-        Metric name
-
-    Returns
-    -------
-    list of colors
-    """
-    direction = METRIC_DIRECTION.get(metric, 1)
-
-    colors = []
-    for delta in delta_values:
-        if delta * direction > 0:
-            colors.append(COLOR_BENEFICIAL)
-        elif delta * direction < 0:
-            colors.append(COLOR_DETRIMENTAL)
-        else:
-            colors.append(COLOR_NEUTRAL)
-
-    return colors
-
-
-def direction_legend_handles(colors: list) -> list:
-    """
-    Legend keys for the point colours actually used.
-
-    A metric whose every participant moved in the beneficial direction should
-    not carry a "detrimental" key, and the grey "no change" points need one
-    when they are there.
-    """
-    present = set(colors)
-
-    keys = [
-        (COLOR_BENEFICIAL, "Beneficial change"),
-        (COLOR_DETRIMENTAL, "Detrimental change"),
-        (COLOR_NEUTRAL, "No change"),
-    ]
-
-    return [
-        mpatches.Patch(facecolor=color, alpha=POINT_ALPHA, label=label)
-        for color, label in keys
-        if color in present
-    ]
-
-
 def create_scatter_plot(data: pd.DataFrame, metric: str,
                         stats_dict: dict, offset: int,
                         delta_prefix: str = DELTA_PREFIX_ALL_DAY,
@@ -415,15 +347,13 @@ def create_scatter_plot(data: pd.DataFrame, metric: str,
     x = plot_data["n_SLH"].values
     y = plot_data[delta_col].values
 
-    colors = assign_point_colors(y, metric)
-
     # No title is drawn inside the artwork.
     fig, ax = plt.subplots(
         figsize=lancet_figsize(FIGURE_HEIGHT, columns=FIGURE_COLUMNS_SINGLE),
         constrained_layout=True,
     )
 
-    ax.scatter(x, y, c=colors, s=POINT_SIZE, alpha=POINT_ALPHA,
+    ax.scatter(x, y, c=COLOR_NEUTRAL, s=POINT_SIZE, alpha=POINT_ALPHA,
                edgecolors='none', linewidths=POINT_EDGE_WIDTH, zorder=4)
 
     for pid in patient_ids:
@@ -471,7 +401,7 @@ def create_scatter_plot(data: pd.DataFrame, metric: str,
     style_axes(ax)
     ax.tick_params(length=3, width=0.8, labelsize=LANCET_MIN_FONT_PT)
 
-    handles = direction_legend_handles(colors) + [
+    handles = [
         Line2D([0], [0], color=COLOR_REGRESSION, ls="--", lw=1.5,
                label="OLS fit"),
     ]
@@ -532,7 +462,6 @@ def create_grid_figure(data: pd.DataFrame, metrics: list,
     axes_flat = np.array(axes).reshape(-1) if n_metrics > 1 else [axes]
 
     stats_dict_map = {s["metric"]: s for s in stats_list if s is not None}
-    colors_used = set()
 
     for idx, metric in enumerate(metrics):
         ax = axes_flat[idx]
@@ -547,10 +476,7 @@ def create_grid_figure(data: pd.DataFrame, metrics: list,
         x = plot_data["n_SLH"].values
         y = plot_data[delta_col].values
 
-        colors = assign_point_colors(y, metric)
-        colors_used.update(colors)
-
-        ax.scatter(x, y, c=colors, s=POINT_SIZE * 0.8, alpha=POINT_ALPHA,
+        ax.scatter(x, y, c=COLOR_NEUTRAL, s=POINT_SIZE * 0.8, alpha=POINT_ALPHA,
                    edgecolors='none', linewidths=0, zorder=4)
 
         stats_dict = stats_dict_map.get(metric)
@@ -586,7 +512,7 @@ def create_grid_figure(data: pd.DataFrame, metrics: list,
     for idx in range(n_metrics, len(axes_flat)):
         axes_flat[idx].set_visible(False)
 
-    handles = direction_legend_handles(sorted(colors_used)) + [
+    handles = [
         Line2D([0], [0], color=COLOR_REGRESSION, ls="--", lw=1.2,
                label="OLS fit"),
     ]

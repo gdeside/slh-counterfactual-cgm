@@ -68,7 +68,7 @@ from src.visualization.colors import (
     COLOR_PRIMARY, COLOR_THRESHOLD, COLOR_ANNOTATION, COLOR_BOX_BG,
     COLOR_INCLUDED, COLOR_EXCLUDED, COLOR_ZONE, COLORMAP_CONTINUOUS,
 )
-from src.visualization.style import apply_publication_style, style_axes, save_figure
+from src.visualization.style import apply_publication_style, style_axes, save_figure_with_panels
 from src.visualization.glucose_axis import apply_glucose_axis
 from src.utils.unit_conversion import format_glucose, glucose_label
 
@@ -647,7 +647,9 @@ def generate_supplementary_figure_1_data_quality():
     os.makedirs(output_dir, exist_ok=True)
     
     output_path = output_dir / "supplementary_figure_1"
-    save_figure(fig, output_path)
+    save_figure_with_panels(fig, output_path, "supplementary_figure_1",
+                            {"A": ax_timestep, "B": ax_cov_hist, "C": ax_cov_strip,
+                             "D": ax_med_hist, "E": ax_scatter})
     
     print("\n" + "=" * 70)
     print("  FIGURE SAVED")

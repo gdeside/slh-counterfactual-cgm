@@ -62,7 +62,8 @@ from src.utils.patient_selection import resolve_patient_pair
 from src.config import BASE_PATH, DATA_PATH, SENSITIVITY_PATH
 
 # Import visualization
-from src.visualization.style import apply_publication_style, save_figure, style_axes, FONT_SIZE_BASE
+from src.visualization.style import (apply_publication_style, save_figure_with_panels, style_axes,
+                                        FONT_SIZE_BASE)
 from src.visualization.colors import DIVERGING
 from src.visualization.glucose_axis import apply_glucose_axis
 from src.utils.unit_conversion import (
@@ -598,7 +599,8 @@ def generate_figure_5():
     plot_mutual_information_panel(ax_f, mi_df)
     add_panel_label(ax_f, "F", x=-0.42, y=1.06)
 
-    return fig
+    panels = {"A": ax_a, "B": ax_b, "C": ax_c, "D": ax_d, "E": ax_e, "F": ax_f}
+    return fig, panels
 
 
 # =============================================================================
@@ -622,16 +624,15 @@ def main():
         return
 
     # Generate figure
-    fig = generate_figure_5()
+    fig, panels = generate_figure_5()
 
     # Save
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
-    save_figure(fig, output_path)
+    save_figure_with_panels(fig, output_path, OUTPUT_NAME, panels)
 
     print("\n" + "=" * 70)
-    print(f"  Figure saved: {output_path}.pdf")
-    print(f"                {output_path}.svg")
+    print(f"  Figure and panels saved in: {output_path}/")
     print("=" * 70 + "\n")
 
 

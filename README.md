@@ -1,4 +1,4 @@
-# Counterfactual CGM Signals for Short-Lasting Hyperglycaemia (SLH)
+# Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code and open dataset
 
 [![Tests](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml/badge.svg)](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-%E2%89%A5%203.11-blue.svg)](#installation)
@@ -9,7 +9,7 @@
 Code, analysis pipeline and figure scripts for the manuscript:
 
 > *Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making*
-> Deside G, Syed Z, Symul L, Lysy P. *The Lancet Digital Health*.
+> Deside G, Syed Z, Symul L, Lysy P. *The Lancet Diabetes & Endocrinology* (submitted; preprint on medRxiv).
 >
 > Archived on Zenodo: [10.5281/zenodo.23102518](https://doi.org/10.5281/zenodo.23102518)
 
@@ -79,7 +79,7 @@ All thresholds live in `src/config/` (`constants.py`, `episode_config`, `counter
 |---|---|---|---|
 | What it does | raw files → 45-day windows → metrics → cohort filter → episodes → counterfactual + sensitivity → manuscript figures and tables | episode detection / classification, counterfactual and effect on the metrics | the same, for every file of a folder (a whole cohort) |
 | Input | `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT` | any CSV / TSV / Excel file of one patient | a folder with one such file per patient (file name = patient ID) |
-| Preprocessing, quality flags, 45-day window, filtering | yes | **no** — give a clean trace | **no** — give clean traces |
+| Preprocessing, quality flags, 45-day window, filtering | yes | **no** - give a clean trace | **no** - give clean traces |
 | Command | `make pipeline`, then `make paper` | `make example INPUT=my_patient.csv` | `make example INPUT_DIR=my_folder` |
 | Output | `Data/`, `Results/`, `Figures/` under `CGM_DATA_ROOT` | `example_output/` (episodes, counterfactual, summary, figure) | `example_output/`: per-patient folders + `cohort_summary.csv` + `cohort_episodes.csv` |
 | Reproduces the manuscript | **yes** (with the original data; the open dataset gives close values) | no | no |
@@ -90,7 +90,7 @@ quickly, without organising them in the `Data/Raw/…` layout or filtering the c
 the pipeline's for the same patients, because the pipeline first extracts a 45-day window with ≥ 70 % coverage and applies the
 cohort filter.
 
-**A in short** — put the files in `<CGM_DATA_ROOT>/Data/Raw/`, then:
+**A in short** - put the files in `<CGM_DATA_ROOT>/Data/Raw/`, then:
 
 ```bash
 export CGM_DATA_ROOT=/path/to/your/data
@@ -112,16 +112,21 @@ No data at hand? `make sample_data_run` runs the whole chain on synthetic patien
 
 | Manuscript item | Script | Notes |
 |---|---|---|
-| Table 1 — Cohort characteristics | `scripts/paper_figures/generate_table1.py` | `make table1`; needs `pysummaries` and the clinical table |
-| Fig. 2 — Episode classification summary (SLH / Not isolated / Night / LLH) | `scripts/paper_figures/generate_figure_2_classification_summary.py` | `make fig2` |
-| Fig. 3 — Two patients, similar metrics, different SLH frequency (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | `make fig3` |
-| Fig. 4 — Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | `make fig4`; needs `make sensitivity_analysis` |
-| Fig. 5 — Distribution of ΔTIR / Δmedian / max ΔAGP, with the correlation matrix | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | `make fig5`; needs the clinical table |
-| Fig. 6 — Determinants of SLH frequency | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | `make fig6`; needs the clinical table |
-| Suppl. Fig. 1 — Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1_data_quality.py` | `make suppfig1` |
-| Suppl. Fig. 3 — SLH detection schema | `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` | `make suppfig3` |
-| Suppl. Fig. — Cohort flowchart | `scripts/paper_figures/generate_cohort_flowchart.py` | `make cohort_flowchart`; needs `rsvg-convert` (`brew install librsvg`) |
-| Suppl. Fig. — Phenotype determinants | `scripts/paper_figures/generate_supplementary_figure_phenotype_determinants.py` | `make suppfig_phenotype`; needs the clinical table |
+| Table 1 - Cohort characteristics | `scripts/paper_figures/generate_table1.py` | `make table1`; needs `pysummaries` and the clinical table |
+| Fig. 2 - Episode classification summary (SLH / Not isolated / Night / LLH) | `scripts/paper_figures/generate_figure_2_classification_summary.py` | `make fig2` |
+| Fig. 3 - Two patients, similar metrics, different SLH frequency (high vs low SLH) | `scripts/paper_figures/generate_figure_3_patient_comparison.py` | `make fig3` |
+| Fig. 4 - Counterfactual construction and sensitivity | `scripts/paper_figures/generate_figure_4_counterfactual_construction.py` | `make fig4`; needs `make sensitivity_analysis` |
+| Fig. 5 - Distribution of ΔTIR / Δmedian / max ΔAGP, with the correlation matrix | `scripts/paper_figures/generate_figure_5_counterfactual_distribution.py` | `make fig5`; needs the clinical table |
+| Fig. 6 - Determinants of SLH frequency | `scripts/paper_figures/generate_figure_6_slh_determinants.py` | `make fig6`; needs the clinical table |
+| Suppl. Fig. 1 - Data quality and cohort selection | `scripts/paper_figures/generate_supplementary_figure_1_data_quality.py` | `make suppfig1` |
+| Suppl. Fig. 3 - SLH detection schema | `scripts/paper_figures/generate_supplementary_figure_3_slh_detection_schema.py` | `make suppfig3` |
+| Suppl. Fig. - Cohort flowchart | `scripts/paper_figures/generate_cohort_flowchart.py` | `make cohort_flowchart`; needs `rsvg-convert` (`brew install librsvg`) |
+| Suppl. Fig. - Phenotype determinants | `scripts/paper_figures/generate_supplementary_figure_phenotype_determinants.py` | `make suppfig_phenotype`; needs the clinical table |
+
+Every manuscript figure is saved in its **own folder** under `Figures/Manuscript_Figures/` (supplementary ones under
+`Figures/Supplementary/`): the whole figure as `<name>.{pdf,svg}` and each panel on its own as `<name>_panel_A.{pdf,svg}`,
+`…_panel_B…`, etc. (cropped from the same rendering, so panels are identical to what the combined figure shows). Figure 6
+keeps its separately rendered panels in `Figure6_Determinants/`. The cohort flowchart and Table 1 are not matplotlib figures.
 
 "Clinical table" = `Data/Final cohort SLH.csv` (not in the open dataset; `make paper` skips these items, `make paper_clinical` runs them).
 
@@ -158,10 +163,10 @@ counterfactual-cgm-slh/
 │   └── *.py                      #   single-patient illustrations at the top level (overview, zoom panels, AGP recurrence, patient comparison)
 │
 ├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
-├── tests/                        # pytest suite (238 tests; no patient data needed) — `make tests`
+├── tests/                        # pytest suite (238 tests; no patient data needed) - `make tests`
 ├── docs/UNITS.md                 # mg/dL ↔ mmol/L handling
 ├── .github/workflows/tests.yml   # CI: pytest + example smoke test on every push
-├── Makefile                      # all execution commands — `make help`
+├── Makefile                      # all execution commands - `make help`
 ├── requirements.txt              # pinned dependencies (Python ≥ 3.11)
 ├── TODO.md                       # pre-release checklist (maintainers; removed from the archived version)
 ├── CITATION.cff                  # how to cite (Zenodo DOI)
@@ -213,11 +218,11 @@ No access to patient data is needed to try the pipeline. `scripts/sample_data/` 
 fixed seed). The same file is attached to each GitHub release as `sample_data.zip`.
 
 ```bash
-# Option A — generate locally
+# Option A - generate locally
 make sample_data                 # → sample_data/ and sample_data.zip
 make sample_data_run             # preprocessing → metrics → filtering → episodes → sensitivity (~2 min)
 
-# Option B — from the release asset
+# Option B - from the release asset
 unzip sample_data.zip
 export CGM_DATA_ROOT=$PWD/sample_data
 make pipeline
@@ -244,7 +249,7 @@ officer's approval. Details in the script header.
 
 [`scripts/examples/detect_and_counterfactual.py`](scripts/examples/detect_and_counterfactual.py) runs **episode detection and
 classification**, the **counterfactual** and the **effect on the glucose metrics** (TIR, TAR, median, CV) straight from CGM
-files — no preprocessing, no filtering, no `Data/Raw` layout, no `CGM_DATA_ROOT`.
+files - no preprocessing, no filtering, no `Data/Raw` layout, no `CGM_DATA_ROOT`.
 
 **Expected files** (CSV, TSV or Excel), one patient each, with a time column and a glucose column; names are auto-detected
 (`time`/`timestamp`/…, `glycemie`/`glucose`/…) or given with `--time_col` / `--glucose_col`. Glucose in mg/dL (`--unit mmol/L`
@@ -262,13 +267,13 @@ python3 -m scripts.examples.detect_and_counterfactual --input my_patient.csv \
         [--unit mmol/L] [--time_col Time] [--glucose_col Glucose] [--offset 30] [--out_dir example_output]
 ```
 
-Outputs in `example_output/` (git-ignored): `episodes.csv` (every episode with C1–C6 and its category — SLH / Not isolated /
+Outputs in `example_output/` (git-ignored): `episodes.csv` (every episode with C1–C6 and its category - SLH / Not isolated /
 Night / LLH), `counterfactual.csv` (observed G(t) and counterfactual C(t)), `summary.txt` (counts, ΔTIR, ΔTAR, Δmedian) and
 `counterfactual.png`.
 
 ### C. A folder of files (a whole cohort)
 
-Put one file per patient in a folder — any folder, no required sub-structure. The **file name is the patient ID**
+Put one file per patient in a folder - any folder, no required sub-structure. The **file name is the patient ID**
 (`P001.csv` → patient `P001`), and CSV, TSV and Excel files can be mixed.
 
 ```bash
@@ -283,10 +288,10 @@ Outputs in `example_output/`:
 
 | File | Content |
 |---|---|
-| `<patient_id>/episodes.csv`, `counterfactual.csv`, `counterfactual.png` | the single-file outputs, for each patient (`--no_plots` skips the figures — faster for large cohorts) |
+| `<patient_id>/episodes.csv`, `counterfactual.csv`, `counterfactual.png` | the single-file outputs, for each patient (`--no_plots` skips the figures - faster for large cohorts) |
 | `cohort_episodes.csv` | all episodes of all patients, `patient_id` first |
 | `cohort_summary.csv` | one row per patient: readings, days, number of episodes per category, TIR 70–180 / TAR > 180 / median glucose observed vs counterfactual and the differences Δ = counterfactual − observed |
-| `skipped_files.csv` | files that could not be processed and why (unreadable, columns not found, fewer than 100 readings) — one bad file never stops the others |
+| `skipped_files.csv` | files that could not be processed and why (unreadable, columns not found, fewer than 100 readings) - one bad file never stops the others |
 
 In both modes the zone-expansion offset δ is `--offset` (default 30 min; the manuscript tests 0–90 min). The thresholds are in
 `src/episodes/episode_config.py`.
@@ -338,7 +343,7 @@ the counterfactual on files, without this layout, see [B and C](#run-detection-a
 | **Open anonymised dataset** (Zenodo) | re-running the analysis | convert it to the raw layout (below), then `make pipeline` |
 | **Your own CGM exports** | applying the method to new data | put one file per patient in `Data/Raw/` (below) |
 
-### A1 — Open dataset (Zenodo)
+### A1 - Open dataset (Zenodo)
 
 The release contains `cohort_open_data.csv` (all patients) and `per_patient/OD_xxx.csv`, with three columns:
 
@@ -359,7 +364,7 @@ time onto an arbitrary origin (2000-01-01 00:00): no real date is involved. Beca
 differ slightly from the manuscript. The phenotype table (`Data/Final cohort SLH.csv`) is **not** part of the open
 dataset, so Table 1 and the determinant figures cannot be reproduced from it.
 
-### A2 — Your own CGM data (full pipeline)
+### A2 - Your own CGM data (full pipeline)
 
 Create `Data/Raw/<patient_id>.xlsx` under `CGM_DATA_ROOT`, one file per patient, with two columns:
 
@@ -384,7 +389,7 @@ unless you tell it which ones to use.
 and, for two-patient figures, also the patient with the **fewest** (at least one). The chosen IDs are printed
 (`[auto] patient with most SLH episodes: …`).
 
-**Choosing your own patients — with `make`**
+**Choosing your own patients - with `make`**
 
 One patient: add `PATIENT_ID=<id>` to the command (any number of targets can share it):
 
@@ -412,7 +417,7 @@ export CGM_PATIENT_LOW=A224
 make fig3 fig4 fig5 patient_comparison
 ```
 
-**Without `make`** — every one of these scripts accepts `--patient_id <ID>` (and, where relevant, `--offset`, `--offsets`,
+**Without `make`** - every one of these scripts accepts `--patient_id <ID>` (and, where relevant, `--offset`, `--offsets`,
 `--n_episodes`, `--out_dir`; run with `-h`):
 
 ```bash
@@ -543,7 +548,7 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 If you use this code or the open dataset, please cite:
 
 ```
-Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making. The Lancet Digital Health. Code and data: Zenodo, doi:10.5281/zenodo.23102518
+Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making. The Lancet Diabetes & Endocrinology (submitted; medRxiv). Code and data: Zenodo, doi:10.5281/zenodo.23102518
 ```
 
 

@@ -804,7 +804,7 @@ def generate_figure_5(apply_filter: bool = True) -> None:
     ax_g = fig.add_subplot(gs[3, 1])
     plot_scatter_duration_gtaa1c_by_insulin(ax_g, df, scatter_stats)
 
-    output_path = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
+    output_path = os.path.join(INDIVIDUAL_DIR, OUTPUT_NAME)   # whole figure next to its panels
     save_figure(fig, output_path)
 
     print("\n  Writing consolidated results digest ...")

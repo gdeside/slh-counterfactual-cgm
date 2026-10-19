@@ -23,7 +23,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 	sensitivity_analysis lines_sensitivity boxplots_sensitivity cdf_sensitivity agp_sensitivity \
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis \
-	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_onset_time suppfig_phenotype cohort_flowchart paper \
+	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_onset_time suppfig_phenotype suppfig_s10 cohort_flowchart paper \
 	example presentation_figures open_data open_data_phase_shift open_data_to_raw convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
 
@@ -190,12 +190,15 @@ suppfig_onset_time:  ## Suppl. figure — SLH/LLH onset time of day for every pa
 suppfig_phenotype: check_clinical_table  ## Suppl. figure — phenotype determinants (needs clinical phenotype table)
 	$(RUN) scripts.paper_figures.generate_supplementary_figure_phenotype_determinants
 
+suppfig_s10: check_clinical_table  ## Suppl. Figure S10 — phenotype overview: MI, GTAA1C vs duration, n_SLH by category (needs clinical phenotype table)
+	$(RUN) scripts.paper_figures.generate_supplementary_figure_s10_phenotype_overview
+
 cohort_flowchart:  ## Suppl. cohort flowchart (PDF needs rsvg-convert)
 	$(RUN) scripts.paper_figures.generate_cohort_flowchart
 
 paper: fig2 fig3 fig4 suppfig1 suppfig3 suppfig_onset_time cohort_flowchart  ## Manuscript figures that need no clinical table
 
-paper_clinical: table1 fig5 fig6 suppfig_phenotype  ## Table 1 and figures that need the clinical phenotype table
+paper_clinical: table1 fig5 fig6 suppfig_phenotype suppfig_s10  ## Table 1 and figures that need the clinical phenotype table
 
 
 # ---- OPEN DATA & UNITS ------------------------------------------------------

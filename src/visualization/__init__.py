@@ -43,6 +43,7 @@ from src.visualization.style import (
     apply_publication_style,
     style_axes,
     save_figure,
+    save_figure_with_panels,
     FONT_SIZE_BASE,
 )
 
@@ -109,6 +110,7 @@ __all__ = [
     "apply_publication_style",
     "style_axes",
     "save_figure",
+    "save_figure_with_panels",
     "FONT_SIZE_BASE",
     # agp_plot
     "plot_agp_panel",

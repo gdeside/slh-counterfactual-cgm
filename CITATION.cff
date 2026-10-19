@@ -22,7 +22,8 @@ authors:
 preferred-citation:
   type: article
   title: "Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making"
-  journal: "The Lancet Digital Health"
+  journal: "The Lancet Diabetes & Endocrinology"
+  status: submitted
   authors:
     - family-names: Deside
       given-names: Guillaume

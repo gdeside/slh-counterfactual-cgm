@@ -39,13 +39,7 @@ With those gone, the four surviving panels appear in the order the Results
 text cites them (A -> B -> C -> D), so no sentence in the manuscript needs
 to move.
 
-Panel C's vertical-bar construction follows
-`plot_cohort_category_composition_vertical` in the notebook (§3.5), except
-no patient is highlighted (that notebook figure calls out its worked
-examples; this one characterises the whole cohort, not individual patients).
-Individual patient IDs are not shown on the x-axis (135 rotated ID labels are
-illegible in a printed document) — the axis label states the ordering rule
-instead; see `classification_summary_per_patient.csv` for the per-patient data.
+
 
 Episode categorisation (C1–C6 already computed by the detection pipeline)
 --------------------------------------------------------------------------
@@ -66,7 +60,8 @@ Usage
 
 Outputs (FIG_DIR / Manuscript_Figures)
 ---------------------------------------
-  Figure2_Classification_Summary.{pdf,svg}
+  Figure2_Classification_Summary/Figure2_Classification_Summary.{pdf,svg}   (whole figure)
+  Figure2_Classification_Summary/Figure2_Classification_Summary_panel_{A,B,C,D}.{pdf,svg}
   classification_summary_per_patient.csv
 
 Authors: Guillaume Deside
@@ -86,7 +81,8 @@ from src.config.paths import EPISODES_PATH
 from src.preprocessing.load_data import discover_patients
 from src.filtering.load_filtering import load_filtered_patient_list
 from src.episodes.episode_config import D_MIN_MIN, D_MAX_MIN, NIGHT_START_H, NIGHT_END_H, MIN_DATA_COMPLETENESS
-from src.visualization.style import apply_publication_style, save_figure, style_axes, FONT_SIZE_BASE
+from src.visualization.style import (apply_publication_style, save_figure_with_panels, style_axes,
+                                        FONT_SIZE_BASE)
 from src.visualization.colors import (WONG_COLORS, COLOR_NIGHT, COLOR_NIGHT_CATEGORY,
                                        COLOR_ANNOTATION)
 
@@ -331,10 +327,10 @@ def plot_slh_count_distribution(ax, cohort_episodes_df: pd.DataFrame, cohort_pid
     ax.set_xlabel("Number of SLH episodes per patient (daytime)", fontsize=FONT_SIZE_BASE)
     ax.set_ylabel("Number of patients", fontsize=FONT_SIZE_BASE)
     style_axes(ax)
-    ax.set_title(
-        "SLH count distribution",
-        fontweight="bold", loc="left", pad=6, fontsize=FONT_SIZE_BASE,
-    )
+    # ax.set_title(
+    #     "SLH count distribution",
+    #     fontweight="bold", loc="left", pad=6, fontsize=FONT_SIZE_BASE,
+    # )
     add_panel_label(ax, "B", y=panel_label_y(axis_height_in))
     return slh_counts
 
@@ -521,7 +517,8 @@ def generate_figure_2() -> None:
     print(f"\n  Saved: {summary_path}")
 
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
-    save_figure(fig, output_path)
+    save_figure_with_panels(fig, output_path, OUTPUT_NAME,
+                            {"A": ax_a, "B": ax_b, "C": ax_c, "D": ax_d})
 
     print("\n" + "=" * 70)
     print(f"  SAVED: {output_path}")

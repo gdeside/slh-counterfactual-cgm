@@ -54,7 +54,7 @@ from src.metrics.metrics import METRIC_MEDIAN_GLUCOSE
 from src.visualization.style import (
     apply_lancet_style,
     enforce_lancet_minimums,
-    save_figure,
+    save_figure_with_panels,
     style_axes,
 )
 from src.visualization.colors import WONG_COLORS, COLORMAP_CONTINUOUS
@@ -408,7 +408,10 @@ def generate_supplementary_figure() -> None:
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
-    save_figure(fig, output_path, bbox_inches=None)
+    save_figure_with_panels(
+        fig, output_path, OUTPUT_NAME,
+        {"A": ax_a, "B": [ax_b, *row_top.legends], "C": ax_c, "D": ax_d},
+        bbox_inches=None)
 
     print("=" * 70 + "\n")
 

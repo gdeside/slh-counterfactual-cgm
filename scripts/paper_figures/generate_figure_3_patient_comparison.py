@@ -47,7 +47,8 @@ Usage
 
 Outputs (FIG_DIR / Manuscript_Figures)
 ---------------------------------------
-  Figure3_Patient_Comparison_{A}_vs_{B}.{pdf,svg}
+  Figure3_Patient_Comparison_{A}_vs_{B}/Figure3_Patient_Comparison_{A}_vs_{B}.{pdf,svg}   (whole figure)
+  Figure3_Patient_Comparison_{A}_vs_{B}/..._panel_{A-G}.{pdf,svg}
   figure3_metrics_{A}_vs_{B}.csv
 
 Authors: Guillaume Deside
@@ -69,7 +70,7 @@ from src.config.figure_config import FIG_DIR
 from src.preprocessing.load_data import load_patient_window, prepare_valid_data
 from src.preprocessing.timestep import detect_dominant_sampling_interval
 from src.agp.compute_agp import compute_agp_profile
-from src.visualization.style import apply_publication_style, save_figure, style_axes
+from src.visualization.style import apply_publication_style, save_figure_with_panels, style_axes
 from src.visualization.colors import COLOR_RECURRENCE_THRESHOLD
 from src.visualization.agp_plot import plot_agp_panel, plot_7day_trace, add_panel_label
 from src.visualization.glucose_axis import glucose_cell
@@ -371,7 +372,8 @@ def shared_recurrence_y_max(*occurrences: dict) -> float:
                RECURRENCE_SYSTEMATIC_THRESHOLD * 1.05)
 
 
-def build_figure(patient_a: str, patient_b: str, data_a: dict, data_b: dict) -> plt.Figure:
+def build_figure(patient_a: str, patient_b: str, data_a: dict, data_b: dict):
+    """Return (figure, {panel letter: axes})."""
     apply_publication_style()
 
     fig = plt.figure(figsize=(FIGURE_WIDTH, FIGURE_HEIGHT))
@@ -429,7 +431,9 @@ def build_figure(patient_a: str, patient_b: str, data_a: dict, data_b: dict) -> 
                             data_a["counts"], data_b["counts"], patient_a, patient_b)
     add_panel_label(ax_metrics, "G")
 
-    return fig
+    panels = {"A": ax_agp_a, "B": ax_agp_b, "C": ax_rec_a, "D": ax_rec_b,
+              "E": ax_trace_a, "F": ax_trace_b, "G": ax_metrics}
+    return fig, panels
 
 
 def generate_figure_3_patient_comparison() -> None:
@@ -458,9 +462,9 @@ def generate_figure_3_patient_comparison() -> None:
     pd.DataFrame(rows).to_csv(csv_path, index=False)
     print(f"\n  Saved: {csv_path}")
 
-    fig = build_figure(PATIENT_A, PATIENT_B, data_a, data_b)
+    fig, panels = build_figure(PATIENT_A, PATIENT_B, data_a, data_b)
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
-    save_figure(fig, output_path)
+    save_figure_with_panels(fig, output_path, OUTPUT_NAME, panels)
 
     print("\n" + "=" * 70)
     print(f"  SAVED: {output_path}")

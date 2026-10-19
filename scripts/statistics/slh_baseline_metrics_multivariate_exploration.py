@@ -13,16 +13,15 @@ rank-based exploration:
                                      coloured by n_SLH (reduced metric set)
   4. PCA correlation circle        — proper correlation circle showing metric
                                      contributions (reduced metric set)
-  5. t-SNE embedding               — non-linear 2-D layout, coloured by n_SLH
-  6. Stratified box plots          — metrics split by SLH tertile
-  7. Parallel coordinates          — each patient as a poly-line across z-scored
+  5. Stratified box plots          — metrics split by SLH tertile
+  6. Parallel coordinates          — each patient as a poly-line across z-scored
                                      metrics, coloured by n_SLH
-  8. SLH-count distribution        — simple histogram for reference
+  7. SLH-count distribution        — simple histogram for reference
 
 Metric sets
 -----------
   METRICS_ALL  — all 7 metrics; used for heatmap and MI to show collinearity
-  METRICS      — 3 independent representatives retained for PCA/t-SNE:
+  METRICS      — 3 independent representatives retained for PCA:
                    Median glucose (level), CV (variability), TIR 70-180 (in-range time)
                  Mean glucose ~ Median, SD ~ CV x Mean, TAR/TBR partition TIR -> dropped
 
@@ -38,7 +37,6 @@ Outputs (written under RESULTS_PATH/SLH_Baseline_Exploration)
   fig_mutual_information.{pdf,png,svg}
   fig_pca_scores.{pdf,png,svg}
   fig_pca_correlation_circle.{pdf,png,svg}
-  fig_tsne.{pdf,png,svg}
   fig_stratified_boxplots.{pdf,png,svg}
   fig_parallel_coordinates.{pdf,png,svg}
   fig_slh_distribution.{pdf,png,svg}
@@ -47,7 +45,7 @@ Outputs (written under RESULTS_PATH/SLH_Baseline_Exploration)
 
 Usage
 -----
-    python3 -m scripts.statistics.slh_baseline_metrics_multivariate_exploration [--no_filter] [--tsne_perplexity 15]
+    python3 -m scripts.statistics.slh_baseline_metrics_multivariate_exploration [--no_filter]
 
 Authors
 -------
@@ -71,7 +69,6 @@ import matplotlib.colors as mcolors
 import matplotlib.patches as mpatches
 from scipy import stats
 from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import StandardScaler
 
@@ -112,7 +109,7 @@ METRICS_ALL = [
     METRIC_TBR70,
 ]
 
-# Reduced independent set for PCA / t-SNE / boxplots / parallel coordinates:
+# Reduced independent set for PCA / boxplots / parallel coordinates:
 #   Mean glucose ~ Median glucose             -> drop Mean
 #   SD ~ CV x Mean (linear transform)         -> drop SD
 #   TAR >180 + TBR <70 partition TIR range    -> drop TAR, TBR
@@ -156,8 +153,6 @@ METRIC_COLORS = {
     METRIC_CV:             WONG_COLORS["orange"],
     METRIC_TIR70180:       WONG_COLORS["vermillion"],
 }
-
-TSNE_RANDOM_STATE = 42
 
 
 # =============================================================================
@@ -257,7 +252,7 @@ def plot_correlation_heatmap(df: pd.DataFrame) -> None:
 
     ax.set_title(
         "Spearman correlation: all CGM metrics & SLH count\n"
-        "(* p < 0.05  |  black square = retained for PCA/t-SNE)",
+        "(* p < 0.05  |  black square = retained for PCA)",
         fontsize=FONT_SIZE_BASE,
     )
     fig.tight_layout()
@@ -292,7 +287,7 @@ def plot_mutual_information(df: pd.DataFrame) -> None:
                 f"{val:.3f}", va="center", fontsize=FONT_SIZE_BASE - 1)
 
     handles = [
-        mpatches.Patch(color=WONG_COLORS["blue"],        label="Retained for PCA/t-SNE"),
+        mpatches.Patch(color=WONG_COLORS["blue"],        label="Retained for PCA"),
         mpatches.Patch(color=WONG_COLORS["bluish_green"], label="Excluded (correlated)"),
     ]
     ax.legend(handles=handles, fontsize=FONT_SIZE_BASE - 2, frameon=False)
@@ -385,42 +380,7 @@ def plot_pca(df: pd.DataFrame) -> None:
 
 
 # =============================================================================
-# PLOT 5: t-SNE
-# =============================================================================
-def plot_tsne(df: pd.DataFrame, perplexity: float = 15.0) -> None:
-    X = df[METRICS].values
-    y = df[RESPONSE].values
-
-    scaler   = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    n    = len(X_scaled)
-    perp = min(perplexity, n - 1)
-
-    tsne   = TSNE(n_components=2, perplexity=perp, random_state=TSNE_RANDOM_STATE,
-                  max_iter=1000, init="pca")
-    coords = tsne.fit_transform(X_scaled)
-
-    apply_publication_style()
-    fig, ax = plt.subplots(figsize=(5.5, 4.5))
-    sc = ax.scatter(coords[:, 0], coords[:, 1], c=y, cmap="plasma",
-                    s=40, alpha=0.75, edgecolors="none")
-    plt.colorbar(sc, ax=ax, label=RESPONSE_LABEL, shrink=0.85)
-    ax.set_xlabel("t-SNE dim 1", fontsize=FONT_SIZE_BASE)
-    ax.set_ylabel("t-SNE dim 2", fontsize=FONT_SIZE_BASE)
-    ax.set_title(
-        f"t-SNE of CGM metrics (perplexity={perp:.0f})\n(coloured by n_SLH)",
-        fontsize=FONT_SIZE_BASE,
-    )
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    fig.tight_layout()
-    save_figure(fig, OUTPUT_DIR / "fig_tsne")
-    print("  Saved: fig_tsne")
-
-
-# =============================================================================
-# PLOT 6: Stratified box plots (tertile split on n_SLH)
+# PLOT 5: Stratified box plots (tertile split on n_SLH)
 # =============================================================================
 def plot_stratified_boxplots(df: pd.DataFrame) -> None:
     df        = add_tertile(df)
@@ -478,7 +438,7 @@ def plot_stratified_boxplots(df: pd.DataFrame) -> None:
 
 
 # =============================================================================
-# PLOT 7: Parallel coordinates
+# PLOT 6: Parallel coordinates
 # =============================================================================
 def plot_parallel_coordinates(df: pd.DataFrame) -> None:
     X     = df[METRICS].values.copy()
@@ -522,7 +482,7 @@ def plot_parallel_coordinates(df: pd.DataFrame) -> None:
 
 
 # =============================================================================
-# PLOT 8: SLH count distribution (reference)
+# PLOT 7: SLH count distribution (reference)
 # =============================================================================
 def plot_slh_distribution(df: pd.DataFrame) -> None:
     y = df[RESPONSE].values
@@ -555,8 +515,6 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--no_filter", action="store_true",
                    help="Skip cohort filter and use all available patients")
-    p.add_argument("--tsne_perplexity", type=float, default=15.0,
-                   help="t-SNE perplexity (default: 15)")
     return p.parse_args()
 
 
@@ -567,30 +525,27 @@ def main() -> None:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     print(f"Output directory: {OUTPUT_DIR}")
 
-    print("\n[1/8] Loading data ...")
+    print("\n[1/7] Loading data ...")
     df = load_and_merge(apply_filter=apply_filter)
     print(f"\n  n_SLH: mean={df[RESPONSE].mean():.2f}, "
           f"median={df[RESPONSE].median():.0f}, "
           f"max={df[RESPONSE].max():.0f}, "
           f"n={len(df)}")
 
-    print("\n[2/8] Spearman correlation heatmap (all metrics) ...")
+    print("\n[2/7] Spearman correlation heatmap (all metrics) ...")
     plot_correlation_heatmap(df)
 
-    print("\n[3/8] Mutual information (all metrics) ...")
+    print("\n[3/7] Mutual information (all metrics) ...")
     plot_mutual_information(df)
 
-    print("\n[4/8] PCA scores ...")
-    print("\n[5/8] PCA correlation circle ...")
+    print("\n[4/7] PCA scores ...")
+    print("\n[5/7] PCA correlation circle ...")
     plot_pca(df)
 
-    print("\n[6/8] t-SNE ...")
-    plot_tsne(df, perplexity=args.tsne_perplexity)
-
-    print("\n[7/8] Stratified box plots ...")
+    print("\n[6/7] Stratified box plots ...")
     plot_stratified_boxplots(df)
 
-    print("\n[8/8] Parallel coordinates ...")
+    print("\n[7/7] Parallel coordinates ...")
     plot_parallel_coordinates(df)
 
     print("\n[+] SLH distribution ...")

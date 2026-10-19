@@ -71,7 +71,7 @@ from src.episodes.criteria import classify_episodes as classify_episodes_core
 from src.episodes.criteria import calculate_data_completeness
 
 from src.visualization.slh_schema_plots import draw_zoom_panel, draw_overview_panel
-from src.visualization.style import apply_publication_style, save_figure
+from src.visualization.style import apply_publication_style, save_figure_with_panels
 
 # =============================================================================
 # PARAMETERS
@@ -397,7 +397,8 @@ def generate_schema_figure(patient_id, df, classified, window_start, window_end,
     #     fontsize=FONT_SIZE_BASE + 1, fontweight="bold", y=0.99,
     # )
     
-    save_figure(fig, output_prefix)
+    panels = {"A": ax_overview, **dict(zip(["B", "C"], ax_zooms))}
+    save_figure_with_panels(fig, output_prefix, os.path.basename(output_prefix), panels)
     print(f"  [{patient_id}]  SLH={n_slh}  LLH={n_llh}  Incomplete={n_incomplete}  "
           f"Zoom episodes: {n_zoom}")
 

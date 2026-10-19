@@ -53,6 +53,10 @@ Usage
     python3 -m scripts.presentation_figures.slh_twin_comparison
             [--patient_id ID] [--n_days 3] [--smooth_min 120] [--out_dir DIR]
 
+    # Same figure in mmol/L (default is mg/dL; output filename gets a _mmoll suffix)
+    CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.presentation_figures.slh_twin_comparison
+            [same options]
+
 Authors
 -------
 Guillaume Deside

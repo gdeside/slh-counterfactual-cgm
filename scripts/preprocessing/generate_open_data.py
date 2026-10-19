@@ -350,9 +350,9 @@ def write_datacard(output_path: str, n_patients: int, noise_std: float,
     If you use this dataset, please cite:
 
     ```
-    Deside G., Symul L., Lysy P., Syed Z. (2025).
-    Counterfactual CGM Signals for Short-Lasting Hyperglycaemia Episodes.
-    UCL. [Dataset]. doi: TBD
+    Deside G., Syed Z., Symul L., Lysy P. (2026).
+    Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code and open dataset.
+    Zenodo. doi: 10.5281/zenodo.23102518
     ```
 
     ---

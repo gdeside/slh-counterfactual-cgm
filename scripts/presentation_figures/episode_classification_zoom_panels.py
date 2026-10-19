@@ -12,6 +12,10 @@ For a given patient, one representative episode per classification stage
   3. C1 + C2 + C3 side-by-side — three-panel figure comparing C1, C2, and C3 episodes
   4. C1 + C3 side-by-side — two-panel figure comparing C1 and C3 (no C2)
 
+Each grouped figure (2–4) is also saved panel by panel, in its own folder
+(<patient>_C4_C5/<patient>_C4_C5_panel_C4.{pdf,svg}, ...), cropped from the
+same rendering so the separate panels are identical to the grouped ones.
+
 All panels use the same styling and presentation standards, with titles showing
 only the episode description (no "C#" prefix).
 
@@ -20,12 +24,16 @@ Usage
     python3 -m scripts.presentation_figures.episode_classification_zoom_panels [--patient_id ID]
                                                           [--out_dir DIR]
 
+    # Same figure in mmol/L (default is mg/dL; output filename gets a _mmoll suffix)
+    CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.presentation_figures.episode_classification_zoom_panels
+
 Output
 ------
     scripts/presentation_figures/output/episode_classification_zoom_panels/  (git-ignored; --out_dir to change)
 """
 
 import os
+import re
 import sys
 import argparse
 
@@ -57,7 +65,9 @@ from src.episodes.episode_config import (
     H_HYPER, H_CONTEXT, CONTEXT_WIN_MIN, GAP_FACTOR,
 )
 from src.config import TIME_COL, GLUCOSE_COL
-from src.visualization.style import apply_publication_style, save_figure
+from src.visualization.style import apply_publication_style, save_figure, save_figure_with_panels
+from src.visualization.glucose_axis import apply_glucose_axis
+from src.utils.unit_conversion import format_glucose
 from src.visualization.colors import (
     STAGE_COLORS, COLOR_HYPER, COLOR_CONTEXT, COLOR_ORIGINAL,
 )
@@ -109,9 +119,9 @@ def plot_individual_panel(df: pd.DataFrame, episode: dict, stage: str,
 
     # Threshold lines
     ax.axhline(H_HYPER,   color=COLOR_HYPER,   ls="--", lw=1.0, zorder=4,
-               label=f"H = {H_HYPER} mg/dL")
+               label=f"H = {format_glucose(H_HYPER)}")
     ax.axhline(H_CONTEXT, color=COLOR_CONTEXT, ls=":",  lw=1.0, zorder=4,
-               label=f"Hc = {H_CONTEXT} mg/dL")
+               label=f"Hc = {format_glucose(H_CONTEXT)}")
 
     # Onset / offset markers
     for tm in (episode["onset"], episode["offset"]):
@@ -125,7 +135,7 @@ def plot_individual_panel(df: pd.DataFrame, episode: dict, stage: str,
     pk_t, pk_v = episode["peak_time"], episode["peak_glucose"]
     ax.scatter([pk_t], [pk_v], marker="^", s=25, color=COLOR_HYPER, zorder=9)
 
-    annot_text = f"{pk_v:.0f} mg/dL\n{episode['duration_min']:.0f} min"
+    annot_text = f"{format_glucose(pk_v)}\n{episode['duration_min']:.0f} min"
     if "completeness_episode" in episode:
         annot_text += f"\nData: {episode['completeness_episode']:.0%}"
 
@@ -150,7 +160,7 @@ def plot_individual_panel(df: pd.DataFrame, episode: dict, stage: str,
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
     plt.setp(ax.xaxis.get_majorticklabels(), fontsize=7, rotation=30, ha="right")
 
-    ax.set_ylabel("Glucose (mg/dL)", fontsize=8, labelpad=2)
+    apply_glucose_axis(ax, fontsize=8, labelpad=2)   # after ylim is final
     ax.tick_params(axis="y", labelsize=7)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -236,9 +246,9 @@ def plot_multi_panel_figure(df: pd.DataFrame, episodes_and_stages: list,
 
         # Threshold lines
         ax.axhline(H_HYPER,   color=COLOR_HYPER,   ls="--", lw=1.0, zorder=4,
-                   label=f"H = {H_HYPER} mg/dL")
+                   label=f"H = {format_glucose(H_HYPER)}")
         ax.axhline(H_CONTEXT, color=COLOR_CONTEXT, ls=":",  lw=1.0, zorder=4,
-                   label=f"Hc = {H_CONTEXT} mg/dL")
+                   label=f"Hc = {format_glucose(H_CONTEXT)}")
 
         # Onset / offset markers
         for tm in (episode["onset"], episode["offset"]):
@@ -252,7 +262,7 @@ def plot_multi_panel_figure(df: pd.DataFrame, episodes_and_stages: list,
         pk_t, pk_v = episode["peak_time"], episode["peak_glucose"]
         ax.scatter([pk_t], [pk_v], marker="^", s=25, color=COLOR_HYPER, zorder=9)
 
-        annot_text = f"{pk_v:.0f} mg/dL\n{episode['duration_min']:.0f} min"
+        annot_text = f"{format_glucose(pk_v)}\n{episode['duration_min']:.0f} min"
         if "completeness_episode" in episode:
             annot_text += f"\nData: {episode['completeness_episode']:.0%}"
 
@@ -277,7 +287,7 @@ def plot_multi_panel_figure(df: pd.DataFrame, episodes_and_stages: list,
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         plt.setp(ax.xaxis.get_majorticklabels(), fontsize=7, rotation=30, ha="right")
 
-        ax.set_ylabel("Glucose (mg/dL)", fontsize=8, labelpad=2)
+        apply_glucose_axis(ax, fontsize=8, labelpad=2)   # after ylim is final
         ax.tick_params(axis="y", labelsize=7)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
@@ -297,6 +307,23 @@ def plot_multi_panel_figure(df: pd.DataFrame, episodes_and_stages: list,
         ax.legend(fontsize=6.5, framealpha=0.85, loc="upper left")
 
     return fig
+
+
+def save_grouped_figure(fig: plt.Figure, output_dir: str, name: str,
+                        episodes_and_stages: list) -> None:
+    """
+    Save a grouped figure AND each of its panels on its own, in one folder::
+
+        <output_dir>/<name>/<name>.{pdf,svg}              the whole figure
+        <output_dir>/<name>/<name>_panel_<stage>.{pdf,svg}  one panel (e.g. _panel_C4)
+
+    Panels are cropped from the very same rendering as the grouped figure.
+    """
+    panels = {}
+    for ax, (_, stage) in zip(fig.axes, episodes_and_stages):
+        key = re.split(r"[\s_:]", stage, maxsplit=1)[0]     # "C4  Pre-episode…" -> "C4"
+        panels[key] = ax
+    save_figure_with_panels(fig, os.path.join(output_dir, name), name, panels)
 
 
 def generate_individual_panels(patient_id: str, output_dir: str) -> None:
@@ -363,10 +390,8 @@ def generate_individual_panels(patient_id: str, output_dir: str) -> None:
             (c5_episode, c5_stage),
         ]
         fig = plot_multi_panel_figure(df, episodes_list, patient_id, timestep_min)
-        out_path = os.path.join(output_dir, f"{patient_id}_C4_C5")
-        save_figure(fig, out_path)
+        save_grouped_figure(fig, output_dir, f"{patient_id}_C4_C5", episodes_list)
         plt.close(fig)
-        print(f"  Saved: {out_path}.pdf/.png (C4 + C5)")
     else:
         missing = [s for s in ["C4", "C5"] if (s == "C4" and not c4_stage) or (s == "C5" and not c5_stage)]
         print(f"  [!] Skipped C4+C5 figure — missing {missing}")
@@ -383,10 +408,8 @@ def generate_individual_panels(patient_id: str, output_dir: str) -> None:
             (c3_episode, c3_stage),
         ]
         fig = plot_multi_panel_figure(df, episodes_list, patient_id, timestep_min)
-        out_path = os.path.join(output_dir, f"{patient_id}_C1_C2_C3")
-        save_figure(fig, out_path)
+        save_grouped_figure(fig, output_dir, f"{patient_id}_C1_C2_C3", episodes_list)
         plt.close(fig)
-        print(f"  Saved: {out_path}.pdf/.png (C1 + C2 + C3)")
     else:
         missing = [s for s in ["C1", "C2", "C3"]
                    if (s == "C1" and not c1_stage) or (s == "C2" and not c2_stage) or (s == "C3" and not c3_stage)]
@@ -399,10 +422,8 @@ def generate_individual_panels(patient_id: str, output_dir: str) -> None:
             (c3_episode, c3_stage),
         ]
         fig = plot_multi_panel_figure(df, episodes_list, patient_id, timestep_min)
-        out_path = os.path.join(output_dir, f"{patient_id}_C1_C3")
-        save_figure(fig, out_path)
+        save_grouped_figure(fig, output_dir, f"{patient_id}_C1_C3", episodes_list)
         plt.close(fig)
-        print(f"  Saved: {out_path}.pdf/.png (C1 + C3)")
     else:
         missing = [s for s in ["C1", "C3"]
                    if (s == "C1" and not c1_stage) or (s == "C3" and not c3_stage)]

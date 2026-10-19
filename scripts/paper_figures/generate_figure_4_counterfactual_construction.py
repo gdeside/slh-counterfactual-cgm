@@ -20,7 +20,16 @@ Exports sensitivity delta values to CSV for both patients.
 
 Usage:
 -----
+# Automatic pair (most / fewest SLH episodes, or CGM_PATIENT_HIGH / CGM_PATIENT_LOW)
 python3 -m scripts.paper_figures.generate_figure_4_counterfactual_construction
+
+# Explicit pair: --high_id = high-SLH patient (panels B, C), --low_id = low-SLH patient (panels A, D)
+python3 -m scripts.paper_figures.generate_figure_4_counterfactual_construction \\
+    --high_id <ID_HIGH> --low_id <ID_LOW>
+
+# Same figure in mmol/L (file name gets the _mmoll suffix; default is mg/dL)
+CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_4_counterfactual_construction \\
+    --high_id <ID_HIGH> --low_id <ID_LOW>
 
 Authors: Guillaume Deside
 
@@ -53,7 +62,7 @@ from src.episodes.episode_config import (
 from src.config import TIME_COL, GLUCOSE_COL, FIG_DIR, COL_FLAG_TIME_ERROR, COL_FLAG_OUTLIER_GLUCOSE
 from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
 from src.agp.compute_agp import compute_agp_profile
-from src.visualization.style import apply_publication_style, save_figure, style_axes
+from src.visualization.style import apply_publication_style, save_figure_with_panels, style_axes
 from src.visualization.colors import OFFSET_COLORS, COLOR_NIGHT, CATEGORICAL_5, COLOR_ZERO_LINE
 from src.visualization.glucose_axis import apply_glucose_axis
 from src.utils.unit_conversion import format_glucose, glucose_unit_label
@@ -243,7 +252,7 @@ def plot_episode_comparison(ax, patient_id, df, episode, offsets, timestep_min):
     ax.axvspan(episode["onset_time"], episode["offset_time"],
               color=COLOR_EPISODE, alpha=0.22, zorder=1, linewidth=0)
     ax.axhline(H_HYPER, color=COLOR_THRESHOLD, ls="--", lw=0.8, alpha=0.65, zorder=2)
-    ax.plot(t_window, g_window, color=COLOR_ORIGINAL, lw=1.0, alpha=0.9, zorder=3,
+    ax.plot(t_window, g_window, color=COLOR_ORIGINAL, lw=1.0, alpha=0.9, zorder=6,
            label="G(t)")
     
     for offset in offsets:
@@ -482,7 +491,19 @@ def plot_sensitivity_metric(ax, ylabel, series, offsets=OFFSET_VALUES_COMPARE,
 # =============================================================================
 # MAIN FIGURE GENERATION
 # =============================================================================
-def generate_figure_4():
+def set_patient_ids(high=None, low=None):
+    """Select the (high-SLH, low-SLH) pair; None falls back to env vars / automatic selection."""
+    global PATIENT_IDS, PATIENT_STYLES
+    if high or low:
+        PATIENT_IDS = list(resolve_patient_pair(high, low))
+        PATIENT_STYLES = {
+            PATIENT_IDS[0]: {"color": CATEGORICAL_5[0], "marker": "o", "ls": "-"},
+            PATIENT_IDS[1]: {"color": CATEGORICAL_5[1], "marker": "s", "ls": "--"},
+        }
+
+
+def generate_figure_4(high=None, low=None):
+    set_patient_ids(high, low)
     apply_publication_style()
     
     print("\n" + "=" * 70)
@@ -660,7 +681,8 @@ def generate_figure_4():
     # Save figure
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     output_path = os.path.join(OUTPUT_DIR, f"Figure4_Counterfactual_Construction_{PATIENT_IDS[0]}_vs_{PATIENT_IDS[1]}")
-    save_figure(fig, output_path)
+    save_figure_with_panels(fig, output_path, os.path.basename(output_path),
+                            {"A": ax_a, "B": ax_b, "C": ax_c, "D": ax_d, "E": ax_e, "F": ax_f})
     
     print("\n" + "=" * 70)
     print(f"  SAVED: {output_path}")
@@ -684,4 +706,9 @@ def generate_figure_4():
     print("=" * 70 + "\n")
 
 if __name__ == "__main__":
-    generate_figure_4()
+    import argparse
+    parser = argparse.ArgumentParser(description="Figure 4: counterfactual construction.")
+    parser.add_argument("--high_id", default=None, help="High-SLH patient ID (default: automatic)")
+    parser.add_argument("--low_id", default=None, help="Low-SLH patient ID (default: automatic)")
+    args = parser.parse_args()
+    generate_figure_4(args.high_id, args.low_id)

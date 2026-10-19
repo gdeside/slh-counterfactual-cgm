@@ -31,6 +31,9 @@ Usage
                                           [--n_days 7]
                                           [--out_dir DIR]
 
+    # Same figure in mmol/L (default is mg/dL; output filename gets a _mmoll suffix)
+    CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.presentation_figures.cgm_overview
+
 Output
 ------
     scripts/presentation_figures/output/cgm_overview/  (git-ignored; --out_dir to change)
@@ -62,6 +65,8 @@ from src.episodes.episode_config import (
 )
 from src.config import TIME_COL, GLUCOSE_COL
 from src.visualization.style import apply_publication_style, save_figure
+from src.visualization.glucose_axis import apply_glucose_axis
+from src.utils.unit_conversion import format_glucose
 
 # ---------------------------------------------------------------------------
 # Defaults
@@ -213,11 +218,12 @@ def plot_cgm_overview(patient_id: str, df: pd.DataFrame,
 
     # ── 1.  Glucose zone fills  ──────────────────────────────────────────────
     # Draw from bottom to top so colours are layered correctly.
+    fg = format_glucose   # mg/dL value -> text in the display unit
     zone_specs = [
-        (Y_MIN,    H_HYPO,    COLOR_ZONE_HYPO,    "Hypoglycaemia  (< 70 mg/dL)"),
-        (H_HYPO,   H_CONTEXT, COLOR_ZONE_NORMAL,  f"Normal range for healthy people  (70–{H_CONTEXT} mg/dL)"),
-        (H_CONTEXT,H_HYPER,   COLOR_ZONE_CAUTION, f"Caution zone  ({H_CONTEXT}–{H_HYPER} mg/dL)"),
-        (H_HYPER,  Y_MAX,     COLOR_ZONE_HYPER,   f"Hyperglycaemia  (> {H_HYPER} mg/dL)"),
+        (Y_MIN,    H_HYPO,    COLOR_ZONE_HYPO,    f"Hypoglycaemia  (< {fg(H_HYPO)})"),
+        (H_HYPO,   H_CONTEXT, COLOR_ZONE_NORMAL,  f"Normal range for healthy people  ({fg(H_HYPO, False)}–{fg(H_CONTEXT)})"),
+        (H_CONTEXT,H_HYPER,   COLOR_ZONE_CAUTION, f"Caution zone  ({fg(H_CONTEXT, False)}–{fg(H_HYPER)})"),
+        (H_HYPER,  Y_MAX,     COLOR_ZONE_HYPER,   f"Hyperglycaemia  (> {fg(H_HYPER)})"),
     ]
     for y_lo, y_hi, color, label in zone_specs:
         ax.axhspan(y_lo, y_hi, color=color, alpha=1.0, zorder=0, label=label)
@@ -239,11 +245,11 @@ def plot_cgm_overview(patient_id: str, df: pd.DataFrame,
     # ── 4.  Threshold lines  ─────────────────────────────────────────────────
     thresholds = [
         (H_HYPO,    "--", COLOR_LINE_HYPO,   "lw=1.8",
-         f"Hypo threshold  {H_HYPO} mg/dL"),
+         f"Hypo threshold  {fg(H_HYPO)}"),
         (H_CONTEXT, ":",  COLOR_LINE_NORMAL, "lw=2.0",
-         f"Healthy upper limit  {H_CONTEXT} mg/dL"),
+         f"Healthy upper limit  {fg(H_CONTEXT)}"),
         (H_HYPER,   "--", COLOR_LINE_HYPER,  "lw=1.8",
-         f"Hyper threshold  {H_HYPER} mg/dL"),
+         f"Hyper threshold  {fg(H_HYPER)}"),
     ]
     for val, ls, color, _, lbl in thresholds:
         lw = 2.0 if ls == ":" else 1.8
@@ -251,9 +257,9 @@ def plot_cgm_overview(patient_id: str, df: pd.DataFrame,
 
     # ── 5.  Threshold labels (right margin) ──────────────────────────────────
     label_specs = [
-        (H_HYPO,    COLOR_LINE_HYPO,   f"{H_HYPO} mg/dL\n(hypo)"),
-        (H_CONTEXT, COLOR_LINE_NORMAL, f"{H_CONTEXT} mg/dL\n(healthy)"),
-        (H_HYPER,   COLOR_LINE_HYPER,  f"{H_HYPER} mg/dL\n(hyper)"),
+        (H_HYPO,    COLOR_LINE_HYPO,   f"{fg(H_HYPO)}\n(hypo)"),
+        (H_CONTEXT, COLOR_LINE_NORMAL, f"{fg(H_CONTEXT)}\n(healthy)"),
+        (H_HYPER,   COLOR_LINE_HYPER,  f"{fg(H_HYPER)}\n(hyper)"),
     ]
     for val, color, text in label_specs:
         ax.annotate(
@@ -290,11 +296,10 @@ def plot_cgm_overview(patient_id: str, df: pd.DataFrame,
 
     # Y-axis: annotate all key glucose values
     yticks = [H_HYPO, 100, H_CONTEXT, H_HYPER, 250, 300]
-    ax.set_yticks(yticks)
-    ax.set_yticklabels([str(v) for v in yticks])
+    apply_glucose_axis(ax, quantity="Blood glucose", mgdl_ticks=yticks,
+                       fontsize=FS + 1, labelpad=6)
 
     ax.set_xlabel("Time", fontsize=FS + 1, labelpad=6)
-    ax.set_ylabel("Blood glucose (mg/dL)", fontsize=FS + 1, labelpad=6)
 
     # ── 8.  Legend  ──────────────────────────────────────────────────────────
     # Zone patches + night patch
@@ -302,10 +307,10 @@ def plot_cgm_overview(patient_id: str, df: pd.DataFrame,
     from matplotlib.lines import Line2D
 
     legend_handles = [
-        mpatches.Patch(facecolor=COLOR_ZONE_HYPO,    label=f"Hypoglycaemia  (< {H_HYPO} mg/dL)"),
-        mpatches.Patch(facecolor=COLOR_ZONE_NORMAL,  label=f"Normal range — healthy people  (70–{H_CONTEXT} mg/dL)"),
-        mpatches.Patch(facecolor=COLOR_ZONE_CAUTION, label=f"Above healthy, below hyper  ({H_CONTEXT}–{H_HYPER} mg/dL)"),
-        mpatches.Patch(facecolor=COLOR_ZONE_HYPER,   label=f"Hyperglycaemia  (> {H_HYPER} mg/dL)"),
+        mpatches.Patch(facecolor=COLOR_ZONE_HYPO,    label=f"Hypoglycaemia  (< {fg(H_HYPO)})"),
+        mpatches.Patch(facecolor=COLOR_ZONE_NORMAL,  label=f"Normal range — healthy people  ({fg(H_HYPO, False)}–{fg(H_CONTEXT)})"),
+        mpatches.Patch(facecolor=COLOR_ZONE_CAUTION, label=f"Above healthy, below hyper  ({fg(H_CONTEXT, False)}–{fg(H_HYPER)})"),
+        mpatches.Patch(facecolor=COLOR_ZONE_HYPER,   label=f"Hyperglycaemia  (> {fg(H_HYPER)})"),
         mpatches.Patch(facecolor=COLOR_NIGHT, alpha=0.55,
                        label=f"Night  ({NIGHT_START_H:02d}:00–{NIGHT_END_H:02d}:00)"),
         Line2D([0], [0], color=COLOR_TRACE, lw=1.4, label="CGM signal"),

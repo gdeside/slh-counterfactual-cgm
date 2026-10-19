@@ -7,7 +7,7 @@ Side-by-side 9-day CGM overviews for two patients.
 Generates TWO figures:
 
   Figure 1 (suffix *_raw*):
-    · Raw CGM trace with threshold lines only (70 & 180 mg/dL)
+    · Raw CGM trace with threshold lines only (70 & 180 mg/dL; mmol/L via CGM_GLUCOSE_UNIT)
     · No episode highlighting — clean baseline view
     · Night shading and day separators
 
@@ -23,6 +23,9 @@ Both figures: 16:9 presentation-ready layout, side-by-side panels.
 Usage
 -----
     python3 -m scripts.presentation_figures.nine_days_two_patients         [--patient_1 ID]         [--patient_2 ID]         [--n_days 9]         [--out_dir DIR]
+
+    # Same figure in mmol/L (default is mg/dL; output filename gets a _mmoll suffix)
+    CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.presentation_figures.nine_days_two_patients
 
 Output
 ------
@@ -60,6 +63,8 @@ from src.episodes.episode_config import (
 from src.config import TIME_COL, GLUCOSE_COL, COL_FLAG_TIME_ERROR, COL_FLAG_OUTLIER_GLUCOSE
 from src.counterfactual.build_counterfactual import build_full_counterfactual_signal
 from src.visualization.style import apply_publication_style, save_figure
+from src.visualization.glucose_axis import apply_glucose_axis
+from src.utils.unit_conversion import format_glucose
 from src.visualization.colors import (
     COLOR_THRESHOLD_HYPER, COLOR_THRESHOLD_HYPO,
     COLOR_SLH,           # navy — episode highlight
@@ -194,10 +199,9 @@ def _format_x_axis(ax, x_max: float, n_days: int) -> None:
 
 def _format_y_axis(ax) -> None:
     yticks = [H_HYPO, 100, 140, H_HYPER, 250, 300]
-    ax.set_yticks(yticks)
-    ax.set_yticklabels([str(v) for v in yticks], fontsize=FS_TICK)
     ax.set_ylim(Y_MIN, Y_MAX)
-    ax.set_ylabel("Glucose (mg/dL)", fontsize=FS_LABEL, labelpad=6)
+    apply_glucose_axis(ax, mgdl_ticks=yticks, fontsize=FS_LABEL, labelpad=6)
+    ax.tick_params(axis="y", labelsize=FS_TICK)
     ax.yaxis.grid(True, ls=":", lw=0.5, color="#DDDDDD", zorder=0)
     ax.set_axisbelow(True)
     ax.spines["top"].set_visible(False)
@@ -205,7 +209,7 @@ def _format_y_axis(ax) -> None:
 
 
 def _draw_thresholds(ax, x_max: float, show_labels: bool = True) -> None:
-    """Draw 70 and 180 mg/dL threshold lines with optional right-margin labels."""
+    """Draw hypo / hyper threshold lines with optional right-margin labels."""
     ax.axhline(H_HYPER, color=COLOR_THRESHOLD_HYPER,
                lw=1.6, ls="--", alpha=0.90, zorder=5)
     ax.axhline(H_HYPO,  color=COLOR_THRESHOLD_HYPO,
@@ -213,8 +217,8 @@ def _draw_thresholds(ax, x_max: float, show_labels: bool = True) -> None:
 
     if show_labels:
         for val, color, text in [
-            (H_HYPER, COLOR_THRESHOLD_HYPER, f"{H_HYPER} mg/dL"),
-            (H_HYPO,  COLOR_THRESHOLD_HYPO,  f"{H_HYPO} mg/dL"),
+            (H_HYPER, COLOR_THRESHOLD_HYPER, format_glucose(H_HYPER)),
+            (H_HYPO,  COLOR_THRESHOLD_HYPO,  format_glucose(H_HYPO)),
         ]:
             ax.annotate(
                 text,

@@ -18,10 +18,9 @@ Analyses
   4. PCA scores                      — patients in PC space on continuous
                                        characteristics, coloured by n_SLH
   5. PCA correlation circle          — variable contributions to each PC
-  6. t-SNE embedding                 — non-linear layout, coloured by n_SLH
-  7. Stratified box plots            — continuous characteristics split by
+  6. Stratified box plots            — continuous characteristics split by
                                        SLH tertile (Kruskal-Wallis p)
-  8. Parallel coordinates            — z-scored continuous characteristics
+  7. Parallel coordinates            — z-scored continuous characteristics
                                        per patient, coloured by n_SLH
 
 Inputs
@@ -35,7 +34,6 @@ Outputs (RESULTS_PATH / SLH_Patient_Characteristics_Exploration)
   fig_slh_by_category_<var>.{pdf,png,svg}
   fig_pca_scores.{pdf,png,svg}
   fig_pca_correlation_circle.{pdf,png,svg}
-  fig_tsne.{pdf,png,svg}
   fig_stratified_boxplots.{pdf,png,svg}
   fig_parallel_coordinates.{pdf,png,svg}
   fig_scatter_age_duration_control.{pdf,png,svg}
@@ -57,7 +55,7 @@ the plot stay on the panel.
 
 Usage
 -----
-    python3 -m scripts.statistics.slh_patient_characteristics_exploration [--no_filter]
+    python3 -m scripts.statistics.slh_patient_characteristics_exploration
 
 Authors
 -------
@@ -69,7 +67,6 @@ Date
 2025
 """
 
-import argparse
 
 import numpy as np
 import pandas as pd
@@ -82,7 +79,6 @@ import matplotlib.patches as mpatches
 from matplotlib.lines import Line2D
 from scipy import stats as scipy_stats
 from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import StandardScaler
 
@@ -182,7 +178,6 @@ CATEGORICAL_LABELS = {
 
 N_TERTILES     = 3
 TERTILE_COLORS = [WONG_COLORS["blue"], WONG_COLORS["orange"], WONG_COLORS["vermillion"]]
-TSNE_SEED      = 42
 
 # ── Combined supplementary figure (all categorical variables, one subplot each)
 SUPPLEMENTARY_OUTPUT_DIR = FIG_DIR / "Supplementary"
@@ -777,41 +772,7 @@ def plot_pca(df: pd.DataFrame) -> None:
 
 
 # =============================================================================
-# PLOT 6: t-SNE
-# =============================================================================
-def plot_tsne(df: pd.DataFrame, perplexity: float = 15.0) -> None:
-    sub = df[CONTINUOUS_COLS + [RESPONSE]].dropna()
-    X   = sub[CONTINUOUS_COLS].values
-    y   = sub[RESPONSE].values
-
-    scaler   = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    perp   = min(perplexity, len(X_scaled) - 1)
-    tsne   = TSNE(n_components=2, perplexity=perp, random_state=TSNE_SEED,
-                  max_iter=1000, init="pca")
-    coords = tsne.fit_transform(X_scaled)
-
-    apply_lancet_style()
-    fig, ax = plt.subplots(
-        figsize=lancet_figsize(3.4, columns="double"), constrained_layout=True,
-    )
-    sc = ax.scatter(coords[:, 0], coords[:, 1], c=y, cmap="plasma",
-                    s=18, alpha=0.75, edgecolors="none")
-    cbar = fig.colorbar(sc, ax=ax, shrink=0.85, pad=0.02)
-    cbar.set_label(RESPONSE_LABEL, fontsize=FONT_BODY)
-    cbar.ax.tick_params(labelsize=FONT_BODY)
-    ax.set_xlabel("t-SNE dimension 1", fontsize=FONT_BODY)
-    ax.set_ylabel("t-SNE dimension 2", fontsize=FONT_BODY)
-    ax.tick_params(labelsize=FONT_BODY)
-    style_axes(ax)
-
-    save_lancet_figure(fig, OUTPUT_DIR / "fig_tsne")
-    print("  Saved: fig_tsne")
-
-
-# =============================================================================
-# PLOT 7: Stratified box plots (continuous vars by SLH tertile)
+# PLOT 6: Stratified box plots (continuous vars by SLH tertile)
 # =============================================================================
 def plot_stratified_boxplots(df: pd.DataFrame) -> None:
     df_t = add_tertile(df)
@@ -897,7 +858,7 @@ def plot_stratified_boxplots(df: pd.DataFrame) -> None:
 
 
 # =============================================================================
-# PLOT 8: Parallel coordinates (continuous characteristics)
+# PLOT 7: Parallel coordinates (continuous characteristics)
 # =============================================================================
 def plot_parallel_coordinates(df: pd.DataFrame) -> None:
     sub    = df[CONTINUOUS_COLS + [RESPONSE]].dropna()
@@ -939,7 +900,7 @@ def plot_parallel_coordinates(df: pd.DataFrame) -> None:
 
 
 # =============================================================================
-# PLOT 9: Age at entry vs diabetes duration - scatter plots coloured by n_SLH
+# PLOT 8: Age at entry vs diabetes duration - scatter plots coloured by n_SLH
 # =============================================================================
 def _scatter_slh(ax, x: np.ndarray, y: np.ndarray, c: np.ndarray,
                   xlabel: str, ylabel: str, letter: str = "") -> tuple:
@@ -1038,7 +999,7 @@ def plot_age_duration_control_scatter(df: pd.DataFrame) -> None:
 
 
 # =============================================================================
-# PLOT 10: GTAA1C vs diabetes duration - coloured by n_SLH, marker = insulin regimen
+# PLOT 9: GTAA1C vs diabetes duration - coloured by n_SLH, marker = insulin regimen
 # =============================================================================
 INSULIN_REGIMEN_MARKERS = {
     "Basal-prandial": "o",
@@ -1113,19 +1074,11 @@ def plot_gtaa1c_duration_by_insulin(df: pd.DataFrame) -> None:
 # =============================================================================
 # MAIN
 # =============================================================================
-def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--tsne_perplexity", type=float, default=15.0,
-                   help="t-SNE perplexity (default: 15)")
-    return p.parse_args()
-
-
 def main() -> None:
-    args = parse_args()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     print(f"Output directory: {OUTPUT_DIR}")
 
-    print("\n[1/9] Loading data ...")
+    print("\n[1/8] Loading data ...")
     df = load_data()
     print(f"  n_SLH: mean={df[RESPONSE].mean():.1f}, "
           f"median={df[RESPONSE].median():.0f}, "
@@ -1134,29 +1087,26 @@ def main() -> None:
     print("\n[+] Correlation heatmap ...")
     plot_correlation_heatmap(df)
 
-    print("\n[2/9] Spearman correlation bar chart ...")
+    print("\n[2/8] Spearman correlation bar chart ...")
     plot_spearman_bar(df)
 
-    print("\n[3/9] Mutual information ...")
+    print("\n[3/8] Mutual information ...")
     plot_mutual_information(df)
 
-    print("\n[4/9] n_SLH by categorical variable ...")
+    print("\n[4/8] n_SLH by categorical variable ...")
     plot_slh_by_category(df)
 
     print("\n[+] n_SLH by categorical variable -- combined supplementary figure ...")
     plot_slh_by_category_combined(df)
 
-    print("\n[5/9] PCA scores ...")
-    print("\n[6/9] PCA correlation circle ...")
+    print("\n[5/8] PCA scores ...")
+    print("\n[6/8] PCA correlation circle ...")
     plot_pca(df)
 
-    print("\n[7/9] t-SNE ...")
-    plot_tsne(df, perplexity=args.tsne_perplexity)
-
-    print("\n[8/9] Stratified box plots ...")
+    print("\n[7/8] Stratified box plots ...")
     plot_stratified_boxplots(df)
 
-    print("\n[9/9] Parallel coordinates ...")
+    print("\n[8/8] Parallel coordinates ...")
     plot_parallel_coordinates(df)
 
     print("\n[+] Age / duration / GTAA1C scatter + partial correlations ...")

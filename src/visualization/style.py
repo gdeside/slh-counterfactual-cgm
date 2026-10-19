@@ -14,10 +14,16 @@ a figure sit side by side instead of overwriting one another.  See
 
 from pathlib import Path
 
+import numpy as np
+
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.text import Text
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure, SubFigure
+from matplotlib.legend import Legend
+from matplotlib.transforms import Bbox
 
 # =============================================================================
 # IMPORT CENTRAL CONFIGURATION (no duplication)
@@ -319,3 +325,99 @@ def save_figure(
     plt.close(fig)
 
     print(f"Saved: {path.name}.{{pdf,svg}}  (DPI: {dpi})")
+
+
+def _panel_bbox_inches(fig: plt.Figure, members, renderer, pad_in: float) -> Bbox:
+    """Tight box (inches) around `members` (Axes, or any artist such as a figure-level Legend) and
+    everything drawn with them (tick labels, axis labels, titles, legends, panel letters, inset
+    colourbars). Axes sitting exactly on top of one of the given Axes (``twinx``/``twiny``) are
+    included automatically; positions are compared on screen, so the same relative position in
+    two different subfigures is not mistaken for a twin."""
+    members = list(members)
+    axes_given = [m for m in members if isinstance(m, Axes)]
+    for other in fig.axes:
+        if other in members:
+            continue
+        ob = other.get_window_extent(renderer).bounds
+        if any(np.allclose(ob, a.get_window_extent(renderer).bounds) for a in axes_given):
+            members.append(other)
+    boxes = [m.get_tightbbox(renderer) if isinstance(m, Axes) else m.get_window_extent(renderer)
+             for m in members if m.get_visible()]
+    box = Bbox.union([b for b in boxes if b is not None and b.width > 0 and b.height > 0])
+    box = box.transformed(fig.dpi_scale_trans.inverted())
+    return Bbox.from_extents(box.x0 - pad_in, box.y0 - pad_in, box.x1 + pad_in, box.y1 + pad_in)
+
+
+def save_figure_with_panels(
+    fig: plt.Figure,
+    folder: str | Path,
+    name: str,
+    panels: dict,
+    dpi: int | None = None,
+    unit_suffix: bool | str | None = None,
+    bbox_inches: str | None = "tight",
+    pad_in: float = 0.06,
+) -> None:
+    """
+    Save a multi-panel figure AND each panel on its own, in one folder per figure::
+
+        <folder>/<name>.{pdf,svg}                 the whole figure
+        <folder>/<name>_panel_A.{pdf,svg}         panel A alone
+        <folder>/<name>_panel_B.{pdf,svg}         ...
+
+    Panels are cropped out of the very same rendering as the full figure, so they are
+    pixel-for-pixel what the combined figure shows (same data, sizes, fonts, colours) and no
+    plotting code is duplicated.  The crop includes the panel's own tick labels, axis labels,
+    title, legend, panel letter and colourbar.
+
+    Parameters
+    ----------
+    panels : dict
+        ``{"A": ax_a, "B": [ax_b, legend_b], ...}`` — panel label -> Axes, or a list of Axes /
+        artists (e.g. a figure-level Legend) that belong to the panel.  Twin axes are picked up
+        automatically.
+    unit_suffix, dpi, bbox_inches
+        As in :func:`save_figure`; the unit suffix is decided once for the whole figure so the
+        panel files carry the same suffix as the full figure.
+    pad_in : float
+        Margin (inches) kept around each panel crop.
+    """
+    if dpi is None:
+        dpi = DPI_SAVE
+    if unit_suffix is None:
+        unit_suffix = FIGURE_UNIT_SUFFIX
+    if unit_suffix == "auto":
+        unit_suffix = figure_shows_glucose_unit(fig)
+    stem = f"{name}_{unit_tag()}" if unit_suffix else name
+
+    folder = Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
+
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    # Freeze the layout: hiding the other panels below must not make constrained_layout re-flow.
+    fig.set_layout_engine("none")
+    all_axes = list(fig.axes)
+    fig_legends = [leg for leg in fig.findobj(Legend) if isinstance(leg.parent, (Figure, SubFigure))]
+    for label, axes in panels.items():
+        members = list(axes) if isinstance(axes, (list, tuple)) else [axes]
+        box = _panel_bbox_inches(fig, members, renderer, pad_in)
+        # draw only this panel (and its twins) so neighbours do not bleed into the crop
+        keep = [a for a in all_axes
+                if a in members or any(np.allclose(a.get_window_extent(renderer).bounds,
+                                                   m.get_window_extent(renderer).bounds)
+                                       for m in members if isinstance(m, Axes))]
+        hidden = [a for a in all_axes if a not in keep and a.get_visible()]
+        hidden += [leg for leg in fig_legends if leg not in members and leg.get_visible()]
+        for artist in hidden:
+            artist.set_visible(False)
+        try:
+            for ext in ("pdf", "svg"):
+                fig.savefig(folder / f"{stem}_panel_{label}.{ext}", dpi=dpi, bbox_inches=box,
+                            transparent=False)
+        finally:
+            for artist in hidden:
+                artist.set_visible(True)
+
+    print(f"Saved: {folder.name}/{stem}_panel_{{{','.join(panels)}}}.{{pdf,svg}}")
+    save_figure(fig, folder / stem, dpi=dpi, unit_suffix=False, bbox_inches=bbox_inches)

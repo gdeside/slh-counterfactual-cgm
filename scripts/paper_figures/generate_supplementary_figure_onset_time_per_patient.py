@@ -1,30 +1,33 @@
 """
 scripts/paper_figures/generate_supplementary_figure_onset_time_per_patient.py
 =============================================================================
-Supplementary figure: per-patient time-of-day distribution of hyperglycemia
-episodes, for all four categories of Figure 2.
+Supplementary figure: time of day at which hyperglycemia episodes start, shown
+for every patient of the cohort and for each episode category.
 
-Supports the sentence in the Results:
+Each hyperglycemia episode of the cohort belongs to one of four categories:
 
-    "However, the time distribution of SLHs and LLHs varied among participants,
-     with some patients experiencing SLHs but no LLHs at specific times of day."
+  SLH           short, isolated, sufficiently complete and starting in daytime
+  Not isolated  short enough, but not isolated and/or insufficiently complete
+  Night         would be SLH, but starts during the night window
+  LLH           duration outside the short-episode bounds
 
-Figure 2 panel D pools all participants into one curve per category, which hides
-who contributes to which hour. This figure keeps the same categories, colours and
-night window, but unfolds the cohort by patient: one row per participant, one
-column per hour of onset, one panel per category:
+The figure has three panels (A SLH + Night, B Not isolated, C LLH): SLH and Night
+share panel A (a Night episode is an SLH that merely starts at night) but keep their
+own colours: SLH orange in daytime hours, Night navy in night hours.
+In every panel each row is one patient and each column is one hour of the day
+(onset time); the colour intensity is the number of episodes of that group that started
+in that hour, on a 4-level scale (plus white for none). The levels differ per
+panel (PANEL_STEPS) because LLH counts are almost everywhere above 4, so they
+need coarser steps than the other panels. Dashed vertical lines mark the edges
+of the night window.
 
-  A — SLH           B — Not isolated           C — Night           D — LLH
+Rows are identical in all panels, so one patient can be followed across
+panels: they are sorted by the circular mean onset hour of the patient's
+SLH + Night episodes; patients without any come next, sorted the same way using
+their first non-empty group in the order SLH + Night > Not isolated > LLH.
 
-Rows are identical in all panels (same patient on the same line) and sorted by
-the circular mean onset hour of each patient's SLH episodes; patients without
-any SLH follow, ordered the same way by their first non-empty category in the
-order SLH > Not isolated > Night > LLH. A patient can therefore be followed
-across panels: an orange cell with an empty blue cell at the same hour is an
-SLH-without-LLH time of day.
-
-Classification is exactly that of Figure 2 (imported from
-`generate_figure_2_classification_summary`; episodes failing C2 are dropped).
+Console output: number of patients with at least one SLH / LLH, and number of
+patients with at least one hour of the day that has SLH but no LLH.
 
 Usage
 -----
@@ -32,8 +35,9 @@ Usage
 
 Outputs (FIG_DIR / Manuscript_Figures)
 ---------------------------------------
-  SuppFigure_Onset_Time_Per_Patient.{pdf,svg}
-  onset_time_per_patient_hourly_counts.csv   (patient x hour, one column per category)
+  SuppFigure_Onset_Time_Per_Patient/SuppFigure_Onset_Time_Per_Patient.{pdf,svg}   (whole figure)
+  SuppFigure_Onset_Time_Per_Patient/SuppFigure_Onset_Time_Per_Patient_panel_{A,B,C}.{pdf,svg}
+  onset_time_per_patient_hourly_counts.csv   (patient x hour, one column per category, SLH and Night kept separate)
 
 Authors: Guillaume Deside
 """
@@ -46,10 +50,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from matplotlib.colors import LinearSegmentedColormap, BoundaryNorm
+from matplotlib.colors import ListedColormap, BoundaryNorm, to_rgb
 
 from src.episodes.episode_config import NIGHT_START_H, NIGHT_END_H
-from src.visualization.style import apply_publication_style, save_figure, FONT_SIZE_BASE
+from src.visualization.style import apply_publication_style, save_figure_with_panels, FONT_SIZE_BASE
 from scripts.paper_figures.generate_figure_2_classification_summary import (
     build_cohort_episodes, CATEGORY_ORDER, CATEGORY_COLORS, OUTPUT_DIR,
 )
@@ -57,7 +61,22 @@ from scripts.paper_figures.generate_figure_2_classification_summary import (
 OUTPUT_NAME = "SuppFigure_Onset_Time_Per_Patient"
 
 BIN_WIDTH_H = 1          # one column per hour of onset
-MAX_COUNT_DISPLAYED = 4  # colour scale saturates at this many episodes per cell
+
+# Display panels: (title, categories drawn on the panel, each in its CATEGORY_COLORS colour).
+PANELS = [
+    ("SLH + Night",  ["SLH", "Night"]),
+    ("Not isolated", ["Not isolated"]),
+    ("LLH",          ["LLH"]),
+]
+
+# Per-panel colour steps: lower bound (episodes per cell) of each of the 4 colours;
+# 0 is always white. LLH counts are almost always >= 4, hence its coarser steps.
+PANEL_STEPS = {
+    "SLH + Night":  (1, 2, 3, 4),
+    "Not isolated": (1, 2, 3, 4),
+    "LLH":          (1, 4, 8, 12),
+}
+SHADE_FRACTIONS = (0.3, 0.55, 0.78, 1.0)   # light -> full category colour
 
 
 # =============================================================================
@@ -85,15 +104,15 @@ def circular_mean_hour(counts_row: np.ndarray) -> float:
     return (mean % (2 * np.pi)) * 24 / (2 * np.pi)
 
 
-def order_patients(counts: dict[str, np.ndarray]) -> np.ndarray:
-    """Row order: group = index of the patient's first non-empty category in CATEGORY_ORDER
+def order_patients(counts: dict[str, np.ndarray], order: list[str]) -> np.ndarray:
+    """Row order: group = index of the patient's first non-empty panel in `order`
     (patients with no episode at all last); within a group, by circular-mean onset hour of
-    that category."""
+    that panel."""
     n = next(iter(counts.values())).shape[0]
-    group = np.full(n, len(CATEGORY_ORDER))
+    group = np.full(n, len(order))
     key = np.zeros(n)
     for i in range(n):
-        for g, cat in enumerate(CATEGORY_ORDER):
+        for g, cat in enumerate(order):
             m = circular_mean_hour(counts[cat][i])
             if not np.isnan(m):
                 group[i], key[i] = g, m
@@ -104,13 +123,30 @@ def order_patients(counts: dict[str, np.ndarray]) -> np.ndarray:
 # =============================================================================
 # PLOTTING
 # =============================================================================
-def plot_count_heatmap(fig, ax, mat: np.ndarray, category: str, panel: str) -> None:
-    n = mat.shape[0]
-    cmap = LinearSegmentedColormap.from_list(f"w_{panel}", ["#ffffff", CATEGORY_COLORS[category]],
-                                             N=MAX_COUNT_DISPLAYED + 1)
-    norm = BoundaryNorm(np.arange(0, MAX_COUNT_DISPLAYED + 2), cmap.N)
-    ax.imshow(np.minimum(mat, MAX_COUNT_DISPLAYED), aspect="auto", cmap=cmap, norm=norm,
-              interpolation="nearest", extent=(0, 24, n, 0), zorder=2)
+def step_labels(steps: tuple[int, ...]) -> list[str]:
+    """Colour-bar labels for the 4 levels given their lower bounds, e.g. (1,4,8,12) -> 1-3, 4-7, 8-11, >=12."""
+    labels = []
+    for lo, hi in zip(steps[:-1], steps[1:]):
+        labels.append(str(lo) if hi - lo == 1 else f"{lo}–{hi - 1}")
+    labels.append(f"≥{steps[-1]}")
+    return labels
+
+
+def plot_count_heatmap(fig, ax, mats: dict[str, np.ndarray], title: str, panel: str) -> None:
+    """`mats`: category -> (n_patients, 24) counts, each drawn in its own colour on the same panel
+    (SLH starts in daytime hours and Night in night hours, so their cells never overlap)."""
+    steps = PANEL_STEPS[title]
+    n = next(iter(mats.values())).shape[0]
+    total = sum(mats.values())
+    img = np.ones((*total.shape, 3))
+    cmaps = {}
+    for cat, mat in mats.items():
+        base = np.array(to_rgb(CATEGORY_COLORS[cat]))
+        shades = [tuple(1 - f * (1 - base)) for f in SHADE_FRACTIONS]
+        cmaps[cat] = ListedColormap(["#ffffff"] + shades)
+        level = np.digitize(mat, steps)            # 0 = none, 1..4 = colour level
+        img[level > 0] = np.array([to_rgb(c) for c in cmaps[cat].colors])[level[level > 0]]
+    ax.imshow(img, aspect="auto", interpolation="nearest", extent=(0, 24, n, 0), zorder=2)
     for h in (NIGHT_END_H, NIGHT_START_H):  # night window wraps midnight
         ax.axvline(h, color="#333333", lw=0.6, ls="--", zorder=5)
     ax.set_xlim(0, 24)
@@ -121,20 +157,25 @@ def plot_count_heatmap(fig, ax, mat: np.ndarray, category: str, panel: str) -> N
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
 
-    ax.set_title(f"{category} (n={int(mat.sum())})", fontweight="bold", loc="left", pad=6,
+    ax.set_title(f"{title} (n={int(total.sum())})", fontweight="bold", loc="left", pad=6,
                  fontsize=FONT_SIZE_BASE)
     ax.text(-0.02 if panel == "A" else -0.08, 1.04, panel, transform=ax.transAxes, fontsize=11,
             fontweight="bold", va="bottom", ha="right")
 
-    # inset axes (not `ax=`) so the colourbar does not steal height/width from the heatmap
-    sm = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
-    cb = fig.colorbar(sm, cax=ax.inset_axes([0.15, -0.15, 0.7, 0.025]), orientation="horizontal")
-    ticks = np.arange(0, MAX_COUNT_DISPLAYED + 1)
-    cb.set_ticks(ticks + 0.5)
-    cb.set_ticklabels([str(t) if t < MAX_COUNT_DISPLAYED else f"≥{t}" for t in ticks])
-    cb.ax.tick_params(labelsize=FONT_SIZE_BASE, length=2)
-    cb.set_label("Episodes per hour", fontsize=FONT_SIZE_BASE)
-    cb.outline.set_visible(False)
+    # one colour bar per category, side by side; inset axes so they do not steal heatmap space
+    norm = BoundaryNorm(np.arange(0, 6), 6)
+    k = len(mats)
+    gap, width = 0.08, (0.8 - 0.08 * (len(mats) - 1)) / len(mats)
+    for i, (cat, mat) in enumerate(mats.items()):
+        sm = plt.cm.ScalarMappable(norm=norm, cmap=cmaps[cat])
+        cax = ax.inset_axes([0.1 + i * (width + gap), -0.15, width, 0.025])
+        cb = fig.colorbar(sm, cax=cax, orientation="horizontal")
+        cb.set_ticks(np.arange(5) + 0.5)
+        cb.set_ticklabels(["0", *step_labels(steps)])
+        cb.ax.tick_params(labelsize=FONT_SIZE_BASE, length=2)
+        cb.set_label(f"{cat}: episodes per hour" if k > 1 else "Episodes per hour",
+                     fontsize=FONT_SIZE_BASE)
+        cb.outline.set_visible(False)
 
 
 # =============================================================================
@@ -151,9 +192,11 @@ def generate_figure() -> None:
     pids = sorted(episodes_df["patient_id"].unique())
 
     counts = {c: hourly_counts(episodes_df, c, pids) for c in CATEGORY_ORDER}
-    order = order_patients(counts)
+    panel_counts = {t: sum(counts[c] for c in cats) for t, cats in PANELS}
+    order = order_patients(panel_counts, [t for t, _ in PANELS])
     pids_sorted = [pids[i] for i in order]
     counts = {c: m[order] for c, m in counts.items()}
+    panel_counts = {t: m[order] for t, m in panel_counts.items()}
     n = len(pids_sorted)
 
     # ---- numbers checkable against the Results sentence ----
@@ -179,20 +222,20 @@ def generate_figure() -> None:
     fig_height = heat_h + 1.4
     fig = plt.figure(figsize=(fig_width, fig_height))
     gs = gridspec.GridSpec(
-        1, len(CATEGORY_ORDER), figure=fig, wspace=0.1,
+        1, len(PANELS), figure=fig, wspace=0.1,
         left=0.07, right=0.98, top=1 - 0.5 / fig_height, bottom=0.9 / fig_height,
     )
     axes = []
-    for k, cat in enumerate(CATEGORY_ORDER):
+    for k, (title, cats) in enumerate(PANELS):
         ax = fig.add_subplot(gs[0, k], sharey=axes[0] if axes else None)
-        plot_count_heatmap(fig, ax, counts[cat], cat, "ABCD"[k])
+        plot_count_heatmap(fig, ax, {c: counts[c] for c in cats}, title, "ABC"[k])
         if k:
             plt.setp(ax.get_yticklabels(), visible=False)
             ax.tick_params(axis="y", length=0)
         axes.append(ax)
 
     ax0 = axes[0]
-    ax0.set_ylabel(f"Patients (n={n}, sorted by mean SLH onset time)", fontsize=FONT_SIZE_BASE)
+    ax0.set_ylabel(f"Patients (n={n}, sorted by mean SLH + Night onset time)", fontsize=FONT_SIZE_BASE)
     ax0.set_yticks([0, n - 1] if n > 1 else [0])
     ax0.set_yticklabels(["1", str(n)] if n > 1 else ["1"], fontsize=FONT_SIZE_BASE)
 
@@ -201,7 +244,7 @@ def generate_figure() -> None:
              fontsize=FONT_SIZE_BASE - 0.5, color="#555555", ha="right", va="top")
 
     output_path = os.path.join(OUTPUT_DIR, OUTPUT_NAME)
-    save_figure(fig, output_path)
+    save_figure_with_panels(fig, output_path, OUTPUT_NAME, dict(zip("ABC", axes)))
     print("\n" + "=" * 70)
     print(f"  SAVED: {output_path}")
     print("=" * 70 + "\n")

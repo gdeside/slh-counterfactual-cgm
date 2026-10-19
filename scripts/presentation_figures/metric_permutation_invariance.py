@@ -25,6 +25,10 @@ Usage
     python3 -m scripts.presentation_figures.metric_permutation_invariance
             [--patient_id ID] [--n_days 5] [--seed 7] [--out_dir DIR]
 
+    # Same figure in mmol/L (default is mg/dL; output filename gets a _mmoll suffix)
+    CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.presentation_figures.metric_permutation_invariance
+            [same options]
+
 Authors
 -------
 Guillaume Deside
