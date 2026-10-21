@@ -210,13 +210,8 @@ def _base_ax(ax, t_start, t_end, t_onset, t_offset,
 def _new_fig():
     """Create a blank 16:9 figure with one axes."""
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
-    fig.subplots_adjust(left=0.08, right=0.88, top=0.88, bottom=0.13)
+    fig.subplots_adjust(left=0.08, right=0.88, top=0.96, bottom=0.13)
     return fig, ax
-
-
-def _add_title(ax, text: str) -> None:
-    ax.set_title(text, fontsize=FS_TITLE, fontweight="bold",
-                 loc="left", pad=8, color="#222222")
 
 
 # =============================================================================
@@ -261,7 +256,6 @@ def draw_step1(ax, t_window, g_window, episode,
         loc="upper left", fontsize=FS_LEGEND, framealpha=0.92,
         handlelength=1.8,
     )
-    _add_title(ax, "Step 1 — Original CGM signal  G(t)")
 
 
 # =============================================================================
@@ -276,7 +270,7 @@ def draw_step2(ax, t_window, g_window, episode, anchor_info,
              delta_td, y_min, y_max, show_zones=True)
 
     ax.plot(t_window, g_window, color=COLOR_ORIGINAL,
-            lw=1.4, alpha=ALPHA_G_STEP[2], zorder=4)
+            lw=1.4, alpha=ALPHA_G_STEP[2], zorder=8)
 
     y_range = y_max - y_min
 
@@ -313,7 +307,6 @@ def draw_step2(ax, t_window, g_window, episode, anchor_info,
         loc="upper left", fontsize=FS_LEGEND, framealpha=0.92,
         handlelength=1.8,
     )
-    _add_title(ax, f"Step 2 — Zone expansion  (δ = {offset_min} min)  +  local-minima anchors")
 
 
 # =============================================================================
@@ -329,7 +322,7 @@ def draw_step3(ax, t_window, g_window, l_window, episode, anchor_info,
 
     # G(t) very faded
     ax.plot(t_window, g_window, color=COLOR_ORIGINAL,
-            lw=1.2, alpha=ALPHA_G_STEP[3], zorder=4)
+            lw=1.2, alpha=ALPHA_G_STEP[3], zorder=8)
 
     # L(t) — dashed orange
     ax.plot(t_window, l_window, color=COLOR_LININTERP,
@@ -354,7 +347,6 @@ def draw_step3(ax, t_window, g_window, l_window, episode, anchor_info,
         loc="upper left", fontsize=FS_LEGEND, framealpha=0.92,
         handlelength=1.8,
     )
-    _add_title(ax, "Step 3 — Linear interpolation baseline  L(t)")
 
 
 # =============================================================================
@@ -373,7 +365,7 @@ def draw_step4(ax, t_window, g_window, l_window, c_window,
 
     # G(t) — barely visible
     ax.plot(t_window, g_window, color=COLOR_ORIGINAL,
-            lw=1.0, alpha=ALPHA_G_STEP[4], zorder=4)
+            lw=1.0, alpha=ALPHA_G_STEP[4], zorder=8)
 
     # L(t) — faint dashed
     ax.plot(t_window, l_window, color=COLOR_LININTERP,
@@ -434,10 +426,6 @@ def draw_step4(ax, t_window, g_window, l_window, c_window,
         loc="upper left", fontsize=FS_LEGEND, framealpha=0.92,
         handlelength=1.8,
     )
-    title = "Step 4 — Final counterfactual  C(t)"
-    if APPLY_KERNEL:
-        title += f"  [rolling mean  k = {KERNEL_MIN} min]"
-    _add_title(ax, title)
 
 
 # =============================================================================

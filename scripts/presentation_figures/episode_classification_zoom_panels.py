@@ -8,7 +8,7 @@ For a given patient, one representative episode per classification stage
 (C1–C6 + SLH) is selected.  Figures are saved in three forms:
 
   1. Individual panels — one panel per classification stage (7 separate figures)
-  2. C4 + C5 side-by-side — two-panel figure comparing C4 and C5 episodes
+  2. C4 + C5 side-by-side and stacked (C4 above C5, as on the slides)
   3. C1 + C2 + C3 side-by-side — three-panel figure comparing C1, C2, and C3 episodes
   4. C1 + C3 side-by-side — two-panel figure comparing C1 and C3 (no C2)
 
@@ -49,7 +49,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from scripts.generate_zoom_panels import (
     classify_episodes_for_visualization,
-    select_representative_episodes,
     DRAW_ORDER,
     STAGE_LABELS,
     ZOOM_WINDOW_H,
@@ -78,17 +77,17 @@ DEFAULT_OUTPUT_DIR = os.path.join(
 )
 
 
-def plot_individual_panel(df: pd.DataFrame, episode: dict, stage: str,
-                          timestep_min: float,
-                          window_hours: float = ZOOM_WINDOW_H) -> plt.Figure:
-    """
-    Build and return a standalone figure for one zoom panel.
+def _panel_title(stage: str) -> str:
+    """Episode description only (no "C#"/"SLH" prefix), British spelling as on the slides."""
+    label = STAGE_LABELS[stage]
+    if (label.startswith("C") or label.startswith("SLH")) and "  " in label:
+        label = label.split("  ", 1)[1]
+    return label.replace("hyperglycemia", "hyperglycaemia")
 
-    Mirrors ``plot_single_zoom_panel`` from generate_zoom_panels.py but
-    wraps it in its own figure so it can be saved independently.
-    """
-    fig, ax = plt.subplots(figsize=(5.0, 3.2), constrained_layout=True)
 
+def draw_panel(ax: plt.Axes, df: pd.DataFrame, episode: dict, stage: str,
+               timestep_min: float, window_hours: float = ZOOM_WINDOW_H) -> None:
+    """Draw one zoom panel (episode ± window) on ``ax``."""
     color  = STAGE_COLORS[stage]
     win_td = pd.Timedelta(hours=window_hours)
     ctx    = pd.Timedelta(minutes=CONTEXT_WIN_MIN)
@@ -166,146 +165,37 @@ def plot_individual_panel(df: pd.DataFrame, episode: dict, stage: str,
     ax.spines["right"].set_visible(False)
     ax.grid(axis="y", ls=":", alpha=0.22, lw=0.5)
 
-    # Remove C0-C6 prefix from label (keep only the description)
-    label = STAGE_LABELS[stage]
-    # Strip "C#  " or "SLH  " prefix if present
-    if label.startswith("C") and "  " in label:
-        label = label.split("  ", 1)[1]
-    elif label.startswith("SLH") and "  " in label:
-        label = label.split("  ", 1)[1]
-
-    ax.set_title(label, fontsize=8, fontweight="bold",
+    ax.set_title(_panel_title(stage), fontsize=8, fontweight="bold",
                  pad=5, loc="left", color=color)
-
     ax.legend(fontsize=6.5, framealpha=0.85, loc="upper left")
 
+
+def plot_individual_panel(df: pd.DataFrame, episode: dict, stage: str,
+                          timestep_min: float,
+                          window_hours: float = ZOOM_WINDOW_H) -> plt.Figure:
+    """Build and return a standalone figure for one zoom panel."""
+    fig, ax = plt.subplots(figsize=(5.0, 3.2), constrained_layout=True)
+    draw_panel(ax, df, episode, stage, timestep_min, window_hours)
     return fig
 
 
 def plot_multi_panel_figure(df: pd.DataFrame, episodes_and_stages: list,
                              patient_id: str, timestep_min: float,
-                             window_hours: float = ZOOM_WINDOW_H) -> plt.Figure:
+                             window_hours: float = ZOOM_WINDOW_H,
+                             stacked: bool = False) -> plt.Figure:
     """
-    Build and return a multi-panel figure with episodes side by side.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        CGM data
-    episodes_and_stages : list of (episode, stage) tuples
-        Episodes to plot
-    patient_id : str
-        Patient ID for title
-    timestep_min : float
-        Dominant sampling interval
-    window_hours : float
-        Window size around episode
-
-    Returns
-    -------
-    matplotlib.figure.Figure
+    Build and return a multi-panel figure, panels side by side (default) or
+    one above the other (``stacked=True``, as on the slides).  Each panel has the
+    size of an individual panel.
     """
-    n_panels = len(episodes_and_stages)
-    fig_w = 5.0 * n_panels + 0.5  # Scale width with number of panels
-
-    fig, axes = plt.subplots(1, n_panels, figsize=(fig_w, 3.2),
-                              constrained_layout=True)
-
-    # Handle single panel case (axes is not array)
-    if n_panels == 1:
-        axes = [axes]
-
-    for ax, (episode, stage) in zip(axes, episodes_and_stages):
-        color  = STAGE_COLORS[stage]
-        win_td = pd.Timedelta(hours=window_hours)
-        ctx    = pd.Timedelta(minutes=CONTEXT_WIN_MIN)
-
-        t_lo = max(episode["onset"]  - win_td, df[TIME_COL].iloc[0])
-        t_hi = min(episode["offset"] + win_td, df[TIME_COL].iloc[-1])
-
-        mask  = (df[TIME_COL] >= t_lo) & (df[TIME_COL] <= t_hi)
-        t_win = df.loc[mask, TIME_COL]
-        g_win = df.loc[mask, GLUCOSE_COL].astype(float)
-
-        # Break trace at gaps
-        diffs  = t_win.diff().dt.total_seconds().fillna(0) / 60
-        g_plot = g_win.copy()
-        g_plot[diffs > timestep_min * GAP_FACTOR] = np.nan
-
-        _shade_nights(ax, t_lo, t_hi)
-
-        # Context windows
-        ax.axvspan(episode["onset"] - ctx, episode["onset"],
-                   color=COLOR_CONTEXT, alpha=0.09, zorder=1)
-        ax.axvspan(episode["offset"], episode["offset"] + ctx,
-                   color=COLOR_CONTEXT, alpha=0.09, zorder=1)
-
-        # Episode core
-        ax.axvspan(episode["onset"], episode["offset"],
-                   color=color, alpha=ALPHA_EPISODE + 0.10, zorder=2)
-
-        # Threshold lines
-        ax.axhline(H_HYPER,   color=COLOR_HYPER,   ls="--", lw=1.0, zorder=4,
-                   label=f"H = {format_glucose(H_HYPER)}")
-        ax.axhline(H_CONTEXT, color=COLOR_CONTEXT, ls=":",  lw=1.0, zorder=4,
-                   label=f"Hc = {format_glucose(H_CONTEXT)}")
-
-        # Onset / offset markers
-        for tm in (episode["onset"], episode["offset"]):
-            ax.axvline(tm, color="#777777", lw=0.7, ls="-", alpha=0.45, zorder=5)
-
-        # CGM trace
-        ax.plot(t_win, g_plot, color=COLOR_ORIGINAL, lw=1.2, zorder=6)
-        ax.scatter(t_win, g_win, color=COLOR_ORIGINAL, s=5, alpha=0.4, zorder=7)
-
-        # Peak annotation
-        pk_t, pk_v = episode["peak_time"], episode["peak_glucose"]
-        ax.scatter([pk_t], [pk_v], marker="^", s=25, color=COLOR_HYPER, zorder=9)
-
-        annot_text = f"{format_glucose(pk_v)}\n{episode['duration_min']:.0f} min"
-        if "completeness_episode" in episode:
-            annot_text += f"\nData: {episode['completeness_episode']:.0%}"
-
-        ax.annotate(
-            annot_text,
-            xy=(pk_t, pk_v),
-            xytext=(pk_t + pd.Timedelta(minutes=18), pk_v + 25),
-            fontsize=7, color=COLOR_HYPER, ha="left", va="bottom",
-            arrowprops=dict(arrowstyle="->", color=COLOR_HYPER, lw=0.7),
-            bbox=dict(boxstyle="round,pad=0.15", fc="white",
-                      ec=COLOR_HYPER, lw=0.6, alpha=0.92),
-            zorder=10,
-        )
-
-        # Axes
-        ax.set_xlim(t_lo, t_hi)
-        ax.set_ylim(70, 350)
-
-        span_min = (t_hi - t_lo).total_seconds() / 60
-        interval = 1 if span_min <= 300 else 2
-        ax.xaxis.set_major_locator(mdates.HourLocator(interval=interval))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        plt.setp(ax.xaxis.get_majorticklabels(), fontsize=7, rotation=30, ha="right")
-
-        apply_glucose_axis(ax, fontsize=8, labelpad=2)   # after ylim is final
-        ax.tick_params(axis="y", labelsize=7)
-        ax.spines["top"].set_visible(False)
-        ax.spines["right"].set_visible(False)
-        ax.grid(axis="y", ls=":", alpha=0.22, lw=0.5)
-
-        # Remove C0-C6 prefix from label (keep only the description)
-        label = STAGE_LABELS[stage]
-        # Strip "C#  " or "SLH  " prefix if present
-        if label.startswith("C") and "  " in label:
-            label = label.split("  ", 1)[1]
-        elif label.startswith("SLH") and "  " in label:
-            label = label.split("  ", 1)[1]
-
-        ax.set_title(label, fontsize=8, fontweight="bold",
-                     pad=5, loc="left", color=color)
-
-        ax.legend(fontsize=6.5, framealpha=0.85, loc="upper left")
-
+    n = len(episodes_and_stages)
+    figsize = (5.0, 3.2 * n + 0.2) if stacked else (5.0 * n + 0.5, 3.2)
+    fig, axes = plt.subplots(n, 1, figsize=figsize, constrained_layout=True,
+                             squeeze=False) if stacked else \
+                plt.subplots(1, n, figsize=figsize, constrained_layout=True,
+                             squeeze=False)
+    for ax, (episode, stage) in zip(axes.ravel(), episodes_and_stages):
+        draw_panel(ax, df, episode, stage, timestep_min, window_hours)
     return fig
 
 
@@ -351,7 +241,14 @@ def generate_individual_panels(patient_id: str, output_dir: str) -> None:
         if count:
             print(f"  {stage}: {count}")
 
-    selected = select_representative_episodes(classified)
+    # One representative per stage (C1–SLH): the episode closest to the median peak.
+    # Not select_representative_episodes: it truncates to 6 panels and drops C1.
+    selected = []
+    for stage in DRAW_ORDER:
+        eps = classified[stage]
+        if eps:
+            med = np.median([e["peak_glucose"] for e in eps])
+            selected.append((min(eps, key=lambda e: abs(e["peak_glucose"] - med)), stage))
     print(f"\nSelected {len(selected)} representative episodes")
 
     apply_publication_style()
@@ -391,6 +288,12 @@ def generate_individual_panels(patient_id: str, output_dir: str) -> None:
         ]
         fig = plot_multi_panel_figure(df, episodes_list, patient_id, timestep_min)
         save_grouped_figure(fig, output_dir, f"{patient_id}_C4_C5", episodes_list)
+        plt.close(fig)
+
+        # C4 above C5 (slide layout)
+        fig = plot_multi_panel_figure(df, episodes_list, patient_id, timestep_min,
+                                      stacked=True)
+        save_grouped_figure(fig, output_dir, f"{patient_id}_C4_C5_stacked", episodes_list)
         plt.close(fig)
     else:
         missing = [s for s in ["C4", "C5"] if (s == "C4" and not c4_stage) or (s == "C5" and not c5_stage)]

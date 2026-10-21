@@ -165,7 +165,7 @@ def build_figure(patient_id: str, df, episode, timestep_min: float) -> plt.Figur
     })
 
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
-    fig.subplots_adjust(left=0.09, right=0.93, top=0.90, bottom=0.12)
+    fig.subplots_adjust(left=0.09, right=0.93, top=0.96, bottom=0.12)
 
     # Define plot window
     window_delta = pd.Timedelta(hours=PLOT_WINDOW_H / 2)
@@ -206,7 +206,7 @@ def build_figure(patient_id: str, df, episode, timestep_min: float) -> plt.Figur
 
     # ── 4. Original signal (G(t)) – bold ──────────────────────────────────────
     ax.plot(t_window, g_window, color=COLOR_ORIGINAL, lw=2.0, alpha=0.90,
-            zorder=4, label="G(t)")
+            zorder=6, label="G(t)")
 
     # ── 5. Counterfactual signals (C(t) for each offset) ──────────────────────
     for offset in OFFSET_VALUES:
@@ -230,12 +230,6 @@ def build_figure(patient_id: str, df, episode, timestep_min: float) -> plt.Figur
 
     ax.set_xlabel("Time of day", fontsize=FS_LABEL, labelpad=8)
     ax.set_ylabel("Glucose (mg/dL)", fontsize=FS_LABEL, labelpad=8)
-
-    # Title with patient ID
-    ax.set_title(
-        f"Episode Counterfactual Comparison — Participant {patient_id}",
-        fontsize=FS_TITLE, fontweight='bold', pad=14
-    )
 
     # ── 7. Clean spines ───────────────────────────────────────────────────────
     ax.spines["top"].set_visible(False)
