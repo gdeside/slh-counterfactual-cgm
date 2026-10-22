@@ -24,7 +24,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis \
 	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_onset_time suppfig_phenotype suppfig_s10 cohort_flowchart paper \
-	example presentation_figures convert_units sample_data sample_data_real sample_data_run \
+	example brist1d brist1d_run presentation_figures convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
 
 
@@ -205,6 +205,12 @@ paper_clinical: table1 fig5 fig6 suppfig_phenotype suppfig_s10  ## Table 1 and f
 
 example:  ## Detection + counterfactual without the pipeline: demo, INPUT=file, or INPUT_DIR=folder [UNIT=mmol/L]
 	$(RUN) scripts.examples.detect_and_counterfactual $(if $(INPUT_DIR),--input_dir $(INPUT_DIR),$(if $(INPUT),--input $(INPUT),--demo)) $(if $(UNIT),--unit $(UNIT))
+
+brist1d:  ## Convert example_data/BrisT1D/raw (original BrisT1D-Open) -> example_data/BrisT1D/converted/Data/Raw (glucose only, mg/dL)
+	$(RUN) scripts.examples.convert_brist1d
+
+brist1d_run: brist1d  ## Convert BrisT1D, then run the core pipeline on it (notebooks: CGM_DATA_ROOT=$(CURDIR)/example_data/BrisT1D/converted)
+	CGM_DATA_ROOT=$(CURDIR)/example_data/BrisT1D/converted $(MAKE) pipeline
 
 presentation_figures:  ## Talk figures (scripts/presentation_figures/, output ignored by git; patients chosen automatically)
 	$(RUN) scripts.presentation_figures.agp_counterfactual_recurrence

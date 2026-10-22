@@ -228,13 +228,22 @@ example_data/BrisT1D/
 └── raw/          <- put the ORIGINAL BrisT1D-Open files here, as downloaded (git-ignored: the data stay on your machine)
 ```
 
-> ⚠️ **The data will be modified.** BrisT1D-Open is not in the format and units of this project. A conversion script (in preparation)
-> will turn the original files into one file per patient with the columns `time` and `glycemie` (mg/dL, 5-min grid), written to a
-> separate `converted/` folder. The converted files are *not* the original BrisT1D files: this README, the script and the files it writes
-> will state which changes were made (selection of columns, units, resampling), and any result obtained from them illustrates what
-> the code does, not a finding about BrisT1D. The converted files can then be used with
-> [`make example INPUT_DIR=...`](#c-a-folder-of-files-a-whole-cohort) or, if a participant has a long enough recording
-> (45 days at ≥ 70 % coverage), with the [full pipeline](#full-pipeline-on-your-own-data).
+> ⚠️ **The data are modified.** BrisT1D-Open is not in the format and units of this project.
+> [`scripts/examples/convert_brist1d.py`](scripts/examples/convert_brist1d.py) (`make brist1d`) writes one file per participant to
+> `example_data/BrisT1D/converted/Data/Raw/<participant>.xlsx` (git-ignored) with only two columns, `time` and `glycemie`:
+> - **columns**: everything but the timestamp and the glucose (insulin, carbs, heart rate, steps, device ...) is dropped, as are rows without glucose;
+> - **units**: mmol/L -> mg/dL (x 18.0182);
+> - **time grid**: each reading is moved to the nearest 5-minute mark and readings landing on the same mark are averaged; nothing is interpolated
+>   (15-minute FreeStyle Libre 2 recordings stay 15-minute).
+>
+> The converted files are *not* the original BrisT1D files, and any result obtained from them illustrates what the code does, not a finding about BrisT1D.
+
+```bash
+make brist1d            # convert
+make brist1d_run        # convert + run the core pipeline (preprocessing -> metrics -> filtering -> episodes -> sensitivity)
+CGM_DATA_ROOT=$PWD/example_data/BrisT1D/converted jupyter lab notebooks/    # notebooks 01-08 on these data
+make example INPUT_DIR=example_data/BrisT1D/converted/Data/Raw              # no pipeline, a whole folder
+```
 
 ---
 
@@ -523,7 +532,7 @@ If you use the example data, also cite the dataset: Sam Gordon James, Miranda Ar
 Guillaume Deside, Zain Syed, Laura Symul, Philippe Lysy.
 
 - **Code** (this repository, issues, questions): Guillaume Deside - guillaume.deside@uclouvain.be
-- **Study data** (available on request): Philippe Lysy, corresponding author of the manuscript.
+- **Study data** (available on request): Philippe Lysy, corresponding author of the manuscript - philippe.lysy@uclouvain.be
 
 ---
 
