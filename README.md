@@ -3,7 +3,7 @@
 [![Tests](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml/badge.svg)](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-%E2%89%A5%203.11-blue.svg)](#installation)
 [![License: MIT](https://img.shields.io/badge/code%20license-MIT-green.svg)](LICENSE)
-[![Example data: ShanghaiT1DM, CC BY 4.0](https://img.shields.io/badge/example%20data-ShanghaiT1DM%20(CC%20BY%204.0)-lightgrey.svg)](#data-availability)
+[![Example data: BrisT1D-Open, CC BY 4.0](https://img.shields.io/badge/example%20data-BrisT1D--Open%20(CC%20BY%204.0)-lightgrey.svg)](#data-availability)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23102518.svg)](https://doi.org/10.5281/zenodo.23102518)
 
 Code, analysis pipeline and figure scripts for the manuscript:
@@ -23,7 +23,7 @@ Code, analysis pipeline and figure scripts for the manuscript:
 - [Manuscript figure and table map](#manuscript-figure-and-table-map)
 - [Repository structure](#repository-structure)
 - [Installation](#installation)
-- [Example with the ShanghaiT1DM data](#example-with-the-shanghait1dm-data)
+- [Example with the BrisT1D-Open data](#example-with-the-brist1d-open-data)
 - [Run detection and counterfactual directly on your files (no pipeline)](#run-detection-and-counterfactual-directly-on-your-files-no-pipeline)
 - [Data availability](#data-availability)
 - [Full pipeline on your own data](#full-pipeline-on-your-own-data)
@@ -103,8 +103,8 @@ make suppfig3 lininterp_45days PATIENT_ID=A224
 CGM_PATIENT_HIGH=A174 CGM_PATIENT_LOW=A224 make fig3 fig4     # two patients: high vs low SLH frequency
 ```
 
-No data at hand? Try **B/C** on the [ShanghaiT1DM example data](#example-with-the-shanghait1dm-data)
-(`make shanghai_example`). Those recordings (15-min CGM, about 7 days) are too short for the 45-day pipeline.
+No data at hand? Use the public [BrisT1D-Open example data](#example-with-the-brist1d-open-data): they are the only
+data this repository points to, and they are not the study data.
 
 ---
 
@@ -157,12 +157,12 @@ counterfactual-cgm-slh/
 │   ├── statistics/               #   descriptive stats, quartiles, scatter plots; exploratory scripts (below)
 │   ├── patient_selection/        #   participant pairs / similarity map illustrating SLH beyond standard CGM metrics
 │   ├── paper_figures/            #   manuscript figures and tables
-│   ├── examples/                 #   detection + counterfactual on one file or a folder (`make example`); ShanghaiT1DM converter
+│   ├── examples/                 #   detection + counterfactual on one file or a folder (`make example`)
 │   ├── presentation_figures/     #   talk figures, synthetic-data friendly (`make presentation_figures`; not part of the paper)
 │   ├── sample_data/              #   synthetic sample patients (`make sample_data`) and the generator built from real data (maintainers)
 │   └── *.py                      #   single-patient illustrations at the top level (overview, zoom panels, AGP recurrence, patient comparison)
 │
-├── example_data/ShanghaiT1DM/    # example data (NOT in the repository): raw/ = original files, converted/ = project format
+├── example_data/BrisT1D/raw/     # where to put the BrisT1D-Open files (NOT in the repository; contents git-ignored)
 ├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
 ├── tests/                        # pytest suite (238 tests; no patient data needed) - `make tests`
 ├── docs/UNITS.md                 # mg/dL ↔ mmol/L handling
@@ -212,45 +212,29 @@ Results/                         # all outputs are written here
 
 ---
 
-## Example with the ShanghaiT1DM data
+## Example with the BrisT1D-Open data
 
-The example data of this repository are the **ShanghaiT1DM** recordings:
+The example data of this repository are the open part of the **BrisT1D** dataset (young adults with type 1 diabetes, University of Bristol):
 
-> Zhu, Jinhao (2022). *Diabetes Datasets-ShanghaiT1DM and ShanghaiT2DM*. figshare. Dataset.
-> [https://doi.org/10.6084/m9.figshare.20444397.v3](https://doi.org/10.6084/m9.figshare.20444397.v3) (CC BY 4.0)
+> Sam Gordon James, Miranda Armstrong, Aisling O'Kane, Harry Emerson, Zahraa Abdallah (2025): BrisT1D-Open Dataset. https://doi.org/10.5523/bris.33z5jc8fa6tob21ptrugzqog08 (CC BY 4.0)
 
-They are **not distributed with this code** (the Zenodo archive contains code only): download them from figshare. Each patient
-file (e.g. `1001_0_20210730.xlsx`) holds about a week of CGM sampled every 15 minutes, in mg/dL, with insulin and meal records.
-
-> ⚠️ **The data are modified.** To match the format and units of this project, `scripts/examples/convert_shanghai_t1dm.py`
-> keeps only the time stamp and the CGM column, expresses glucose in mg/dL (converted from mmol/L if needed), **resamples the
-> 15-min CGM to a 5-min grid by linear interpolation** (gaps longer than 20 min are left empty) and renames the columns
-> `time` / `glycemie`. Interpolated points are not measurements, and the results below illustrate what the code does; they say
-> nothing about ShanghaiT1DM itself. The converted files are *not* the original ShanghaiT1DM files and the original authors do not
-> endorse them. The converter writes a `MODIFIED_DATA_NOTICE.md` next to its output to say so.
+They are **not distributed with this code** (the Zenodo archive contains code only): download them from the University of Bristol
+Data Repository (link above), which also describes the files and their licence. Only the open part is needed.
 
 **Where to put the files**
 
 ```
-example_data/ShanghaiT1DM/
-├── raw/          <- put the ORIGINAL figshare files here (patient .xlsx files; Shanghai_T1DM_Summary.xlsx is ignored)
-└── converted/    <- written by the converter: <patient_id>.csv (time, glycemie in mg/dL, 5 min) + MODIFIED_DATA_NOTICE.md
+example_data/BrisT1D/
+└── raw/          <- put the ORIGINAL BrisT1D-Open files here, as downloaded (git-ignored: the data stay on your machine)
 ```
 
-`raw/` and `converted/` are git-ignored: the data stay on your machine. To add the other patients, drop their files in `raw/`
-and run the commands again; the folder is not limited to one patient.
-
-```bash
-make shanghai_convert     # raw/ → converted/   (the data are modified, see above)
-make shanghai_example     # convert, then episodes + counterfactual for every converted patient → example_output/
-```
-
-`example_output/` contains `cohort_summary.csv`, `cohort_episodes.csv` and one folder per patient (episodes, counterfactual, figure);
-see [Run on your files](#c-a-folder-of-files-a-whole-cohort) for the content. The converter options are `--input_dir`, `--out_dir` and
-`--max_gap` (`python3 -m scripts.examples.convert_shanghai_t1dm -h`).
-
-For another dataset, convert it to one CSV / Excel file per patient with a time column and a glucose column in mg/dL on a
-5-minute grid, then use the section below.
+> ⚠️ **The data will be modified.** BrisT1D-Open is not in the format and units of this project. A conversion script (in preparation)
+> will turn the original files into one file per patient with the columns `time` and `glycemie` (mg/dL, 5-min grid), written to a
+> separate `converted/` folder. The converted files are *not* the original BrisT1D files: this README, the script and the files it writes
+> will state which changes were made (selection of columns, units, resampling), and any result obtained from them illustrates what
+> the code does, not a finding about BrisT1D. The converted files can then be used with
+> [`make example INPUT_DIR=...`](#c-a-folder-of-files-a-whole-cohort) or, if a participant has a long enough recording
+> (45 days at ≥ 70 % coverage), with the [full pipeline](#full-pipeline-on-your-own-data).
 
 ---
 
@@ -334,10 +318,10 @@ filtering. For that reason the episode counts differ from those of the pipeline 
 - **This repository and its Zenodo archive contain code only. No patient data are shared.**
 - **Study data.** The CGM data used in the manuscript are patient-level clinical data. They are available on request from the
   corresponding author of the paper, **Philippe Lysy**.
-- **Example data.** The examples use the public **ShanghaiT1DM** dataset (Zhu, Jinhao, 2022, figshare,
-  [10.6084/m9.figshare.20444397.v3](https://doi.org/10.6084/m9.figshare.20444397.v3), CC BY 4.0), which you download yourself.
-  It is **modified** by the converter of this repository (see [Example](#example-with-the-shanghait1dm-data)); numbers obtained
-  from it are not manuscript results.
+- **Example data (the only data this repository points to).** The examples use the open part of the public **BrisT1D** dataset
+  (Sam Gordon James, Miranda Armstrong, Aisling O'Kane, Harry Emerson, Zahraa Abdallah (2025): BrisT1D-Open Dataset, [10.5523/bris.33z5jc8fa6tob21ptrugzqog08](https://doi.org/10.5523/bris.33z5jc8fa6tob21ptrugzqog08),
+  CC BY 4.0), which you download yourself. It is converted to the format of this project (see
+  [Example](#example-with-the-brist1d-open-data)); numbers obtained from it are not manuscript results.
 
 ---
 
@@ -366,7 +350,7 @@ subset only).
 
 Scripts that illustrate one patient (episode detection, counterfactual construction, AGP, …) or two patients
 (Figures 3–5, patient comparison) **do not hard-code participant IDs**. Participant IDs differ between datasets
-(original study codes, `A001`… in the synthetic sample data, file names in the ShanghaiT1DM example), so the code picks patients itself
+(original study codes, `A001`… in the synthetic sample data, file names in the BrisT1D example), so the code picks patients itself
 unless you tell it which ones to use.
 
 **Default (automatic).** From the filtered cohort, the script takes the patient with the **most** SLH episodes
@@ -501,7 +485,6 @@ Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [
 | Sensitivity | `sensitivity_analysis`, `lines_sensitivity`, `boxplots_sensitivity`, `cdf_sensitivity`, `agp_sensitivity`, `timeseries_sensitivity`, `sensitivity_figures` |
 | Manuscript | `fig2`, `fig3`, `fig4`, `suppfig1`, `suppfig3`, `cohort_flowchart`, **`paper`**; with the clinical table*: `table1`, `fig5`, `fig6`, `suppfig_phenotype`, **`paper_clinical`** |
 | Single file / folder, no pipeline | `example` (`make example INPUT=file.csv` or `INPUT_DIR=folder`) |
-| ShanghaiT1DM example data | `shanghai_convert`, `shanghai_example` |
 | Talk figures | `presentation_figures` |
 | Units | `convert_units` |
 | Sample dataset | `sample_data`, `sample_data_run`, `sample_data_real` (maintainers, real data) |
@@ -531,8 +514,7 @@ If you use this code, please cite the Zenodo archive (code only) and the manuscr
 Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making. The Lancet Diabetes & Endocrinology (submitted; medRxiv). Code: Zenodo, doi:10.5281/zenodo.23102518
 ```
 
-If you use the example data, also cite the dataset: Zhu, Jinhao (2022). *Diabetes Datasets-ShanghaiT1DM and ShanghaiT2DM*. figshare.
-Dataset. https://doi.org/10.6084/m9.figshare.20444397.v3 - and state that the data were modified by this project's converter.
+If you use the example data, also cite the dataset: Sam Gordon James, Miranda Armstrong, Aisling O'Kane, Harry Emerson, Zahraa Abdallah (2025): BrisT1D-Open Dataset. https://doi.org/10.5523/bris.33z5jc8fa6tob21ptrugzqog08 - and state that the data were modified by this project's converter.
 
 ---
 
@@ -548,4 +530,4 @@ Guillaume Deside, Zain Syed, Laura Symul, Philippe Lysy.
 ## License
 
 Code: **MIT** (see [`LICENSE`](LICENSE)).
-The ShanghaiT1DM example data are not part of this repository; they belong to their authors and are released under **CC BY 4.0**.
+The BrisT1D-Open example data are not part of this repository; they belong to their authors and are released under **CC BY 4.0**.

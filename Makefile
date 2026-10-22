@@ -24,7 +24,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis \
 	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_onset_time suppfig_phenotype suppfig_s10 cohort_flowchart paper \
-	example shanghai_convert shanghai_example presentation_figures convert_units sample_data sample_data_real sample_data_run \
+	example presentation_figures convert_units sample_data sample_data_real sample_data_run \
 	figures tests clean
 
 
@@ -226,12 +226,6 @@ presentation_figures:  ## Talk figures (scripts/presentation_figures/, output ig
 	$(RUN) scripts.presentation_figures.slh_distributions_by_category
 	$(RUN) scripts.presentation_figures.slh_twin_comparison
 	$(RUN) scripts.presentation_figures.twin_two_weeks
-
-shanghai_convert:  ## Put the ShanghaiT1DM files (example_data/ShanghaiT1DM/raw/) into the project format -> converted/ (MODIFIED data)
-	$(RUN) scripts.examples.convert_shanghai_t1dm
-
-shanghai_example: shanghai_convert  ## Detection + counterfactual on the converted ShanghaiT1DM example data -> example_output/
-	$(RUN) scripts.examples.detect_and_counterfactual --input_dir example_data/ShanghaiT1DM/converted
 
 convert_units:  ## Write mmol/L copies of the data files (mg/dL originals untouched)
 	$(RUN) scripts.preprocessing.convert_data_units

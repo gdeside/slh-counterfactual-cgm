@@ -226,7 +226,7 @@ scripts/presentation_figures/output/
 # Output of scripts/examples/detect_and_counterfactual.py
 example_output/
 
-# ShanghaiT1DM example data (CC BY 4.0, not redistributed here): original and converted files stay local
+# BrisT1D-Open example data (CC BY 4.0, not redistributed here): original and converted files stay local
 /example_data/*/raw/*
 !/example_data/*/raw/.gitkeep
 /example_data/*/converted/
