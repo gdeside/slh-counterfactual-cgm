@@ -16,7 +16,7 @@ from pathlib import Path
 import os
 
 # CGM_DATA_ROOT is the folder holding Data/ and Results/ (e.g. the folder produced by
-# `make sample_data`). Without it, ./data (relative to the working directory) is used.
+# `make brist1d`). Without it, ./data (relative to the working directory) is used.
 _root = os.environ.get("CGM_DATA_ROOT", "data")
 BASE_PATH = Path(_root)
 

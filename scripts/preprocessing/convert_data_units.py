@@ -25,10 +25,6 @@ distribution  Data/Filtered/filtered_cohort_metrics_distribution.csv
 episodes      Data/Episodes/<PID>_episodes.csv             (no glucose column)
 signals       Results/Sensitivity_Analysis/Signals/<PID>_signals.csv
 sensitivity   Results/Sensitivity_Analysis/Data/cohort_sensitivity.csv
-opendata      Results/Open_Data/**/*.csv                   (glucose_mgdl ->
-              glucose_mmoll; prefer regenerating the release with
-              ``generate_open_data.py --unit mmol/L``, which also rewrites
-              DATACARD.md)
 cohort        Data/Final cohort SLH.csv                    (';' + decimal ',')
 
 Usage
@@ -141,7 +137,6 @@ TARGETS = [
     Target("episodes", "Data/Episodes/*_episodes.csv"),
     Target("signals", "Results/Sensitivity_Analysis/Signals/*_signals.csv"),
     Target("sensitivity", "Results/Sensitivity_Analysis/Data/cohort_sensitivity.csv"),
-    Target("opendata", "Results/Open_Data/**/*.csv"),
     Target(
         "cohort",
         "Data/Final cohort SLH.csv",

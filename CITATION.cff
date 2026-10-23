@@ -4,7 +4,6 @@ title: "Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code"
 type: software
 version: 1.0.0
 date-released: 2026-10-05
-doi: 10.5281/zenodo.23102518
 license: MIT
 repository-code: "https://github.com/gdeside/counterfactual-cgm-slh"
 authors:

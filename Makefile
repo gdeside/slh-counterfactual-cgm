@@ -3,7 +3,7 @@
 #
 # * Every scripts/ entry point is run as a module from the repository root.
 # * Data root: set CGM_DATA_ROOT (see src/config/paths.py), e.g.
-#       CGM_DATA_ROOT=$PWD/sample_data make pipeline
+#       CGM_DATA_ROOT=$PWD/example_data/BrisT1D/converted make pipeline
 # * Help text = the `## comment` written after each target.
 # =============================================================================
 
@@ -24,7 +24,7 @@ CLINICAL_TABLE = $(or $(CGM_DATA_ROOT),data)/Data/Final cohort SLH.csv
 	timeseries_sensitivity sensitivity_figures \
 	quartile_analysis scatter_analysis \
 	table1 fig2 fig3 fig4 fig5 fig6 suppfig1 suppfig3 suppfig_onset_time suppfig_phenotype suppfig_s10 cohort_flowchart paper \
-	example brist1d brist1d_run presentation_figures convert_units sample_data sample_data_real sample_data_run \
+	example brist1d brist1d_run presentation_figures convert_units \
 	figures tests clean
 
 
@@ -235,18 +235,6 @@ presentation_figures:  ## Talk figures (scripts/presentation_figures/, output ig
 
 convert_units:  ## Write mmol/L copies of the data files (mg/dL originals untouched)
 	$(RUN) scripts.preprocessing.convert_data_units
-
-
-# ---- SAMPLE DATASET (synthetic, for reviewers) ------------------------------
-
-sample_data:  ## Generate 4 synthetic patients + sample_data.zip
-	$(RUN) scripts.sample_data.generate_sample_data --out sample_data --zip
-
-sample_data_real:  ## Maintainers only: 4 fake patients re-assembled from REAL data (needs real CGM_DATA_ROOT; DPO approval before publishing)
-	$(RUN) scripts.sample_data.generate_sample_data_from_real --out sample_data_real --zip
-
-sample_data_run: sample_data  ## Run the core pipeline on sample_data/ (~2 min)
-	CGM_DATA_ROOT=$(CURDIR)/sample_data $(MAKE) pipeline
 
 
 # ---- AGGREGATE --------------------------------------------------------------

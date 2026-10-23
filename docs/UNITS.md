@@ -44,7 +44,7 @@ python3 -m scripts.preprocessing.convert_data_units --to mg/dL \
 ```
 
 Targets: `windows`, `metrics`, `distribution`, `episodes`, `signals`,
-`sensitivity`, `cohort`, `opendata` (all by default).
+`sensitivity`, `cohort` (all by default).
 
 The output root gets a `CONVERSION_REPORT.md` listing, per target, exactly
 which columns were converted.
@@ -80,16 +80,6 @@ concentrations, since the conversion is purely multiplicative.
 * The `cohort` target round-trips a `;`-separated, decimal-comma file through
   pandas, so untouched integers may be re-serialised as `7,0` instead of `7`.
   Values are unchanged.
-* For the open-data release, prefer regenerating rather than converting, so
-  that `DATACARD.md` matches:
-
-  ```bash
-  python3 -m scripts.preprocessing.generate_open_data --unit mmol/L
-  ```
-
-  Noise and clipping are still applied in mg/dL; only the published column is
-  converted (and renamed `glucose_mmoll`), so both releases describe the same
-  perturbed signal.
 
 ---
 
@@ -148,7 +138,7 @@ with display_unit(UNIT_MMOLL):      # or scoped — e.g. to emit both versions
     generate_figure_3_patient_comparison()
 ```
 
-Console logs, `DATACARD.md`, and the parameter banners printed by the pipeline
+Console logs and the parameter banners printed by the pipeline
 stay in mg/dL: they report canonical values, not presentation.
 
 ### The mechanism

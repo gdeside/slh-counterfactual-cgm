@@ -217,8 +217,6 @@ analyzer.py
 *.html
 
 # Generated sample dataset (attached to the GitHub release, not tracked)
-/sample_data/
-/sample_data.zip
 
 # Presentation figure outputs (generated; may derive from patient data)
 scripts/presentation_figures/output/
