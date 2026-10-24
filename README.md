@@ -167,7 +167,6 @@ slh-counterfactual-cgm/
 ├── .github/workflows/tests.yml   # CI: pytest + example smoke test on every push
 ├── Makefile                      # all execution commands - `make help`
 ├── requirements.txt              # pinned dependencies (Python ≥ 3.11)
-├── TODO.md                       # pre-release checklist (maintainers; removed from the archived version)
 ├── CITATION.cff                  # how to cite (Zenodo DOI, code only)
 └── LICENSE                       # MIT
 ```
