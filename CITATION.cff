@@ -5,7 +5,7 @@ type: software
 version: 1.0.0
 date-released: 2026-10-05
 license: MIT
-repository-code: "https://github.com/gdeside/counterfactual-cgm-slh"
+repository-code: "https://github.com/gdeside/slh-counterfactual-cgm"
 authors:
   - family-names: Deside
     given-names: Guillaume

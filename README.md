@@ -1,6 +1,6 @@
 # Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code
 
-[![Tests](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml/badge.svg)](https://github.com/gdeside/counterfactual-cgm-slh/actions/workflows/tests.yml)
+[![Tests](https://github.com/gdeside/slh-counterfactual-cgm/actions/workflows/tests.yml/badge.svg)](https://github.com/gdeside/slh-counterfactual-cgm/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-%E2%89%A5%203.11-blue.svg)](#installation)
 [![License: MIT](https://img.shields.io/badge/code%20license-MIT-green.svg)](LICENSE)
 [![Example data: BrisT1D-Open, CC BY 4.0](https://img.shields.io/badge/example%20data-BrisT1D--Open%20(CC%20BY%204.0)-lightgrey.svg)](#data-availability)
@@ -137,7 +137,7 @@ Run any script as a module from the repository root, e.g.
 ## Repository structure
 
 ```
-counterfactual-cgm-slh/
+slh-counterfactual-cgm/
 ├── src/                          # Reusable, tested library code
 │   ├── config/                   #   thresholds (constants.py), paths (paths.py), figure settings
 │   ├── preprocessing/            #   loading, quality flags, coverage, 45-day window extraction
@@ -188,8 +188,8 @@ giving its path, what it does, its **module command** (`Usage`) and its **output
 Requires **Python ≥ 3.11** (developed and tested on 3.13).
 
 ```bash
-git clone https://github.com/gdeside/counterfactual-cgm-slh.git
-cd counterfactual-cgm-slh
+git clone https://github.com/gdeside/slh-counterfactual-cgm.git
+cd slh-counterfactual-cgm
 python -m venv venv
 source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt

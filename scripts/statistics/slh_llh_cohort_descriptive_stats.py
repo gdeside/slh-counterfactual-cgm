@@ -42,7 +42,7 @@ Usage
 Authors
 -------
 Guillaume Deside, Laura Symul, Philippe Lysy, Zain Syed
-UCL — counterfactual-cgm-slh project
+UCL — slh-counterfactual-cgm project
 
 Date
 ----

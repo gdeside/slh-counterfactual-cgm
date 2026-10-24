@@ -50,7 +50,7 @@ Usage
 Authors
 -------
 Guillaume Deside
-UCL - counterfactual-cgm-slh project
+UCL - slh-counterfactual-cgm project
 
 Date
 ----
