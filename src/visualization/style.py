@@ -9,7 +9,7 @@ All figure constants are imported from src.config.figure_config.
 Figures that show glucose are saved with the display unit in their filename
 (``Figure4_..._mgdl.pdf`` / ``Figure4_..._mmoll.pdf``), so the two versions of
 a figure sit side by side instead of overwriting one another.  See
-:func:`save_figure` and ``docs/UNITS.md``.
+:func:`save_figure`.
 """
 
 from pathlib import Path

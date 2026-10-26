@@ -164,7 +164,6 @@ slh-counterfactual-cgm/
 ├── example_data/BrisT1D/raw/     # where to put the BrisT1D-Open files (NOT in the repository; contents git-ignored)
 ├── notebooks/                    # 9 example notebooks (01_cgm_metrics … 09_detect_and_counterfactual_on_your_file)
 ├── tests/                        # pytest suite (238 tests; no patient data needed) - `make tests`
-├── docs/UNITS.md                 # mg/dL ↔ mmol/L handling
 ├── .github/workflows/tests.yml   # CI: pytest + example smoke test on every push
 ├── Makefile                      # all execution commands - `make help`
 ├── requirements.txt              # pinned dependencies (Python ≥ 3.11)
@@ -473,7 +472,7 @@ python3 -m scripts.preprocessing.convert_data_units            # mmol/L copies o
 CGM_GLUCOSE_UNIT="mmol/L" python3 -m scripts.paper_figures.generate_figure_3_patient_comparison
 ```
 
-Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`). Details in [`docs/UNITS.md`](docs/UNITS.md).
+Figure filenames carry the unit (`..._mgdl.pdf` / `..._mmoll.pdf`).
 
 ---
 
