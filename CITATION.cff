@@ -3,6 +3,7 @@ message: "If you use this code, please cite it as below. The archive contains co
 title: "Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code"
 type: software
 version: 1.0.0
+doi: 10.5281/zenodo.23615326
 date-released: 2026-10-24
 license: MIT
 repository-code: "https://github.com/gdeside/slh-counterfactual-cgm"

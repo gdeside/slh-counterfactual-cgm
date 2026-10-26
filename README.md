@@ -1,5 +1,6 @@
 # Counterfactual CGM signals for short-lived hyperglycaemia (SLH): code
 
+[![DOI](https://zenodo.org/badge/1432055223.svg)](https://doi.org/10.5281/zenodo.23615326)
 [![Tests](https://github.com/gdeside/slh-counterfactual-cgm/actions/workflows/tests.yml/badge.svg)](https://github.com/gdeside/slh-counterfactual-cgm/actions/workflows/tests.yml)
 [![Python](https://img.shields.io/badge/python-%E2%89%A5%203.11-blue.svg)](#installation)
 [![License: MIT](https://img.shields.io/badge/code%20license-MIT-green.svg)](LICENSE)
@@ -10,7 +11,7 @@ Code, analysis pipeline and figure scripts for the manuscript:
 > *Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making*
 > Deside G, Syed Z, Symul L, Lysy P. *The Lancet Diabetes & Endocrinology* (submitted; preprint on medRxiv).
 >
-> Code archived on Zenodo (code only, **no patient data**): DOI to come with the next release.
+> Code archived on Zenodo (code only, **no patient data**): [10.5281/zenodo.23615326](https://doi.org/10.5281/zenodo.23615326)
 
 ---
 
@@ -517,7 +518,7 @@ Runs in a few seconds, needs no patient data, and is executed on every push by G
 If you use this code, please cite the Zenodo archive (code only) and the manuscript:
 
 ```
-Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making. The Lancet Diabetes & Endocrinology (submitted; medRxiv). Code: Zenodo (DOI to come)
+Deside G, Syed Z, Symul L, Lysy P. Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making. The Lancet Diabetes & Endocrinology (submitted; medRxiv). Code: Zenodo, doi:10.5281/zenodo.23615326
 ```
 
 If you use the example data, also cite the dataset: Sam Gordon James, Miranda Armstrong, Aisling O'Kane, Harry Emerson, Zahraa Abdallah (2025): BrisT1D-Open Dataset. https://doi.org/10.5523/bris.33z5jc8fa6tob21ptrugzqog08 - and state that the data were modified by this project's converter.
