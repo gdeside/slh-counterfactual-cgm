@@ -14,12 +14,14 @@ authors:
     affiliation: "Institute for Statistics, Biostatistics, and Actuarial Sciences (ISBA), Université catholique de Louvain"
   - family-names: Syed
     given-names: Zain
+    affiliation: "EDIN Laboratory, Institute for Experimental and Clinical Research, Université catholique de Louvain (UCLouvain)"
   - family-names: Symul
     given-names: Laura
     affiliation: "Institute for Statistics, Biostatistics, and Actuarial Sciences (ISBA), Université catholique de Louvain"
   - family-names: Lysy
     given-names: Philippe
     email: philippe.lysy@uclouvain.be
+    affiliation: "EDIN Laboratory, Institute for Experimental and Clinical Research, Université catholique de Louvain (UCLouvain)"
 preferred-citation:
   type: article
   title: "Short-Lived Hyperglycaemia Contributes to Continuous Glucose Monitoring Metrics Used for Therapeutic Decision-Making"
